@@ -29,7 +29,11 @@ export default function LoginScreen() {
   const onSubmit = async (data: LoginFormData) => {
     setIsLoading(true);
     try {
-      const response = await api.post('/auth/login', data);
+      // Backend usa `senha` (PT-BR). Mantemos `password` no form e adaptamos no payload.
+      const response = await api.post('/auth/login', {
+        email: data.email,
+        senha: data.password,
+      });
       await setToken(response.data.token);
       router.replace('/(app)/home');
     } catch (error: any) {

@@ -62,8 +62,10 @@ npx expo start -c
 ngrok http 3000
 ```
 
-Depois atualizar `mobile/services/api.ts` para:
-- `baseURL: 'https://<subdominio>.ngrok-free.app/api/v1'`
+Depois configurar no mobile (sem mexer em código):
+- criar `mobile/.env` (baseado no `mobile/.env.example`)
+- definir:
+  - `EXPO_PUBLIC_API_URL=https://<subdominio>.ngrok-free.app/api/v1`
 
 ## Time (agents)
 

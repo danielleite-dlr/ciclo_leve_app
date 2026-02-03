@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+
+<html class="light" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Onboarding - Momento Atual</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;family=Noto+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#13ec5b",
+                        "background-light": "#f6f8f6",
+                        "background-dark": "#102216",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"],
+                        "body": ["Noto Sans", "sans-serif"],
+                    },
+                    borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark transition-colors duration-200">
+<div class="relative flex h-full min-h-screen w-full flex-col overflow-x-hidden font-display max-w-md mx-auto shadow-2xl bg-white dark:bg-[#102216]">
+<!-- Header / Progress -->
+<header class="flex w-full flex-col pt-8 px-6 pb-4">
+<div class="flex items-center justify-between mb-6">
+<button class="p-2 -ml-2 rounded-full text-[#111813] dark:text-white hover:bg-black/5 dark:hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<div class="text-sm font-medium text-slate-500 dark:text-slate-400">Passo 1 de 4</div>
+</div>
+<!-- Page Indicators -->
+<div class="flex w-full flex-row items-center gap-2">
+<div class="h-1.5 flex-1 rounded-full bg-primary"></div>
+<div class="h-1.5 flex-1 rounded-full bg-[#dbe6df] dark:bg-white/10"></div>
+<div class="h-1.5 flex-1 rounded-full bg-[#dbe6df] dark:bg-white/10"></div>
+<div class="h-1.5 flex-1 rounded-full bg-[#dbe6df] dark:bg-white/10"></div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="flex-1 flex flex-col px-6">
+<!-- Headline -->
+<h1 class="text-[#111813] dark:text-white text-3xl font-bold leading-tight pt-4 pb-3">
+                Qual o seu momento atual?
+            </h1>
+<!-- Body Text -->
+<p class="text-slate-600 dark:text-slate-300 text-base font-normal leading-relaxed pb-8">
+                Selecione a opção que melhor descreve sua fase para personalizarmos suas previsões e dicas diárias.
+            </p>
+<!-- Radio List Options -->
+<form class="flex flex-col gap-4">
+<!-- Option 1: Ciclo Regular -->
+<label class="group relative flex items-center gap-4 rounded-2xl border border-solid border-[#e5e9e6] dark:border-[#1f3627] bg-white dark:bg-[#152a1e] p-4 cursor-pointer transition-all hover:border-primary/50 dark:hover:border-primary/50 has-[:checked]:border-primary has-[:checked]:bg-primary/5 dark:has-[:checked]:bg-primary/10 has-[:checked]:shadow-[0_0_0_1px_rgba(19,236,91,1)]">
+<input checked="" class="peer sr-only" name="cycle_phase" type="radio"/>
+<div class="flex items-center justify-center w-12 h-12 rounded-full bg-[#f2fcf5] dark:bg-[#0c1f13] text-[#134e26] dark:text-[#13ec5b] group-hover:scale-105 transition-transform">
+<span class="material-symbols-outlined">water_drop</span>
+</div>
+<div class="flex flex-col grow">
+<span class="text-[#111813] dark:text-white text-base font-semibold">Ciclo regular</span>
+<span class="text-slate-500 dark:text-slate-400 text-xs mt-0.5">Variação menor que 7 dias</span>
+</div>
+<div class="w-6 h-6 rounded-full border-2 border-[#dbe6df] dark:border-[#3a4a3e] peer-checked:border-primary peer-checked:bg-primary flex items-center justify-center transition-colors">
+<span class="material-symbols-outlined text-[16px] text-[#111813] font-bold opacity-0 peer-checked:opacity-100 transition-opacity">check</span>
+</div>
+</label>
+<!-- Option 2: Ciclo Irregular -->
+<label class="group relative flex items-center gap-4 rounded-2xl border border-solid border-[#e5e9e6] dark:border-[#1f3627] bg-white dark:bg-[#152a1e] p-4 cursor-pointer transition-all hover:border-primary/50 dark:hover:border-primary/50 has-[:checked]:border-primary has-[:checked]:bg-primary/5 dark:has-[:checked]:bg-primary/10 has-[:checked]:shadow-[0_0_0_1px_rgba(19,236,91,1)]">
+<input class="peer sr-only" name="cycle_phase" type="radio"/>
+<div class="flex items-center justify-center w-12 h-12 rounded-full bg-[#f2fcf5] dark:bg-[#0c1f13] text-[#134e26] dark:text-[#13ec5b] group-hover:scale-105 transition-transform">
+<span class="material-symbols-outlined">waves</span>
+</div>
+<div class="flex flex-col grow">
+<span class="text-[#111813] dark:text-white text-base font-semibold">Ciclo irregular</span>
+<span class="text-slate-500 dark:text-slate-400 text-xs mt-0.5">Variação imprevisível</span>
+</div>
+<div class="w-6 h-6 rounded-full border-2 border-[#dbe6df] dark:border-[#3a4a3e] peer-checked:border-primary peer-checked:bg-primary flex items-center justify-center transition-colors">
+<span class="material-symbols-outlined text-[16px] text-[#111813] font-bold opacity-0 peer-checked:opacity-100 transition-opacity">check</span>
+</div>
+</label>
+<!-- Option 3: Menopausa -->
+<label class="group relative flex items-center gap-4 rounded-2xl border border-solid border-[#e5e9e6] dark:border-[#1f3627] bg-white dark:bg-[#152a1e] p-4 cursor-pointer transition-all hover:border-primary/50 dark:hover:border-primary/50 has-[:checked]:border-primary has-[:checked]:bg-primary/5 dark:has-[:checked]:bg-primary/10 has-[:checked]:shadow-[0_0_0_1px_rgba(19,236,91,1)]">
+<input class="peer sr-only" name="cycle_phase" type="radio"/>
+<div class="flex items-center justify-center w-12 h-12 rounded-full bg-[#f2fcf5] dark:bg-[#0c1f13] text-[#134e26] dark:text-[#13ec5b] group-hover:scale-105 transition-transform">
+<span class="material-symbols-outlined">spa</span>
+</div>
+<div class="flex flex-col grow">
+<span class="text-[#111813] dark:text-white text-base font-semibold">Menopausa</span>
+<span class="text-slate-500 dark:text-slate-400 text-xs mt-0.5">Ou perimenopausa</span>
+</div>
+<div class="w-6 h-6 rounded-full border-2 border-[#dbe6df] dark:border-[#3a4a3e] peer-checked:border-primary peer-checked:bg-primary flex items-center justify-center transition-colors">
+<span class="material-symbols-outlined text-[16px] text-[#111813] font-bold opacity-0 peer-checked:opacity-100 transition-opacity">check</span>
+</div>
+</label>
+<!-- Option 4: Anticoncepcional -->
+<label class="group relative flex items-center gap-4 rounded-2xl border border-solid border-[#e5e9e6] dark:border-[#1f3627] bg-white dark:bg-[#152a1e] p-4 cursor-pointer transition-all hover:border-primary/50 dark:hover:border-primary/50 has-[:checked]:border-primary has-[:checked]:bg-primary/5 dark:has-[:checked]:bg-primary/10 has-[:checked]:shadow-[0_0_0_1px_rgba(19,236,91,1)]">
+<input class="peer sr-only" name="cycle_phase" type="radio"/>
+<div class="flex items-center justify-center w-12 h-12 rounded-full bg-[#f2fcf5] dark:bg-[#0c1f13] text-[#134e26] dark:text-[#13ec5b] group-hover:scale-105 transition-transform">
+<span class="material-symbols-outlined">medication</span>
+</div>
+<div class="flex flex-col grow">
+<span class="text-[#111813] dark:text-white text-base font-semibold">Anticoncepcional</span>
+<span class="text-slate-500 dark:text-slate-400 text-xs mt-0.5">Uso contínuo</span>
+</div>
+<div class="w-6 h-6 rounded-full border-2 border-[#dbe6df] dark:border-[#3a4a3e] peer-checked:border-primary peer-checked:bg-primary flex items-center justify-center transition-colors">
+<span class="material-symbols-outlined text-[16px] text-[#111813] font-bold opacity-0 peer-checked:opacity-100 transition-opacity">check</span>
+</div>
+</label>
+</form>
+</main>
+<!-- Footer Action -->
+<footer class="mt-auto p-6 bg-gradient-to-t from-background-light to-transparent dark:from-background-dark">
+<button class="w-full cursor-pointer flex items-center justify-center overflow-hidden rounded-full h-14 bg-primary text-[#111813] text-lg font-bold tracking-wide shadow-lg shadow-primary/20 hover:shadow-primary/40 active:scale-[0.98] transition-all">
+                Continuar
+            </button>
+</footer>
+</div>
+</body></html>

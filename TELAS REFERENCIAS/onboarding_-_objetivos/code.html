@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+
+<html class="light" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Onboarding - Objetivos</title>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&amp;family=Noto+Sans:wght@300;400;500;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Theme Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#13ec5b",
+                        "background-light": "#f6f8f6",
+                        "background-dark": "#102216",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#1A2C22",
+                        "text-main": "#111813",
+                        "text-muted": "#637569",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"],
+                        "body": ["Noto Sans", "sans-serif"],
+                    },
+                    borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        @layer utilities {
+            .no-scrollbar::-webkit-scrollbar {
+                display: none;
+            }
+            .no-scrollbar {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+        }
+        
+        .glass-effect {
+            @apply backdrop-blur-md bg-white/80 dark:bg-black/20;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-gray-100 dark:bg-black flex items-center justify-center min-h-screen font-display">
+<!-- Mobile Container -->
+<div class="relative flex h-full w-full max-w-md flex-col bg-background-light dark:bg-background-dark shadow-2xl overflow-hidden md:h-[90vh] md:rounded-[2rem]">
+<!-- Header / Navigation -->
+<header class="flex w-full items-center justify-between px-6 py-6 z-10">
+<button class="flex h-10 w-10 items-center justify-center rounded-full text-text-main dark:text-white hover:bg-black/5 dark:hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<!-- Page Indicators -->
+<div class="flex flex-row items-center gap-2">
+<div class="h-2 w-2 rounded-full bg-[#dbe6df] dark:bg-white/20"></div>
+<div class="h-2 w-8 rounded-full bg-primary transition-all duration-300"></div> <!-- Active Step 2 -->
+<div class="h-2 w-2 rounded-full bg-[#dbe6df] dark:bg-white/20"></div>
+<div class="h-2 w-2 rounded-full bg-[#dbe6df] dark:bg-white/20"></div>
+</div>
+<button class="flex h-10 w-10 items-center justify-center rounded-full text-text-main dark:text-white hover:bg-black/5 dark:hover:bg-white/10 transition-colors opacity-0 pointer-events-none">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</header>
+<!-- Main Content (Scrollable) -->
+<main class="flex-1 overflow-y-auto no-scrollbar px-6 pb-32">
+<!-- Headline Text -->
+<div class="flex flex-col items-center pt-4 pb-8 text-center">
+<h1 class="text-text-main dark:text-white tracking-tight text-[28px] leading-tight font-bold mb-3">
+                    Quais são seus principais objetivos?
+                </h1>
+<p class="text-text-muted dark:text-gray-400 text-base font-normal leading-relaxed max-w-xs mx-auto">
+                    Selecione todos os objetivos que se aplicam a você para personalizarmos sua jornada.
+                </p>
+</div>
+<!-- Goal Selection Cards -->
+<div aria-label="Objetivos de saúde" class="flex flex-col gap-3 w-full" role="group">
+<!-- Option 1: Unselected -->
+<button class="group relative flex w-full items-center gap-4 rounded-full bg-surface-light dark:bg-surface-dark p-4 pl-5 transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] border-2 border-transparent hover:border-primary/20">
+<div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-background-light dark:bg-black/40 text-text-main dark:text-white group-hover:bg-primary/10 group-hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[22px]">monitor_weight</span>
+</div>
+<span class="flex-1 text-left text-base font-medium text-text-main dark:text-white">Emagrecer</span>
+<div class="h-6 w-6 rounded-full border-2 border-gray-300 dark:border-gray-600 mr-2 flex items-center justify-center"></div>
+</button>
+<!-- Option 2: Selected -->
+<button class="group relative flex w-full items-center gap-4 rounded-full bg-primary p-4 pl-5 transition-all duration-200 shadow-lg shadow-primary/20 border-2 border-primary">
+<div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/20 text-black">
+<span class="material-symbols-outlined text-[22px]">water_drop</span>
+</div>
+<span class="flex-1 text-left text-base font-bold text-black">Reduzir inchaço</span>
+<div class="h-6 w-6 rounded-full bg-black text-primary mr-2 flex items-center justify-center">
+<span class="material-symbols-outlined text-sm font-bold">check</span>
+</div>
+</button>
+<!-- Option 3: Unselected -->
+<button class="group relative flex w-full items-center gap-4 rounded-full bg-surface-light dark:bg-surface-dark p-4 pl-5 transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] border-2 border-transparent hover:border-primary/20">
+<div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-background-light dark:bg-black/40 text-text-main dark:text-white group-hover:bg-primary/10 group-hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[22px]">restaurant_menu</span>
+</div>
+<span class="flex-1 text-left text-base font-medium text-text-main dark:text-white">Controlar fome/compulsão</span>
+<div class="h-6 w-6 rounded-full border-2 border-gray-300 dark:border-gray-600 mr-2 flex items-center justify-center"></div>
+</button>
+<!-- Option 4: Selected -->
+<button class="group relative flex w-full items-center gap-4 rounded-full bg-primary p-4 pl-5 transition-all duration-200 shadow-lg shadow-primary/20 border-2 border-primary">
+<div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/20 text-black">
+<span class="material-symbols-outlined text-[22px]">sentiment_very_satisfied</span>
+</div>
+<span class="flex-1 text-left text-base font-bold text-black">Melhorar humor/TPM</span>
+<div class="h-6 w-6 rounded-full bg-black text-primary mr-2 flex items-center justify-center">
+<span class="material-symbols-outlined text-sm font-bold">check</span>
+</div>
+</button>
+<!-- Option 5: Unselected -->
+<button class="group relative flex w-full items-center gap-4 rounded-full bg-surface-light dark:bg-surface-dark p-4 pl-5 transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] border-2 border-transparent hover:border-primary/20">
+<div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-background-light dark:bg-black/40 text-text-main dark:text-white group-hover:bg-primary/10 group-hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[22px]">bedtime</span>
+</div>
+<span class="flex-1 text-left text-base font-medium text-text-main dark:text-white">Dormir melhor</span>
+<div class="h-6 w-6 rounded-full border-2 border-gray-300 dark:border-gray-600 mr-2 flex items-center justify-center"></div>
+</button>
+</div>
+<div class="mt-8 flex justify-center">
+<p class="text-sm text-text-muted dark:text-gray-500 font-medium">Você poderá alterar isso depois</p>
+</div>
+<div class="h-10"></div> <!-- Spacer -->
+</main>
+<!-- Footer / Action Button -->
+<div class="absolute bottom-0 left-0 right-0 p-6 glass-effect border-t border-white/50 dark:border-white/5 z-20">
+<button class="w-full flex cursor-pointer items-center justify-center rounded-full h-14 bg-primary text-[#111813] text-lg font-bold leading-normal tracking-wide shadow-[0_4px_14px_rgba(19,236,91,0.4)] hover:shadow-[0_6px_20px_rgba(19,236,91,0.6)] hover:brightness-105 active:scale-[0.98] transition-all duration-200">
+<span class="mr-2">Continuar</span>
+<span class="material-symbols-outlined text-xl">arrow_forward</span>
+</button>
+</div>
+</div>
+</body></html>

@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+
+<html class="light" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Onboarding - Dados do Corpo</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#13ec5b",
+                        "background-light": "#f6f8f6",
+                        "background-dark": "#102216",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#1A2C20",
+                        "text-main": "#111813",
+                        "text-muted": "#61896f",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "1rem", 
+                        "lg": "2rem", 
+                        "xl": "3rem", 
+                        "full": "9999px"
+                    },
+                    boxShadow: {
+                        "glow": "0 0 20px rgba(19, 236, 91, 0.15)"
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom Range Slider Styling */
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+        
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 24px;
+            width: 24px;
+            border-radius: 50%;
+            background: #13ec5b;
+            cursor: pointer;
+            margin-top: -10px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+            border: 2px solid #ffffff;
+        }
+
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            cursor: pointer;
+            background: #dbe6df;
+            border-radius: 9999px;
+        }
+        
+        .dark input[type=range]::-webkit-slider-thumb {
+            border: 2px solid #102216;
+        }
+        .dark input[type=range]::-webkit-slider-runnable-track {
+            background: #2A4435;
+        }
+
+        /* Hide scrollbar for clean look */
+        ::-webkit-scrollbar {
+            width: 0px;
+            background: transparent;
+        }
+        
+        /* Smooth transitions */
+        .transition-all-300 {
+            transition: all 0.3s ease;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-text-main dark:text-white antialiased transition-colors duration-300 min-h-screen relative overflow-x-hidden">
+<!-- Main Container -->
+<div class="relative flex flex-col min-h-screen w-full max-w-md mx-auto bg-background-light dark:bg-background-dark pb-8">
+<!-- Header / Progress -->
+<header class="pt-8 pb-4 px-6">
+<div class="flex w-full items-center justify-center gap-3 mb-6">
+<div class="h-2.5 w-2.5 rounded-full bg-gray-300 dark:bg-gray-700"></div>
+<div class="h-2.5 w-2.5 rounded-full bg-gray-300 dark:bg-gray-700"></div>
+<div class="h-2.5 w-8 rounded-full bg-primary shadow-glow"></div> <!-- Active Step -->
+<div class="h-2.5 w-2.5 rounded-full bg-gray-300 dark:bg-gray-700"></div>
+</div>
+<h1 class="text-3xl font-bold leading-tight tracking-tight text-text-main dark:text-white">
+                Vamos personalizar<br/>sua experiência
+            </h1>
+<p class="mt-3 text-base font-light text-text-main/70 dark:text-white/70">
+                Esses dados nos ajudam a prever seus sintomas com precisão.
+            </p>
+</header>
+<!-- Form Content -->
+<main class="flex-1 px-6 space-y-6">
+<!-- Basic Metrics -->
+<div class="flex gap-4">
+<!-- Height -->
+<div class="flex-1 flex flex-col gap-2">
+<label class="text-sm font-medium ml-1">Altura <span class="text-primary">*</span></label>
+<div class="relative group">
+<input class="w-full bg-surface-light dark:bg-surface-light/5 border border-gray-200 dark:border-white/10 rounded-full h-14 px-5 pr-12 outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all-300 text-lg dark:text-white placeholder:text-gray-400" inputmode="numeric" placeholder="165" type="number"/>
+<span class="absolute right-5 top-1/2 -translate-y-1/2 text-sm font-medium text-gray-500 dark:text-gray-400">cm</span>
+</div>
+</div>
+<!-- Weight -->
+<div class="flex-1 flex flex-col gap-2">
+<label class="text-sm font-medium ml-1 text-gray-600 dark:text-gray-300">Peso (opcional)</label>
+<div class="relative group">
+<input class="w-full bg-surface-light dark:bg-surface-light/5 border border-gray-200 dark:border-white/10 rounded-full h-14 px-5 pr-12 outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all-300 text-lg dark:text-white placeholder:text-gray-400" inputmode="numeric" placeholder="60" type="number"/>
+<span class="absolute right-5 top-1/2 -translate-y-1/2 text-sm font-medium text-gray-500 dark:text-gray-400">kg</span>
+</div>
+</div>
+</div>
+<!-- Age -->
+<div class="flex flex-col gap-2">
+<label class="text-sm font-medium ml-1">Idade <span class="text-primary">*</span></label>
+<div class="relative">
+<input class="w-full bg-surface-light dark:bg-surface-light/5 border border-gray-200 dark:border-white/10 rounded-full h-14 px-5 outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all-300 text-lg dark:text-white placeholder:text-gray-400" inputmode="numeric" placeholder="28" type="number"/>
+<span class="absolute right-5 top-1/2 -translate-y-1/2 text-sm font-medium text-gray-500 dark:text-gray-400">anos</span>
+</div>
+</div>
+<!-- Divider -->
+<div class="h-px w-full bg-gray-200 dark:bg-white/10 my-2"></div>
+<!-- Cycle Regularity Toggle -->
+<div class="flex items-center justify-between py-1">
+<div class="flex flex-col">
+<span class="text-lg font-medium">Seu ciclo é regular?</span>
+<span class="text-sm text-gray-500 dark:text-gray-400">Você menstrua todo mês?</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-14 h-8 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/50 dark:peer-focus:ring-primary/30 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-7 after:w-7 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+<!-- Conditional Cycle Data (Visible because toggle is checked) -->
+<div class="space-y-6 animate-in fade-in slide-in-from-top-4 duration-500">
+<!-- Last Period Date -->
+<div class="flex flex-col gap-2">
+<label class="text-sm font-medium ml-1">Data da última menstruação <span class="text-primary">*</span></label>
+<div class="relative">
+<input class="w-full bg-surface-light dark:bg-surface-light/5 border border-gray-200 dark:border-white/10 rounded-full h-14 px-5 outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all-300 text-lg dark:text-white placeholder:text-gray-400 appearance-none [&amp;::-webkit-calendar-picker-indicator]:opacity-0" type="date"/>
+<span class="material-symbols-outlined absolute right-5 top-1/2 -translate-y-1/2 text-primary pointer-events-none">calendar_today</span>
+</div>
+</div>
+<!-- Cycle Duration Slider -->
+<div class="p-5 rounded-lg bg-surface-light dark:bg-surface-light/5 border border-gray-100 dark:border-white/5 shadow-sm">
+<div class="flex justify-between items-end mb-4">
+<label class="text-sm font-medium text-gray-600 dark:text-gray-300">Duração do ciclo</label>
+<div class="flex items-baseline gap-1 text-primary">
+<span class="text-2xl font-bold">28</span>
+<span class="text-sm font-medium">dias</span>
+</div>
+</div>
+<input class="w-full" max="45" min="21" type="range" value="28"/>
+<div class="flex justify-between mt-2 text-xs text-gray-400">
+<span>21 dias</span>
+<span>45 dias</span>
+</div>
+</div>
+<!-- Bleeding Duration Slider -->
+<div class="p-5 rounded-lg bg-surface-light dark:bg-surface-light/5 border border-gray-100 dark:border-white/5 shadow-sm">
+<div class="flex justify-between items-end mb-4">
+<label class="text-sm font-medium text-gray-600 dark:text-gray-300">Duração do sangramento</label>
+<div class="flex items-baseline gap-1 text-primary">
+<span class="text-2xl font-bold">5</span>
+<span class="text-sm font-medium">dias</span>
+</div>
+</div>
+<input class="w-full" max="10" min="1" type="range" value="5"/>
+<div class="flex justify-between mt-2 text-xs text-gray-400">
+<span>1 dia</span>
+<span>10 dias</span>
+</div>
+</div>
+</div>
+<!-- Privacy Policy Checkbox -->
+<div class="flex items-start gap-3 py-2">
+<div class="relative flex items-center">
+<input class="peer h-5 w-5 cursor-pointer appearance-none rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-white/5 checked:bg-primary checked:border-primary transition-all focus:ring-2 focus:ring-primary/50" id="terms" type="checkbox"/>
+<span class="material-symbols-outlined absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-sm text-black opacity-0 peer-checked:opacity-100 pointer-events-none font-bold">check</span>
+</div>
+<label class="text-sm leading-tight text-gray-600 dark:text-gray-400 cursor-pointer select-none" for="terms">
+                    Li e aceito os <a class="text-primary underline hover:text-primary/80" href="#">Termos de Uso</a> e a <a class="text-primary underline hover:text-primary/80" href="#">Política de Privacidade</a>.
+                </label>
+</div>
+</main>
+<!-- Footer Actions -->
+<footer class="mt-8 px-6 pb-6 pt-4 sticky bottom-0 bg-gradient-to-t from-background-light via-background-light to-transparent dark:from-background-dark dark:via-background-dark">
+<button class="flex w-full h-14 items-center justify-center gap-2 rounded-full bg-primary px-8 transition-transform active:scale-[0.98] shadow-glow hover:bg-primary/90">
+<span class="text-base font-bold text-black tracking-wide">Salvar Perfil</span>
+<span class="material-symbols-outlined text-black text-xl">arrow_forward</span>
+</button>
+<div class="flex items-center justify-center gap-2 mt-4 text-xs text-gray-400 dark:text-gray-600">
+<span class="material-symbols-outlined text-[14px]">lock</span>
+<span>Seus dados estão seguros e criptografados.</span>
+</div>
+</footer>
+</div>
+</body></html>

@@ -1,0 +1,241 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// 1. USERS
+model User {
+  id              String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email           String    @unique @db.VarChar(255)
+  passwordHash    String    @map("password_hash") @db.VarChar(255)
+  nomeCompleto    String    @map("nome_completo") @db.VarChar(255)
+  dataNascimento  DateTime  @map("data_nascimento") @db.Date
+  alturaCm        Int?      @map("altura_cm") @db.SmallInt
+  pesoKg          Decimal?  @map("peso_kg") @db.Decimal(5, 2)
+  
+  // Auth
+  emailVerificado      Boolean   @default(false) @map("email_verificado")
+  verificacaoToken     String?   @map("verificacao_token") @db.VarChar(100)
+  resetPasswordToken   String?   @map("reset_password_token") @db.VarChar(100)
+  resetPasswordExpires DateTime? @map("reset_password_expires") @db.Timestamp
+  ultimoLogin          DateTime? @map("ultimo_login") @db.Timestamp
+  
+  // Subscription
+  plano         String    @default("FREE") @db.VarChar(20)
+  planoExpiraEm DateTime? @map("plano_expira_em") @db.Timestamp
+  trialUsado    Boolean   @default(false) @map("trial_usado")
+  
+  // LGPD
+  consentimentoLgpd Boolean   @default(false) @map("consentimento_lgpd")
+  consentimentoData DateTime? @map("consentimento_data") @db.Timestamp
+  ipConsentimento   String?   @map("ip_consentimento") @db.Inet
+  
+  // Meta
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp
+  updatedAt DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamp
+  deletedAt DateTime? @map("deleted_at") @db.Timestamp
+
+  // Relations
+  perfilCiclo        PerfilCiclo?
+  registrosDiarios   RegistroDiario[]
+  historicoMenstrual HistoricoMenstrual[]
+  interacoes         InteracoesConteudo[]
+  notificacoes       NotificacoesPush[]
+  pagamentos         Pagamentos[]
+  eventosAnalytics   EventosAnalytics[]
+
+  @@map("users")
+  @@index([email])
+  @@index([plano, planoExpiraEm])
+}
+
+// 2. PERFIL_CICLO
+model PerfilCiclo {
+  id                     String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId                 String   @unique @map("user_id") @db.Uuid
+  modoCiclo              String   @map("modo_ciclo") @db.VarChar(30)
+  cicloRegular           Boolean  @default(true) @map("ciclo_regular")
+  duracaoCiclo           Int      @default(28) @map("duracao_ciclo_dias") @db.SmallInt
+  duracaoSangramento     Int      @default(5) @map("duracao_sangramento_dias") @db.SmallInt
+  dataUltimaMenstruacao  DateTime @map("data_ultima_menstruacao") @db.Date
+  objetivos              Json?    @default("[]")
+  
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamp
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamp
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("perfil_ciclo")
+  @@index([userId])
+}
+
+// 3. REGISTROS_DIARIOS
+model RegistroDiario {
+  id               String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId           String   @map("user_id") @db.Uuid
+  dataRegistro     DateTime @map("data_registro") @db.Date
+  
+  inchaco          Int?     @db.SmallInt
+  fomeCompulsao    Int?     @map("fome_compulsao") @db.SmallInt
+  humorIrritacao   Int?     @map("humor_irritacao") @db.SmallInt
+  qualidadeSono    Int?     @map("qualidade_sono") @db.SmallInt
+  
+  pesoKg           Decimal? @map("peso_kg") @db.Decimal(5, 2)
+  temperaturaBasal Decimal? @map("temperatura_basal") @db.Decimal(4, 2)
+  
+  notas            String?  @db.Text
+  humorTags        Json?    @map("humor_tags")
+  
+  diaCiclo         Int?     @map("dia_ciclo") @db.SmallInt
+  faseCiclo        String?  @map("fase_ciclo") @db.VarChar(20)
+  
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamp
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamp
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("registros_diarios")
+  @@unique([userId, dataRegistro])
+  @@index([userId, dataRegistro(sort: Desc)])
+  @@index([userId, faseCiclo, dataRegistro(sort: Desc)])
+}
+
+// 4. HISTORICO_MENSTRUAL
+model HistoricoMenstrual {
+  id                    String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId                String   @map("user_id") @db.Uuid
+  dataInicio            DateTime @map("data_inicio") @db.Date
+  dataFim               DateTime? @map("data_fim") @db.Date
+  duracaoDias           Int?      @map("duracao_dias") @db.SmallInt
+  intensidadeFluxo      String?   @map("intensidade_fluxo") @db.VarChar(20)
+  duracaoSangramento    Int?      @map("duracao_sangramento_dias") @db.SmallInt
+  sintomasPredominantes Json?     @map("sintomas_predominantes")
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamp
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamp
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("historico_menstrual")
+  @@index([userId, dataInicio(sort: Desc)])
+}
+
+// 5. CONTEUDO_EDUCACIONAL
+model ConteudoEducacional {
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  categoria       String   @db.VarChar(50)
+  tipo            String   @db.VarChar(30)
+  titulo          String   @db.VarChar(255)
+  descricao       String?  @db.Text
+  conteudoMarkdown String?  @map("conteudo_markdown") @db.Text
+  thumbnailUrl    String?  @map("thumbnail_url") @db.VarChar(500)
+  tempoLeituraMin Int?     @map("tempo_leitura_min") @db.SmallInt
+  
+  fasesAplicaveis Json?    @map("fases_aplicaveis")
+  premiumOnly     Boolean  @default(false) @map("premium_only")
+  
+  slug            String?  @unique @db.VarChar(255)
+  tags            Json?
+  autor           String?  @db.VarChar(100)
+  publicado       Boolean  @default(false)
+  
+  visualizacoes   Int      @default(0)
+  likes           Int      @default(0)
+  
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp
+  updatedAt DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamp
+  deletedAt DateTime? @map("deleted_at") @db.Timestamp
+
+  interacoes InteracoesConteudo[]
+
+  @@map("conteudo_educacional")
+  @@index([categoria, publicado])
+  @@index([slug])
+}
+
+// 6. INTERACOES_CONTEUDO
+model InteracoesConteudo {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId       String   @map("user_id") @db.Uuid
+  conteudoId   String   @map("conteudo_id") @db.Uuid
+  tipoInteracao String   @map("tipo_interacao") @db.VarChar(20)
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamp
+
+  user     User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  conteudo ConteudoEducacional @relation(fields: [conteudoId], references: [id], onDelete: Cascade)
+
+  @@map("interacoes_conteudo")
+  @@unique([userId, conteudoId, tipoInteracao])
+  @@index([userId, tipoInteracao])
+}
+
+// 7. NOTIFICACOES_PUSH
+model NotificacoesPush {
+  id               String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId           String   @map("user_id") @db.Uuid
+  tipo             String   @db.VarChar(50)
+  habilitado       Boolean  @default(true)
+  horarioPreferido DateTime? @map("horario_preferido") @db.Time
+  diasSemana       Json?    @default("[1,2,3,4,5,6,7]") @map("dias_semana")
+  fcmToken         String?  @map("fcm_token") @db.VarChar(255)
+  apnsToken        String?  @map("apns_token") @db.VarChar(255)
+  
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamp
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamp
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notificacoes_push")
+  @@index([userId])
+}
+
+// 8. PAGAMENTOS
+model Pagamentos {
+  id                   String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId               String    @map("user_id") @db.Uuid
+  valorCentavos        Int       @map("valor_centavos")
+  moeda                String?   @default("BRL") @db.VarChar(3)
+  gateway              String    @db.VarChar(30)
+  gatewayTransactionId String?   @map("gateway_transaction_id") @db.VarChar(255)
+  gatewayCustomerId    String?   @map("gateway_customer_id") @db.VarChar(255)
+  tipoPagamento        String?   @map("tipo_pagamento") @db.VarChar(30)
+  plano                String?   @db.VarChar(30)
+  status               String    @db.VarChar(30)
+  
+  pagoEm      DateTime? @map("pago_em") @db.Timestamp
+  expiraEm    DateTime? @map("expira_em") @db.Timestamp
+  canceladoEm DateTime? @map("cancelado_em") @db.Timestamp
+  
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamp
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamp
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("pagamentos")
+  @@index([userId, status])
+}
+
+// 9. EVENTOS_ANALYTICS
+model EventosAnalytics {
+  id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId       String?   @map("user_id") @db.Uuid
+  evento       String    @db.VarChar(100)
+  categoria    String?   @db.VarChar(50)
+  propriedades Json?
+  sessaoId     String?   @map("sessao_id") @db.Uuid
+  ip           String?   @db.Inet
+  userAgent    String?   @map("user_agent")
+  plataforma   String?   @db.VarChar(30)
+  
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamp
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@map("eventos_analytics")
+  @@index([userId, createdAt(sort: Desc)])
+  @@index([evento, createdAt(sort: Desc)])
+}

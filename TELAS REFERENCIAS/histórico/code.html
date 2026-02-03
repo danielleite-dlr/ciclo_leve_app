@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+
+<html class="light" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Meu Histórico</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#13ec5b",
+                        "primary-dark": "#0fb645",
+                        "background-light": "#f6f8f6",
+                        "background-dark": "#102216",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#162b1d",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "1rem", "lg": "1.5rem", "xl": "2rem", "2xl": "2.5rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+<style>
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-[#111813] dark:text-gray-100 font-display min-h-screen flex flex-col overflow-x-hidden transition-colors duration-200">
+<!-- Header -->
+<header class="sticky top-0 z-50 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-sm px-4 pt-4 pb-2 border-b border-transparent">
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center gap-3">
+<div class="flex items-center justify-center size-10 rounded-full bg-white dark:bg-surface-dark shadow-sm text-green-700 dark:text-primary">
+<span class="material-symbols-outlined">calendar_month</span>
+</div>
+<h1 class="text-xl font-bold tracking-tight">Meu Histórico</h1>
+</div>
+<button class="flex items-center justify-center size-10 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined">settings</span>
+</button>
+</div>
+<!-- View Toggle (Segmented Button) -->
+<div class="flex w-full">
+<div class="flex h-12 flex-1 items-center justify-center rounded-full bg-white dark:bg-surface-dark p-1 shadow-sm border border-gray-100 dark:border-gray-800">
+<label class="flex cursor-pointer h-full grow items-center justify-center overflow-hidden rounded-full px-2 has-[:checked]:bg-primary has-[:checked]:text-[#052e16] has-[:checked]:shadow-sm text-gray-500 dark:text-gray-400 text-sm font-semibold transition-all duration-200">
+<span class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">show_chart</span>
+                        Gráfico
+                    </span>
+<input checked="" class="invisible w-0 absolute" name="view-toggle" type="radio" value="chart"/>
+</label>
+<label class="flex cursor-pointer h-full grow items-center justify-center overflow-hidden rounded-full px-2 has-[:checked]:bg-primary has-[:checked]:text-[#052e16] has-[:checked]:shadow-sm text-gray-500 dark:text-gray-400 text-sm font-semibold transition-all duration-200">
+<span class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">list</span>
+                        Lista
+                    </span>
+<input class="invisible w-0 absolute" name="view-toggle" type="radio" value="list"/>
+</label>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="flex-1 flex flex-col gap-6 p-4 pb-24">
+<!-- Filters -->
+<div class="flex gap-2 overflow-x-auto hide-scrollbar pb-2 -mx-4 px-4">
+<button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-[#111813] dark:bg-white px-5 shadow-sm transition-transform active:scale-95">
+<p class="text-white dark:text-[#111813] text-sm font-medium">Tudo</p>
+</button>
+<button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white dark:bg-surface-dark border border-gray-100 dark:border-gray-700 px-5 shadow-sm transition-transform active:scale-95">
+<p class="text-[#111813] dark:text-gray-200 text-sm font-medium">Menstruação</p>
+</button>
+<button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white dark:bg-surface-dark border border-gray-100 dark:border-gray-700 px-5 shadow-sm transition-transform active:scale-95">
+<p class="text-[#111813] dark:text-gray-200 text-sm font-medium">Humor</p>
+</button>
+<button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white dark:bg-surface-dark border border-gray-100 dark:border-gray-700 px-5 shadow-sm transition-transform active:scale-95">
+<p class="text-[#111813] dark:text-gray-200 text-sm font-medium">Físico</p>
+</button>
+</div>
+<!-- Chart Section -->
+<section class="bg-white dark:bg-surface-dark rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-800">
+<div class="flex justify-between items-start mb-2">
+<div>
+<h2 class="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Intensidade</h2>
+<div class="flex items-baseline gap-2 mt-1">
+<span class="text-3xl font-bold text-[#111813] dark:text-white">Médio</span>
+<span class="text-sm font-medium text-green-600 dark:text-primary bg-green-50 dark:bg-green-900/30 px-2 py-0.5 rounded-full">Últimos 7 dias</span>
+</div>
+</div>
+<button class="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300">
+<span class="material-symbols-outlined">more_horiz</span>
+</button>
+</div>
+<div class="h-48 w-full mt-4 relative">
+<!-- Grid lines visual approximation -->
+<div class="absolute inset-0 flex flex-col justify-between text-xs text-gray-300 dark:text-gray-700 z-0">
+<div class="w-full border-b border-dashed border-gray-100 dark:border-gray-700 h-0"></div>
+<div class="w-full border-b border-dashed border-gray-100 dark:border-gray-700 h-0"></div>
+<div class="w-full border-b border-dashed border-gray-100 dark:border-gray-700 h-0"></div>
+<div class="w-full border-b border-dashed border-gray-100 dark:border-gray-700 h-0"></div>
+</div>
+<!-- Chart SVG -->
+<svg class="relative z-10 w-full h-full overflow-visible" preserveaspectratio="none" viewbox="0 0 350 150" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<lineargradient id="chartGradient" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#13ec5b" stop-opacity="0.2"></stop>
+<stop offset="100%" stop-color="#13ec5b" stop-opacity="0"></stop>
+</lineargradient>
+</defs>
+<!-- Smooth path -->
+<path d="M0,120 C40,120 40,60 70,60 C100,60 100,90 130,90 C160,90 160,40 190,40 C220,40 220,70 250,70 C280,70 280,30 310,30 C340,30 350,50 350,50 L350,150 L0,150 Z" fill="url(#chartGradient)"></path>
+<path d="M0,120 C40,120 40,60 70,60 C100,60 100,90 130,90 C160,90 160,40 190,40 C220,40 220,70 250,70 C280,70 280,30 310,30" fill="none" stroke="#13ec5b" stroke-linecap="round" stroke-width="3"></path>
+<!-- Data Points -->
+<circle cx="70" cy="60" fill="white" r="4" stroke="#13ec5b" stroke-width="2"></circle>
+<circle cx="130" cy="90" fill="white" r="4" stroke="#13ec5b" stroke-width="2"></circle>
+<circle cx="190" cy="40" fill="white" r="4" stroke="#13ec5b" stroke-width="2"></circle>
+<circle cx="250" cy="70" fill="white" r="4" stroke="#13ec5b" stroke-width="2"></circle>
+<circle class="animate-pulse" cx="310" cy="30" fill="#13ec5b" r="6" stroke="white" stroke-width="2"></circle>
+</svg>
+</div>
+<div class="flex justify-between mt-4 px-1">
+<p class="text-gray-400 dark:text-gray-500 text-xs font-medium">Seg</p>
+<p class="text-gray-400 dark:text-gray-500 text-xs font-medium">Ter</p>
+<p class="text-gray-400 dark:text-gray-500 text-xs font-medium">Qua</p>
+<p class="text-gray-400 dark:text-gray-500 text-xs font-medium">Qui</p>
+<p class="text-gray-400 dark:text-gray-500 text-xs font-medium">Sex</p>
+<p class="text-gray-400 dark:text-gray-500 text-xs font-medium">Sáb</p>
+<p class="text-[#13ec5b] text-xs font-bold">Hoje</p>
+</div>
+</section>
+<!-- List Section -->
+<section class="flex flex-col gap-3">
+<h3 class="text-lg font-bold px-1">Registros Recentes</h3>
+<!-- Today -->
+<div class="group relative bg-white dark:bg-surface-dark rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-800 flex items-center justify-between active:scale-[0.98] transition-transform cursor-pointer">
+<div class="flex items-center gap-4">
+<div class="flex flex-col items-center justify-center bg-green-50 dark:bg-green-900/20 w-12 h-14 rounded-lg text-green-700 dark:text-primary">
+<span class="text-xs font-semibold uppercase">Out</span>
+<span class="text-lg font-bold leading-none">24</span>
+</div>
+<div>
+<h4 class="font-semibold text-base mb-1">Hoje</h4>
+<div class="flex gap-2">
+<span class="inline-flex items-center gap-1 bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded-md text-xs font-medium text-gray-600 dark:text-gray-300">
+<span class="material-symbols-outlined text-[14px]">sentiment_satisfied</span> Bem
+                            </span>
+<span class="inline-flex items-center gap-1 bg-red-50 dark:bg-red-900/20 px-2 py-0.5 rounded-md text-xs font-medium text-red-600 dark:text-red-300">
+<span class="material-symbols-outlined text-[14px]">water_drop</span> Leve
+                            </span>
+</div>
+</div>
+</div>
+<span class="material-symbols-outlined text-gray-300 dark:text-gray-600">chevron_right</span>
+</div>
+<!-- Yesterday -->
+<div class="group relative bg-white dark:bg-surface-dark rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-800 flex items-center justify-between active:scale-[0.98] transition-transform cursor-pointer">
+<div class="flex items-center gap-4">
+<div class="flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-800 w-12 h-14 rounded-lg text-gray-500 dark:text-gray-400">
+<span class="text-xs font-semibold uppercase">Out</span>
+<span class="text-lg font-bold leading-none">23</span>
+</div>
+<div>
+<h4 class="font-semibold text-base mb-1">Ontem</h4>
+<div class="flex gap-2">
+<span class="inline-flex items-center gap-1 bg-yellow-50 dark:bg-yellow-900/20 px-2 py-0.5 rounded-md text-xs font-medium text-yellow-700 dark:text-yellow-300">
+<span class="material-symbols-outlined text-[14px]">sentiment_dissatisfied</span> Irritada
+                            </span>
+<span class="inline-flex items-center gap-1 bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded-md text-xs font-medium text-gray-600 dark:text-gray-300">
+<span class="material-symbols-outlined text-[14px]">bolt</span> Cólica
+                            </span>
+</div>
+</div>
+</div>
+<span class="material-symbols-outlined text-gray-300 dark:text-gray-600">chevron_right</span>
+</div>
+<!-- Previous Day -->
+<div class="group relative bg-white dark:bg-surface-dark rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-800 flex items-center justify-between opacity-80 active:scale-[0.98] transition-transform cursor-pointer">
+<div class="flex items-center gap-4">
+<div class="flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-800 w-12 h-14 rounded-lg text-gray-500 dark:text-gray-400">
+<span class="text-xs font-semibold uppercase">Out</span>
+<span class="text-lg font-bold leading-none">22</span>
+</div>
+<div>
+<h4 class="font-semibold text-base mb-1">Terça-feira</h4>
+<div class="flex gap-2">
+<span class="inline-flex items-center gap-1 bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded-md text-xs font-medium text-gray-600 dark:text-gray-300">
+<span class="material-symbols-outlined text-[14px]">fitness_center</span> Treino
+                            </span>
+</div>
+</div>
+</div>
+<span class="material-symbols-outlined text-gray-300 dark:text-gray-600">chevron_right</span>
+</div>
+<!-- Locked Items (Premium) -->
+<div class="relative overflow-hidden">
+<!-- Blurred Item -->
+<div class="group relative bg-white dark:bg-surface-dark rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-800 flex items-center justify-between opacity-40 blur-[2px] pointer-events-none select-none">
+<div class="flex items-center gap-4">
+<div class="flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-800 w-12 h-14 rounded-lg">
+<span class="text-xs font-semibold uppercase">Out</span>
+<span class="text-lg font-bold leading-none">21</span>
+</div>
+<div>
+<h4 class="font-semibold text-base mb-1">Segunda-feira</h4>
+<div class="h-5 w-24 bg-gray-200 dark:bg-gray-700 rounded-md"></div>
+</div>
+</div>
+</div>
+<!-- Premium Upsell Overlay -->
+<div class="absolute inset-0 top-[-20px] z-10 flex flex-col items-center justify-end pb-0 bg-gradient-to-b from-transparent via-background-light/90 to-background-light dark:via-background-dark/90 dark:to-background-dark">
+<div class="w-full bg-[#111813] dark:bg-white text-white dark:text-[#111813] rounded-2xl p-5 shadow-xl flex flex-col items-center text-center gap-3 mx-4">
+<div class="bg-primary/20 p-3 rounded-full mb-1">
+<span class="material-symbols-outlined text-primary text-2xl">lock_open</span>
+</div>
+<div>
+<h3 class="font-bold text-lg leading-tight">Desbloqueie seu histórico</h3>
+<p class="text-sm text-gray-400 dark:text-gray-600 mt-1 leading-relaxed">Assinantes Premium podem ver padrões de meses anteriores e exportar dados.</p>
+</div>
+<button class="w-full bg-primary hover:bg-primary-dark text-[#052e16] font-bold py-3 px-6 rounded-full mt-2 transition-colors flex items-center justify-center gap-2">
+                            Assinar Premium
+                            <span class="material-symbols-outlined text-lg">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Spacer for FAB and Bottom Nav -->
+<div class="h-20"></div>
+</section>
+</main>
+<!-- Floating Action Button -->
+<button class="fixed bottom-6 right-6 z-40 bg-[#111813] dark:bg-primary text-white dark:text-[#052e16] size-14 rounded-full shadow-lg shadow-black/20 flex items-center justify-center hover:scale-105 active:scale-95 transition-all">
+<span class="material-symbols-outlined text-3xl">add</span>
+</button>
+</body></html>

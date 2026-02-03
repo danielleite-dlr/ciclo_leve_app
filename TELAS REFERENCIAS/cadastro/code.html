@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html class="light" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Cadastro</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#13ec5b",
+                        "background-light": "#f6f8f6",
+                        "background-dark": "#102216",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#1a2c20",
+                        "text-main-light": "#111813",
+                        "text-main-dark": "#f0fdf4",
+                        "text-sub-light": "#61896f",
+                        "text-sub-dark": "#a0b3a6",
+                        "border-light": "#dbe6df",
+                        "border-dark": "#2a4030",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "1rem", 
+                        "lg": "2rem", 
+                        "xl": "3rem", 
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-display antialiased bg-background-light dark:bg-background-dark text-text-main-light dark:text-text-main-dark transition-colors duration-300">
+<div class="relative flex min-h-screen w-full flex-col overflow-x-hidden">
+<div class="flex items-center p-4 pb-2 justify-between sticky top-0 z-10 bg-background-light/90 dark:bg-background-dark/90 backdrop-blur-md">
+<button class="flex size-12 shrink-0 items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined text-text-main-light dark:text-text-main-dark" style="font-size: 24px;">arrow_back</span>
+</button>
+<h2 class="text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center pr-12">Cadastro</h2>
+</div>
+<div class="flex-1 flex flex-col px-6 w-full max-w-md mx-auto">
+<div class="pt-4 pb-2">
+<h1 class="tracking-tight text-[32px] font-bold leading-tight text-center">Criar conta</h1>
+<p class="text-text-sub-light dark:text-text-sub-dark text-base font-normal leading-relaxed text-center pt-3">
+                    Preencha os dados abaixo para começar seu acompanhamento personalizado.
+                </p>
+</div>
+<div class="flex flex-col gap-5 py-6">
+<label class="flex flex-col gap-2">
+<span class="text-base font-medium leading-normal ml-1">Nome completo</span>
+<div class="relative group">
+<input class="form-input w-full rounded-xl border border-border-light dark:border-border-dark bg-surface-light dark:bg-surface-dark h-14 px-5 text-base font-normal text-text-main-light dark:text-text-main-dark placeholder:text-text-sub-light/70 dark:placeholder:text-text-sub-dark/50 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all shadow-sm" placeholder="Seu nome" required="" type="text"/>
+<span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-text-sub-light dark:text-text-sub-dark pointer-events-none">person</span>
+</div>
+</label>
+<label class="flex flex-col gap-2">
+<span class="text-base font-medium leading-normal ml-1">E-mail</span>
+<div class="relative group">
+<input class="form-input w-full rounded-xl border border-border-light dark:border-border-dark bg-surface-light dark:bg-surface-dark h-14 px-5 text-base font-normal text-text-main-light dark:text-text-main-dark placeholder:text-text-sub-light/70 dark:placeholder:text-text-sub-dark/50 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all shadow-sm" placeholder="exemplo@email.com" required="" type="email"/>
+<span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-text-sub-light dark:text-text-sub-dark pointer-events-none">mail</span>
+</div>
+</label>
+<label class="flex flex-col gap-2">
+<span class="text-base font-medium leading-normal ml-1">Senha</span>
+<div class="relative group">
+<input class="form-input w-full rounded-xl border border-border-light dark:border-border-dark bg-surface-light dark:bg-surface-dark h-14 pl-5 pr-12 text-base font-normal text-text-main-light dark:text-text-main-dark placeholder:text-text-sub-light/70 dark:placeholder:text-text-sub-dark/50 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all shadow-sm" minlength="8" placeholder="Mínimo 8 caracteres" required="" type="password"/>
+<button class="absolute right-4 top-1/2 -translate-y-1/2 flex items-center justify-center text-text-sub-light dark:text-text-sub-dark hover:text-primary transition-colors focus:outline-none" type="button">
+<span class="material-symbols-outlined">visibility</span>
+</button>
+</div>
+</label>
+<label class="flex flex-col gap-2">
+<span class="text-base font-medium leading-normal ml-1">Confirmar senha</span>
+<div class="relative group">
+<input class="form-input w-full rounded-xl border border-border-light dark:border-border-dark bg-surface-light dark:bg-surface-dark h-14 pl-5 pr-12 text-base font-normal text-text-main-light dark:text-text-main-dark placeholder:text-text-sub-light/70 dark:placeholder:text-text-sub-dark/50 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all shadow-sm" minlength="8" placeholder="Repita sua senha" required="" type="password"/>
+<span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-text-sub-light dark:text-text-sub-dark pointer-events-none">lock</span>
+</div>
+</label>
+</div>
+<div class="mt-6 mb-8">
+<button class="w-full h-14 rounded-full bg-primary hover:bg-[#0fd650] active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-2 shadow-lg shadow-primary/20 group">
+<span class="text-[#102216] text-lg font-bold tracking-wide">Cadastrar</span>
+</button>
+<div class="flex items-center justify-center gap-2 mt-8">
+<span class="text-text-sub-light dark:text-text-sub-dark">Já possui uma conta?</span>
+<a class="font-bold text-primary hover:text-[#0fd650] transition-colors" href="#">Fazer login</a>
+</div>
+</div>
+</div>
+</div>
+<div class="fixed top-[-10%] right-[-10%] w-64 h-64 bg-primary/10 rounded-full blur-3xl -z-10 pointer-events-none"></div>
+<div class="fixed bottom-[-5%] left-[-10%] w-80 h-80 bg-primary/5 rounded-full blur-3xl -z-10 pointer-events-none"></div>
+
+</body></html>

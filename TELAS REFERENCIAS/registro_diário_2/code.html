@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html class="light" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Dica do Dia</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#13ec5b",
+                        "background-light": "#f6f8f6",
+                        "background-dark": "#102216",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#1c3024",
+                        "text-main": "#111813",
+                        "text-light": "#f6f8f6",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "1rem", "lg": "1.5rem", "xl": "2rem", "2xl": "3rem", "full": "9999px"},
+                    boxShadow: {
+                        'soft': '0 4px 20px -2px rgba(19, 236, 91, 0.1)',
+                        'glow': '0 0 40px -10px rgba(19, 236, 91, 0.3)',
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-text-main dark:text-text-light font-display antialiased selection:bg-primary selection:text-black">
+<div class="relative flex min-h-screen w-full flex-col overflow-x-hidden max-w-md mx-auto shadow-2xl bg-background-light dark:bg-background-dark">
+<div class="flex items-center px-6 py-6 justify-between sticky top-0 z-10 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md">
+<div class="size-10"></div> 
+<h2 class="text-lg font-bold leading-tight tracking-tight">Dica do Dia</h2>
+<div class="size-10"></div> 
+</div>
+<div class="flex-1 flex flex-col px-6 pb-24 items-center justify-center">
+<div class="relative mb-8">
+<div class="absolute inset-0 bg-primary blur-2xl opacity-20 dark:opacity-10 rounded-full scale-150"></div>
+<div class="relative size-28 rounded-full bg-surface-light dark:bg-surface-dark shadow-soft flex items-center justify-center border border-gray-100 dark:border-gray-800">
+<span class="material-symbols-outlined text-primary" style="font-size: 48px;">self_improvement</span>
+</div>
+</div>
+<div class="text-center mb-10">
+<span class="text-sm font-medium text-primary uppercase tracking-wider block mb-2">Seu Feedback Diário</span>
+<h1 class="text-3xl font-bold leading-tight mb-3">Priorize o seu conforto</h1>
+<p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed max-w-[280px] mx-auto">
+                    Baseado no <strong>inchaço</strong> e <strong>cansaço</strong> que você relatou hoje.
+                </p>
+</div>
+<div class="w-full bg-surface-light dark:bg-surface-dark p-6 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-800 relative overflow-hidden group hover:shadow-md transition-shadow">
+<div class="absolute -right-6 -top-6 size-24 bg-primary/10 rounded-full blur-xl"></div>
+<div class="relative z-10">
+<div class="flex items-center gap-3 mb-4">
+<div class="size-8 rounded-full bg-primary/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-lg">water_drop</span>
+</div>
+<h3 class="font-bold text-lg">Hidratação é a chave</h3>
+</div>
+<p class="text-gray-600 dark:text-gray-300 leading-relaxed text-base">
+                        Para reduzir o inchaço, tente beber mais água ao longo do dia e evite alimentos ricos em sódio. Um chá de hibisco ou cavalinha também pode ajudar na retenção de líquidos.
+                    </p>
+</div>
+</div>
+<div class="mt-6 flex items-start gap-3 p-4 bg-primary/5 rounded-xl border border-primary/10 w-full">
+<span class="material-symbols-outlined text-primary text-xl mt-0.5">psychology</span>
+<p class="text-sm text-gray-600 dark:text-gray-400">
+<strong class="text-text-main dark:text-text-light block mb-1">Dica Extra</strong>
+                    Se sentir irritabilidade, reserve 10 minutos para respiração profunda antes de dormir.
+                </p>
+</div>
+</div>
+<div class="fixed bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-background-light via-background-light to-transparent dark:from-background-dark dark:via-background-dark pointer-events-none max-w-md mx-auto">
+<button class="w-full bg-primary hover:bg-opacity-90 active:scale-[0.98] transition-all text-[#102216] font-bold text-lg h-14 rounded-full shadow-soft flex items-center justify-center gap-2 pointer-events-auto">
+<span class="material-symbols-outlined">home</span>
+                Entendi
+            </button>
+</div>
+</div>
+</body></html>

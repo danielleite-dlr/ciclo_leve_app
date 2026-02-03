@@ -1,0 +1,34 @@
+
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: cicloleve_db
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: adminpassword
+      POSTGRES_DB: cicloleve
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - cicloleve_net
+
+  redis:
+    image: redis:7-alpine
+    container_name: cicloleve_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - cicloleve_net
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  cicloleve_net:
+    driver: bridge

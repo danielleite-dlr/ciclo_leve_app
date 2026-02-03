@@ -12,7 +12,14 @@ import api from '@/services/api';
 const cadastroSchema = z.object({
   name: z.string().min(3, 'Nome muito curto'),
   email: z.string().email('E-mail inválido'),
-  dataNascimento: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Data inválida (AAAA-MM-DD)'),
+  // Opcional: backend aceita null/ausente. Permitimos vazio e validamos somente se preenchido.
+  dataNascimento: z
+    .string()
+    .optional()
+    .refine(
+      (v) => !v || /^\d{4}-\d{2}-\d{2}$/.test(v),
+      'Data inválida (AAAA-MM-DD)'
+    ),
   password: z.string().min(6, 'A senha deve ter no mínimo 6 caracteres'),
   confirmPassword: z.string(),
 }).refine((data) => data.password === data.confirmPassword, {
@@ -29,17 +36,25 @@ export default function CadastroScreen() {
 
   const { control, handleSubmit, formState: { errors } } = useForm<CadastroFormData>({
     resolver: zodResolver(cadastroSchema),
+    defaultValues: {
+      dataNascimento: '',
+    },
   });
 
   const onSubmit = async (data: CadastroFormData) => {
     setIsLoading(true);
     try {
-      await api.post('/auth/register', {
+      const payload: Record<string, any> = {
         nome: data.name,
         email: data.email,
         senha: data.password,
-        dataNascimento: data.dataNascimento
-      });
+      };
+
+      if (data.dataNascimento?.trim()) {
+        payload.dataNascimento = data.dataNascimento.trim();
+      }
+
+      await api.post('/auth/register', payload);
       
       Alert.alert('Sucesso', 'Conta criada com sucesso! Faça login para continuar.', [
         { text: 'OK', onPress: () => router.replace('/(auth)/login') }
@@ -118,8 +133,8 @@ export default function CadastroScreen() {
             name="dataNascimento"
             render={({ field: { onChange, value } }) => (
               <Input
-                label="Data de Nascimento (AAAA-MM-DD)"
-                placeholder="Ex: 1995-05-20"
+                label="Data de Nascimento (opcional)"
+                placeholder="AAAA-MM-DD (ex: 1995-05-20)"
                 value={value}
                 onChangeText={onChange}
                 error={errors.dataNascimento?.message}

@@ -93,86 +93,88 @@ export default function DadosCorpoScreen() {
           />
         </View>
 
-        {store.cicloRegular && (
-          <View className="space-y-6 mt-4">
-            {/* Data Última Menstruação */}
-            <View>
-              <Text className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Data da última menstruação *</Text>
-              <TouchableOpacity 
-                onPress={() => setShowDatePicker(true)}
-                className="w-full bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl h-14 px-5 justify-center"
-              >
-                <View className="flex-row justify-between items-center">
-                  <Text className="text-lg text-[#111813] dark:text-white">
-                    {store.dataUltimaMenstruacao ? store.dataUltimaMenstruacao.toLocaleDateString('pt-BR') : 'Selecione a data'}
-                  </Text>
-                  <MaterialIcons name="calendar-today" size={24} color="#13ec5b" />
-                </View>
-              </TouchableOpacity>
-              {showDatePicker && (
-                <DateTimePicker
-                  value={store.dataUltimaMenstruacao || new Date()}
-                  mode="date"
-                  display="default"
-                  onChange={handleDateChange}
-                  maximumDate={new Date()}
-                />
-              )}
-            </View>
-
-            {/* Duração Ciclo Slider */}
-            <View className="p-5 rounded-lg bg-white dark:bg-white/5 border border-gray-100 dark:border-white/5 shadow-sm">
-              <View className="flex-row justify-between items-end mb-4">
-                <Text className="text-sm font-medium text-gray-600 dark:text-gray-300">Duração do ciclo</Text>
-                <View className="flex-row items-baseline gap-1">
-                  <Text className="text-2xl font-bold text-[#13ec5b]">{Math.round(store.duracaoCiclo)}</Text>
-                  <Text className="text-sm font-medium text-[#13ec5b]">dias</Text>
-                </View>
+        <View className="space-y-6 mt-4">
+          {/* Data Última Menstruação (obrigatória para cálculo de fase) */}
+          <View>
+            <Text className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Data da última menstruação *</Text>
+            <TouchableOpacity 
+              onPress={() => setShowDatePicker(true)}
+              className="w-full bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl h-14 px-5 justify-center"
+            >
+              <View className="flex-row justify-between items-center">
+                <Text className="text-lg text-[#111813] dark:text-white">
+                  {store.dataUltimaMenstruacao ? store.dataUltimaMenstruacao.toLocaleDateString('pt-BR') : 'Selecione a data'}
+                </Text>
+                <MaterialIcons name="calendar-today" size={24} color="#13ec5b" />
               </View>
-              <Slider
-                style={{width: '100%', height: 40}}
-                minimumValue={21}
-                maximumValue={45}
-                step={1}
-                value={store.duracaoCiclo}
-                onValueChange={(v) => store.setDado('duracaoCiclo', v)}
-                minimumTrackTintColor="#13ec5b"
-                maximumTrackTintColor="#dbe6df"
-                thumbTintColor="#13ec5b"
+            </TouchableOpacity>
+            {showDatePicker && (
+              <DateTimePicker
+                value={store.dataUltimaMenstruacao || new Date()}
+                mode="date"
+                display="default"
+                onChange={handleDateChange}
+                maximumDate={new Date()}
               />
-               <View className="flex-row justify-between mt-1">
+            )}
+          </View>
+
+          {store.cicloRegular && (
+            <>
+              {/* Duração Ciclo Slider */}
+              <View className="p-5 rounded-lg bg-white dark:bg-white/5 border border-gray-100 dark:border-white/5 shadow-sm">
+                <View className="flex-row justify-between items-end mb-4">
+                  <Text className="text-sm font-medium text-gray-600 dark:text-gray-300">Duração do ciclo</Text>
+                  <View className="flex-row items-baseline gap-1">
+                    <Text className="text-2xl font-bold text-[#13ec5b]">{Math.round(store.duracaoCiclo)}</Text>
+                    <Text className="text-sm font-medium text-[#13ec5b]">dias</Text>
+                  </View>
+                </View>
+                <Slider
+                  style={{width: '100%', height: 40}}
+                  minimumValue={21}
+                  maximumValue={45}
+                  step={1}
+                  value={store.duracaoCiclo}
+                  onValueChange={(v) => store.setDado('duracaoCiclo', v)}
+                  minimumTrackTintColor="#13ec5b"
+                  maximumTrackTintColor="#dbe6df"
+                  thumbTintColor="#13ec5b"
+                />
+                <View className="flex-row justify-between mt-1">
                   <Text className="text-xs text-gray-400">21 dias</Text>
                   <Text className="text-xs text-gray-400">45 dias</Text>
-              </View>
-            </View>
-
-            {/* Duração Sangramento Slider */}
-             <View className="p-5 rounded-lg bg-white dark:bg-white/5 border border-gray-100 dark:border-white/5 shadow-sm">
-              <View className="flex-row justify-between items-end mb-4">
-                <Text className="text-sm font-medium text-gray-600 dark:text-gray-300">Duração do sangramento</Text>
-                <View className="flex-row items-baseline gap-1">
-                  <Text className="text-2xl font-bold text-[#13ec5b]">{Math.round(store.duracaoSangramento)}</Text>
-                  <Text className="text-sm font-medium text-[#13ec5b]">dias</Text>
                 </View>
               </View>
-              <Slider
-                style={{width: '100%', height: 40}}
-                minimumValue={1}
-                maximumValue={10}
-                step={1}
-                value={store.duracaoSangramento}
-                onValueChange={(v) => store.setDado('duracaoSangramento', v)}
-                minimumTrackTintColor="#13ec5b"
-                maximumTrackTintColor="#dbe6df"
-                thumbTintColor="#13ec5b"
-              />
-               <View className="flex-row justify-between mt-1">
+
+              {/* Duração Sangramento Slider */}
+              <View className="p-5 rounded-lg bg-white dark:bg-white/5 border border-gray-100 dark:border-white/5 shadow-sm">
+                <View className="flex-row justify-between items-end mb-4">
+                  <Text className="text-sm font-medium text-gray-600 dark:text-gray-300">Duração do sangramento</Text>
+                  <View className="flex-row items-baseline gap-1">
+                    <Text className="text-2xl font-bold text-[#13ec5b]">{Math.round(store.duracaoSangramento)}</Text>
+                    <Text className="text-sm font-medium text-[#13ec5b]">dias</Text>
+                  </View>
+                </View>
+                <Slider
+                  style={{width: '100%', height: 40}}
+                  minimumValue={1}
+                  maximumValue={10}
+                  step={1}
+                  value={store.duracaoSangramento}
+                  onValueChange={(v) => store.setDado('duracaoSangramento', v)}
+                  minimumTrackTintColor="#13ec5b"
+                  maximumTrackTintColor="#dbe6df"
+                  thumbTintColor="#13ec5b"
+                />
+                <View className="flex-row justify-between mt-1">
                   <Text className="text-xs text-gray-400">1 dia</Text>
                   <Text className="text-xs text-gray-400">10 dias</Text>
+                </View>
               </View>
-            </View>
-          </View>
-        )}
+            </>
+          )}
+        </View>
       </View>
 
       <View className="absolute bottom-0 left-0 right-0 p-6 bg-white/90 dark:bg-[#102216]/90 border-t border-gray-100 dark:border-white/5">

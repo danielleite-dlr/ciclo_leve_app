@@ -6,6 +6,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { clsx } from 'clsx';
 import api from '@/services/api';
 import { useState } from 'react';
+import { Alert } from 'react-native';
 
 const OBJECTIVES = [
   { id: 'EMAGRECER', title: 'Emagrecer', icon: 'monitor_weight' },
@@ -32,29 +33,35 @@ export default function ObjetivosScreen() {
 
   const handleFinish = async () => {
     if (store.objetivos.length === 0) return;
-    
+
+    // Campos mínimos para o backend calcular fase
+    if (!store.momentoAtual || !store.dataUltimaMenstruacao) {
+      Alert.alert('Atenção', 'Complete as etapas anteriores do onboarding para continuar.');
+      return;
+    }
+
     setIsSubmitting(true);
     try {
-      // 1. Enviar dados para o backend
-      // TODO: Criar endpoint único ou múltiplos para salvar perfil
-      /* 
-      await api.post('/users/profile', {
-        height: store.altura,
-        weight: store.peso,
-        birthDate: ...Calculate from age,
-        cycleData: ...
-      }) 
-      */
-      
-      // Simulação de sucesso
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // 2. Redirecionar para Home
+      const payload = {
+        modoCiclo: store.momentoAtual,
+        cicloRegular: store.cicloRegular,
+        duracaoCiclo: store.duracaoCiclo,
+        duracaoSangramento: store.duracaoSangramento,
+        dataUltimaMenstruacao: store.dataUltimaMenstruacao.toISOString(),
+        objetivos: store.objetivos,
+      };
+
+      await api.put('/perfil/ciclo', payload);
+
+      // Redirecionar para Home
       router.replace('/(app)/home');
-      store.reset(); // Limpar store
-    } catch (error) {
+      store.reset();
+    } catch (error: any) {
       console.error(error);
-      // TODO: Tratar erro
+      Alert.alert(
+        'Erro ao finalizar onboarding',
+        error.response?.data?.message || error.response?.data?.error || 'Tente novamente.'
+      );
     } finally {
       setIsSubmitting(false);
     }

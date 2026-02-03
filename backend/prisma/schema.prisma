@@ -13,7 +13,7 @@ model User {
   email           String    @unique @db.VarChar(255)
   passwordHash    String    @map("password_hash") @db.VarChar(255)
   nomeCompleto    String    @map("nome_completo") @db.VarChar(255)
-  dataNascimento  DateTime  @map("data_nascimento") @db.Date
+  dataNascimento  DateTime? @map("data_nascimento") @db.Date
   alturaCm        Int?      @map("altura_cm") @db.SmallInt
   pesoKg          Decimal?  @map("peso_kg") @db.Decimal(5, 2)
   

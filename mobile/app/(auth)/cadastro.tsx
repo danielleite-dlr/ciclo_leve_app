@@ -12,7 +12,8 @@ import api from '@/services/api';
 const cadastroSchema = z.object({
   name: z.string().min(3, 'Nome muito curto'),
   email: z.string().email('E-mail inválido'),
-  password: z.string().min(8, 'A senha deve ter no mínimo 8 caracteres'),
+  dataNascimento: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Data inválida (AAAA-MM-DD)'),
+  password: z.string().min(6, 'A senha deve ter no mínimo 6 caracteres'),
   confirmPassword: z.string(),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "As senhas não coincidem",
@@ -34,9 +35,10 @@ export default function CadastroScreen() {
     setIsLoading(true);
     try {
       await api.post('/auth/register', {
+        nome: data.name,
         email: data.email,
-        password: data.password,
-        name: data.name
+        senha: data.password,
+        dataNascimento: data.dataNascimento
       });
       
       Alert.alert('Sucesso', 'Conta criada com sucesso! Faça login para continuar.', [
@@ -107,6 +109,21 @@ export default function CadastroScreen() {
                 value={value}
                 onChangeText={onChange}
                 error={errors.email?.message}
+              />
+            )}
+          />
+
+          <Controller
+            control={control}
+            name="dataNascimento"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                label="Data de Nascimento (AAAA-MM-DD)"
+                placeholder="Ex: 1995-05-20"
+                value={value}
+                onChangeText={onChange}
+                error={errors.dataNascimento?.message}
+                keyboardType="numeric"
               />
             )}
           />

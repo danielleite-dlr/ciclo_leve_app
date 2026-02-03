@@ -22,7 +22,7 @@ export class AuthService {
         nomeCompleto: nome,
         email,
         passwordHash,
-        dataNascimento: new Date(dataNascimento),
+        dataNascimento: dataNascimento ? new Date(dataNascimento) : null,
       },
     });
 

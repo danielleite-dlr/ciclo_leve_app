@@ -6,7 +6,7 @@ import { getToken } from './storage';
 // Para dispositivo físico use o IP da sua máquina: 'http://192.168.x.x:3000/api/v1'
 
 const api = axios.create({
-  baseURL: 'http://192.168.0.34:3000/api/v1', 
+  baseURL: 'https://8e52310b0d36.ngrok-free.app/api/v1', 
   timeout: 10000,
 });
 

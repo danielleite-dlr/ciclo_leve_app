@@ -22,6 +22,10 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date() });
 });
 
+app.get('/', (req, res) => {
+  res.json({ message: 'Bem-vindo à API Ciclo Leve' });
+});
+
 // Global Error Handler
 app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
   console.error(err);

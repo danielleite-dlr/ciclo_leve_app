@@ -1,14 +1,26 @@
 import { Request, Response } from 'express';
 import { AuthService } from '../services/auth.service';
+import { registerSchema } from '../schemas/user.schema';
+import { z } from 'zod';
 
 const authService = new AuthService();
 
 export class AuthController {
   async register(req: Request, res: Response) {
     try {
-      const result = await authService.register(req.body);
+      // Validate request body
+      const validatedData = registerSchema.parse(req.body);
+      
+      const result = await authService.register(validatedData);
       res.status(201).json(result);
     } catch (error: any) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ 
+          error: 'Dados inválidos', 
+          details: error.errors.map(e => ({ field: e.path.join('.'), message: e.message })) 
+        });
+        return;
+      }
       res.status(400).json({ error: error.message });
     }
   }

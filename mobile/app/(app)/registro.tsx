@@ -1,8 +1,9 @@
-import { View, Text, ScrollView, TouchableOpacity, TextInput } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, TextInput, Alert } from 'react-native';
 import { Colors } from '@/constants/Colors';
 import { useRouter } from 'expo-router';
 import { X, Check } from 'lucide-react-native';
 import { useState } from 'react';
+import api from '@/services/api';
 
 export default function Registro() {
   const router = useRouter();
@@ -24,11 +25,25 @@ export default function Registro() {
 
   const handleSave = async () => {
     setLoading(true);
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      // Mapeamento mínimo pro backend (DTO atual):
+      // - humorTags: usamos humor + sintomas selecionados
+      // - notas: texto livre
+      await api.post('/registros', {
+        humorTags: [humor, ...sintomas].filter(Boolean),
+        notas: notas?.trim() || undefined,
+      });
+
+      router.replace('/(app)/home');
+    } catch (error: any) {
+      console.error(error);
+      Alert.alert(
+        'Erro ao salvar registro',
+        error.response?.data?.message || error.response?.data?.error || 'Tente novamente.'
+      );
+    } finally {
       setLoading(false);
-      router.back();
-    }, 1000);
+    }
   };
 
   const OptionChip = ({ label, selected, onPress }: { label: string, selected: boolean, onPress: () => void }) => (

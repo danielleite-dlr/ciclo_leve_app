@@ -1,12 +1,16 @@
 import axios from 'axios';
 import { getToken } from './storage';
 
-// IMPORTANTE: Para Android Emulator use 'http://10.0.2.2:3000/api/v1'
-// Para iOS Simulator use 'http://localhost:3000/api/v1'
-// Para dispositivo físico use o IP da sua máquina: 'http://192.168.x.x:3000/api/v1'
+// Base URL por ambiente (Expo): defina EXPO_PUBLIC_API_URL
+// Exemplos:
+// - Android Emulator:  http://10.0.2.2:3000/api/v1
+// - iOS Simulator:    http://localhost:3000/api/v1
+// - Device na mesma rede: http://192.168.x.x:3000/api/v1
+// - Túnel (ngrok/cloudflared): https://<...>/api/v1
+const baseURL = (process.env.EXPO_PUBLIC_API_URL || '').trim() || 'http://localhost:3000/api/v1';
 
 const api = axios.create({
-  baseURL: 'https://8e52310b0d36.ngrok-free.app/api/v1', 
+  baseURL,
   timeout: 10000,
 });
 

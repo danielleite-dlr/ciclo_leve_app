@@ -2,7 +2,7 @@ import { View, Text, ScrollView, TouchableOpacity, TextInput, Alert } from 'reac
 import { Colors } from '@/constants/Colors';
 import { useRouter } from 'expo-router';
 import { X, Check } from 'lucide-react-native';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import api from '@/services/api';
 
 export default function Registro() {
@@ -14,6 +14,21 @@ export default function Registro() {
   const [sintomas, setSintomas] = useState<string[]>([]);
   const [humor, setHumor] = useState('');
   const [notas, setNotas] = useState('');
+
+  useEffect(() => {
+    // Gate simples: se não houver ciclo/perfil, manda pro onboarding
+    (async () => {
+      try {
+        const res = await api.get('/perfil');
+        if (!res.data?.ciclo) {
+          Alert.alert('Complete seu onboarding', 'Antes de registrar, finalize seu ciclo para calcular a fase corretamente.');
+          router.replace('/(onboarding)/dados-corpo');
+        }
+      } catch (e) {
+        // Se falhar, não bloqueia a tela (pode ser instabilidade); o save já trata erro.
+      }
+    })();
+  }, [router]);
 
   const toggleSintoma = (sintoma: string) => {
     if (sintomas.includes(sintoma)) {
@@ -34,6 +49,7 @@ export default function Registro() {
         notas: notas?.trim() || undefined,
       });
 
+      Alert.alert('Salvo!', 'Seu registro de hoje foi salvo.');
       router.replace('/(app)/home');
     } catch (error: any) {
       console.error(error);

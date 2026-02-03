@@ -25,6 +25,27 @@ services:
     networks:
       - cicloleve_net
 
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: cicloleve_api
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      # Internal service hostnames on cicloleve_net
+      PORT: "3000"
+      DATABASE_URL: "postgresql://admin:adminpassword@postgres:5432/cicloleve?schema=public"
+      REDIS_URL: "redis://redis:6379"
+      JWT_SECRET: "dev-change-me"
+      JWT_REFRESH_SECRET: "dev-change-me-too"
+      CORS_ORIGIN: "*"
+    ports:
+      - "3000:3000"
+    networks:
+      - cicloleve_net
+
 volumes:
   postgres_data:
   redis_data:

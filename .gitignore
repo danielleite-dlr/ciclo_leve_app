@@ -1,0 +1,20 @@
+# OS
+.DS_Store
+
+# Env
+**/.env
+**/.env.*
+
+# Dependencies
+**/node_modules/
+
+# Expo
+mobile/.expo/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build
+**/dist/

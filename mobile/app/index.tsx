@@ -6,16 +6,24 @@ import { getToken } from '@/services/storage';
 
 export default function SplashScreen() {
   const router = useRouter();
+  const __debugDest = __DEV__ ? 'dev' : 'release';
 
   useEffect(() => {
     async function checkAuth() {
-      // Pequeno delay para exibir a splash (simulando carregamento)
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      const token = await getToken();
-      if (token) {
-        router.replace('/(app)/home');
-      } else {
+      try {
+        // Pequeno delay para exibir a splash (simulando carregamento)
+        await new Promise(resolve => setTimeout(resolve, 2000));
+
+        const token = await getToken();
+        const dest = token ? '/(app)/home' : '/(auth)/login';
+
+        // eslint-disable-next-line no-console
+        console.log('[SPLASH] token?', !!token, '→ navigating to', dest);
+
+        router.replace(dest);
+      } catch (err) {
+        // eslint-disable-next-line no-console
+        console.error('[SPLASH] checkAuth failed', err);
         router.replace('/(auth)/login');
       }
     }
@@ -56,7 +64,7 @@ export default function SplashScreen() {
         </View>
 
         <Text className="mt-4 text-[#9aa09c] dark:text-[#4a6354] text-[10px] font-medium tracking-widest uppercase">
-          Versão 2.1.0
+          Versão 2.1.0 ({__debugDest})
         </Text>
       </View>
     </View>

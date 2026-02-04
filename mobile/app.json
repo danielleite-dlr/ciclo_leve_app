@@ -48,7 +48,8 @@
       "policy": "sdkVersion"
     },
     "updates": {
-      "url": "https://u.expo.dev/f66382fb-e1a1-46ad-a524-bd6ebd8ea2b6"
+      "url": "https://u.expo.dev/f66382fb-e1a1-46ad-a524-bd6ebd8ea2b6",
+      "fallbackToCacheTimeout": 0
     }
   }
 }

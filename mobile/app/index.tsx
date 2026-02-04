@@ -66,6 +66,10 @@ export default function SplashScreen() {
         <Text className="mt-4 text-[#9aa09c] dark:text-[#4a6354] text-[10px] font-medium tracking-widest uppercase">
           Versão 2.1.0 ({__debugDest})
         </Text>
+
+        <Text className="mt-1 text-[#9aa09c] dark:text-[#4a6354] text-[10px]">
+          Se ficar branco, veja overlay ROUTE.
+        </Text>
       </View>
     </View>
   );

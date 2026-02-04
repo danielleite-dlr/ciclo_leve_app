@@ -1,13 +1,10 @@
 // metro.config.js
-// Workaround: some packages (ex: react-native-worklets) expose TS sources via the `react-native` field.
-// Expo/Metro can fail resolving TS source imports inside node_modules on some setups.
-// Prefer compiled outputs via `module`/`main` to keep Expo Go stable.
+// Expo default Metro config.
+// NOTE: We intentionally keep the default resolverMainFields (includes "react-native")
+// to stay compatible with Expo Go native modules like react-native-safe-area-context.
 
 const { getDefaultConfig } = require('expo/metro-config');
 
 const config = getDefaultConfig(__dirname);
-
-// Prefer compiled JS builds over `react-native` entrypoints.
-config.resolver.resolverMainFields = ['module', 'main'];
 
 module.exports = config;

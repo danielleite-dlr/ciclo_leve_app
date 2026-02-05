@@ -71,9 +71,14 @@ export default function CadastroScreen() {
         url: error?.config?.url,
       });
 
+      const serverMsg =
+        error?.response?.data?.message ||
+        error?.response?.data?.error ||
+        error?.response?.data?.errors?.[0]?.message;
+
       Alert.alert(
         'Erro ao cadastrar',
-        error.response?.data?.message || 'Tente novamente mais tarde.'
+        serverMsg || (error?.message?.includes('Network') ? 'Erro de conexão com o servidor.' : 'Tente novamente mais tarde.')
       );
     } finally {
       setIsLoading(false);

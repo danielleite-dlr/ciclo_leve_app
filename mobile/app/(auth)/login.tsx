@@ -37,10 +37,24 @@ export default function LoginScreen() {
       await setToken(response.data.token);
       router.replace('/(app)/home');
     } catch (error: any) {
-      console.error(error);
+      // eslint-disable-next-line no-console
+      console.error('[LOGIN] erro', {
+        message: error?.message,
+        code: error?.code,
+        status: error?.response?.status,
+        data: error?.response?.data,
+        baseURL: error?.config?.baseURL,
+        url: error?.config?.url,
+      });
+
+      const serverMsg =
+        error?.response?.data?.message ||
+        error?.response?.data?.error ||
+        error?.response?.data?.errors?.[0]?.message;
+
       Alert.alert(
         'Erro ao entrar',
-        error.response?.data?.message || 'Verifique suas credenciais e tente novamente.'
+        serverMsg || (error?.message?.includes('Network') ? 'Erro de conexão com o servidor.' : 'Verifique suas credenciais e tente novamente.')
       );
     } finally {
       setIsLoading(false);

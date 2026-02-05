@@ -60,7 +60,17 @@ export default function CadastroScreen() {
         { text: 'OK', onPress: () => router.replace('/(auth)/login') }
       ]);
     } catch (error: any) {
-      console.error(error);
+      // More diagnostics for device APK debugging
+      // eslint-disable-next-line no-console
+      console.error('[CADASTRO] erro', {
+        message: error?.message,
+        code: error?.code,
+        status: error?.response?.status,
+        data: error?.response?.data,
+        baseURL: error?.config?.baseURL,
+        url: error?.config?.url,
+      });
+
       Alert.alert(
         'Erro ao cadastrar',
         error.response?.data?.message || 'Tente novamente mais tarde.'

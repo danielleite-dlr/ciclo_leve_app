@@ -1,13 +1,17 @@
 import axios from 'axios';
+import Constants from 'expo-constants';
 import { getToken } from './storage';
 
-// Base URL por ambiente (Expo): defina EXPO_PUBLIC_API_URL
-// Exemplos:
-// - Android Emulator:  http://10.0.2.2:3000/api/v1
-// - iOS Simulator:    http://localhost:3000/api/v1
-// - Device na mesma rede: http://192.168.x.x:3000/api/v1
-// - Túnel (ngrok/cloudflared): https://<...>/api/v1
-const baseURL = (process.env.EXPO_PUBLIC_API_URL || '').trim() || 'http://localhost:3000/api/v1';
+// Base URL por ambiente:
+// 1) app.json -> extra.apiUrl (mais "à prova de build")
+// 2) EXPO_PUBLIC_API_URL (EAS env / Expo env)
+// 3) fallback (localhost = EMULADOR/SIMULATOR, NUNCA device real)
+const extraApiUrl = (Constants.expoConfig?.extra as any)?.apiUrl as string | undefined;
+const envApiUrl = (process.env.EXPO_PUBLIC_API_URL || '').trim();
+const baseURL = (extraApiUrl || envApiUrl || '').trim() || 'http://localhost:3000/api/v1';
+
+// eslint-disable-next-line no-console
+console.log('[API] baseURL =', baseURL, '| extra?', !!extraApiUrl, '| env?', !!envApiUrl);
 
 const api = axios.create({
   baseURL,

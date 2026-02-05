@@ -1,12 +1,12 @@
-import { View, Text, ScrollView, TouchableOpacity, Switch, Platform } from 'react-native';
+import { useState } from 'react';
+import { Platform, ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
 import { useRouter } from 'expo-router';
+import { MaterialIcons } from '@expo/vector-icons';
+import Slider from '@react-native-community/slider';
+import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import { useOnboardingStore } from '@/stores/onboardingStore';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
-import Slider from '@react-native-community/slider';
-import { MaterialIcons } from '@expo/vector-icons';
-import { useState } from 'react';
-import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 
 export default function DadosCorpoScreen() {
   const router = useRouter();
@@ -29,38 +29,34 @@ export default function DadosCorpoScreen() {
   };
 
   return (
-    <ScrollView className="flex-1 bg-[#f6f8f6] dark:bg-[#102216]">
+    <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
       {/* Header */}
-      <View className="pt-12 px-6 pb-4">
-        <View className="flex-row justify-center gap-3 mb-6">
-          <View className="h-2.5 w-8 rounded-full bg-[#13ec5b]" />
-          <View className="h-2.5 w-2.5 rounded-full bg-gray-300 dark:bg-gray-700" />
-          <View className="h-2.5 w-2.5 rounded-full bg-gray-300 dark:bg-gray-700" />
+      <View style={styles.header}>
+        <View style={styles.dotsRow}>
+          <View style={[styles.dot, styles.dotWide]} />
+          <View style={styles.dotMuted} />
+          <View style={styles.dotMuted} />
         </View>
-        <Text className="text-3xl font-bold text-[#111813] dark:text-white">
-          Vamos personalizar{'\n'}sua experiência
-        </Text>
-        <Text className="mt-3 text-base font-light text-[#61896f] dark:text-[#a1b8aa]">
-          Esses dados nos ajudam a prever seus sintomas com precisão.
-        </Text>
+        <Text style={styles.title}>Vamos personalizar{String.fromCharCode(10)}sua experiência</Text>
+        <Text style={styles.subtitle}>Esses dados nos ajudam a prever seus sintomas com precisão.</Text>
       </View>
 
-      <View className="px-6 space-y-6 pb-24">
+      <View style={styles.content}>
         {/* Altura e Peso */}
-        <View className="flex-row gap-4">
-          <View className="flex-1">
-            <Input 
-              label="Altura *" 
-              placeholder="165" 
+        <View style={styles.row}>
+          <View style={styles.flex1}>
+            <Input
+              label="Altura *"
+              placeholder="165"
               keyboardType="numeric"
               value={store.altura}
               onChangeText={(t) => store.setDado('altura', t)}
             />
           </View>
-          <View className="flex-1">
-             <Input 
-              label="Peso" 
-              placeholder="60" 
+          <View style={styles.flex1}>
+            <Input
+              label="Peso"
+              placeholder="60"
               keyboardType="numeric"
               value={store.peso}
               onChangeText={(t) => store.setDado('peso', t)}
@@ -69,23 +65,23 @@ export default function DadosCorpoScreen() {
         </View>
 
         {/* Idade */}
-        <Input 
-          label="Idade *" 
-          placeholder="28" 
+        <Input
+          label="Idade *"
+          placeholder="28"
           keyboardType="numeric"
           value={store.idade}
           onChangeText={(t) => store.setDado('idade', t)}
         />
 
-        <View className="h-px bg-gray-200 dark:bg-white/10 my-2" />
+        <View style={styles.divider} />
 
         {/* Regularidade */}
-        <View className="flex-row justify-between items-center">
-          <View>
-            <Text className="text-lg font-medium text-[#111813] dark:text-white">Seu ciclo é regular?</Text>
-            <Text className="text-sm text-gray-500">Você menstrua todo mês?</Text>
+        <View style={styles.regularRow}>
+          <View style={styles.flex1}>
+            <Text style={styles.sectionTitle}>Seu ciclo é regular?</Text>
+            <Text style={styles.sectionHint}>Você menstrua todo mês?</Text>
           </View>
-          <Switch 
+          <Switch
             value={store.cicloRegular}
             onValueChange={(v) => store.setDado('cicloRegular', v)}
             trackColor={{ false: '#767577', true: '#13ec5b' }}
@@ -93,97 +89,252 @@ export default function DadosCorpoScreen() {
           />
         </View>
 
-        <View className="space-y-6 mt-4">
-          {/* Data Última Menstruação (obrigatória para cálculo de fase) */}
-          <View>
-            <Text className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Data da última menstruação *</Text>
-            <TouchableOpacity 
-              onPress={() => setShowDatePicker(true)}
-              className="w-full bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl h-14 px-5 justify-center"
-            >
-              <View className="flex-row justify-between items-center">
-                <Text className="text-lg text-[#111813] dark:text-white">
-                  {store.dataUltimaMenstruacao ? store.dataUltimaMenstruacao.toLocaleDateString('pt-BR') : 'Selecione a data'}
-                </Text>
-                <MaterialIcons name="calendar-today" size={24} color="#13ec5b" />
-              </View>
-            </TouchableOpacity>
-            {showDatePicker && (
-              <DateTimePicker
-                value={store.dataUltimaMenstruacao || new Date()}
-                mode="date"
-                display="default"
-                onChange={handleDateChange}
-                maximumDate={new Date()}
-              />
-            )}
-          </View>
-
-          {store.cicloRegular && (
-            <>
-              {/* Duração Ciclo Slider */}
-              <View className="p-5 rounded-lg bg-white dark:bg-white/5 border border-gray-100 dark:border-white/5 shadow-sm">
-                <View className="flex-row justify-between items-end mb-4">
-                  <Text className="text-sm font-medium text-gray-600 dark:text-gray-300">Duração do ciclo</Text>
-                  <View className="flex-row items-baseline gap-1">
-                    <Text className="text-2xl font-bold text-[#13ec5b]">{Math.round(store.duracaoCiclo)}</Text>
-                    <Text className="text-sm font-medium text-[#13ec5b]">dias</Text>
-                  </View>
-                </View>
-                <Slider
-                  style={{width: '100%', height: 40}}
-                  minimumValue={21}
-                  maximumValue={45}
-                  step={1}
-                  value={store.duracaoCiclo}
-                  onValueChange={(v) => store.setDado('duracaoCiclo', v)}
-                  minimumTrackTintColor="#13ec5b"
-                  maximumTrackTintColor="#dbe6df"
-                  thumbTintColor="#13ec5b"
-                />
-                <View className="flex-row justify-between mt-1">
-                  <Text className="text-xs text-gray-400">21 dias</Text>
-                  <Text className="text-xs text-gray-400">45 dias</Text>
-                </View>
-              </View>
-
-              {/* Duração Sangramento Slider */}
-              <View className="p-5 rounded-lg bg-white dark:bg-white/5 border border-gray-100 dark:border-white/5 shadow-sm">
-                <View className="flex-row justify-between items-end mb-4">
-                  <Text className="text-sm font-medium text-gray-600 dark:text-gray-300">Duração do sangramento</Text>
-                  <View className="flex-row items-baseline gap-1">
-                    <Text className="text-2xl font-bold text-[#13ec5b]">{Math.round(store.duracaoSangramento)}</Text>
-                    <Text className="text-sm font-medium text-[#13ec5b]">dias</Text>
-                  </View>
-                </View>
-                <Slider
-                  style={{width: '100%', height: 40}}
-                  minimumValue={1}
-                  maximumValue={10}
-                  step={1}
-                  value={store.duracaoSangramento}
-                  onValueChange={(v) => store.setDado('duracaoSangramento', v)}
-                  minimumTrackTintColor="#13ec5b"
-                  maximumTrackTintColor="#dbe6df"
-                  thumbTintColor="#13ec5b"
-                />
-                <View className="flex-row justify-between mt-1">
-                  <Text className="text-xs text-gray-400">1 dia</Text>
-                  <Text className="text-xs text-gray-400">10 dias</Text>
-                </View>
-              </View>
-            </>
+        {/* Data Última Menstruação */}
+        <View style={styles.block}>
+          <Text style={styles.label}>Data da última menstruação *</Text>
+          <TouchableOpacity onPress={() => setShowDatePicker(true)} style={styles.dateButton}>
+            <View style={styles.dateRow}>
+              <Text style={styles.dateText}>
+                {store.dataUltimaMenstruacao
+                  ? store.dataUltimaMenstruacao.toLocaleDateString('pt-BR')
+                  : 'Selecione a data'}
+              </Text>
+              <MaterialIcons name="calendar-today" size={22} color="#13ec5b" />
+            </View>
+          </TouchableOpacity>
+          {showDatePicker && (
+            <DateTimePicker
+              value={store.dataUltimaMenstruacao || new Date()}
+              mode="date"
+              display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+              onChange={handleDateChange}
+              maximumDate={new Date()}
+            />
           )}
         </View>
+
+        {store.cicloRegular ? (
+          <>
+            {/* Duração Ciclo */}
+            <View style={styles.card}>
+              <View style={styles.cardHeaderRow}>
+                <Text style={styles.cardLabel}>Duração do ciclo</Text>
+                <View style={styles.cardValueRow}>
+                  <Text style={styles.cardValue}>{Math.round(store.duracaoCiclo)}</Text>
+                  <Text style={styles.cardValueUnit}>dias</Text>
+                </View>
+              </View>
+              <Slider
+                style={styles.slider}
+                minimumValue={21}
+                maximumValue={45}
+                step={1}
+                value={store.duracaoCiclo}
+                onValueChange={(v) => store.setDado('duracaoCiclo', v)}
+                minimumTrackTintColor="#13ec5b"
+                maximumTrackTintColor="#dbe6df"
+                thumbTintColor="#13ec5b"
+              />
+              <View style={styles.sliderHints}>
+                <Text style={styles.sliderHintText}>21 dias</Text>
+                <Text style={styles.sliderHintText}>45 dias</Text>
+              </View>
+            </View>
+
+            {/* Duração Sangramento */}
+            <View style={styles.card}>
+              <View style={styles.cardHeaderRow}>
+                <Text style={styles.cardLabel}>Duração do sangramento</Text>
+                <View style={styles.cardValueRow}>
+                  <Text style={styles.cardValue}>{Math.round(store.duracaoSangramento)}</Text>
+                  <Text style={styles.cardValueUnit}>dias</Text>
+                </View>
+              </View>
+              <Slider
+                style={styles.slider}
+                minimumValue={1}
+                maximumValue={10}
+                step={1}
+                value={store.duracaoSangramento}
+                onValueChange={(v) => store.setDado('duracaoSangramento', v)}
+                minimumTrackTintColor="#13ec5b"
+                maximumTrackTintColor="#dbe6df"
+                thumbTintColor="#13ec5b"
+              />
+              <View style={styles.sliderHints}>
+                <Text style={styles.sliderHintText}>1 dia</Text>
+                <Text style={styles.sliderHintText}>10 dias</Text>
+              </View>
+            </View>
+          </>
+        ) : null}
       </View>
 
-      <View className="absolute bottom-0 left-0 right-0 p-6 bg-white/90 dark:bg-[#102216]/90 border-t border-gray-100 dark:border-white/5">
-        <Button 
-          title="Continuar" 
-          onPress={handleNext} 
-          className="bg-[#13ec5b]"
-        />
+      {/* Footer */}
+      <View style={styles.footer}>
+        <Button title="Continuar" onPress={handleNext} style={styles.cta} />
       </View>
     </ScrollView>
   );
 }
+
+const styles = StyleSheet.create({
+  scrollContent: {
+    flexGrow: 1,
+    backgroundColor: '#F6F8F6',
+    paddingBottom: 120,
+  },
+  header: {
+    paddingTop: 48,
+    paddingHorizontal: 24,
+    paddingBottom: 16,
+  },
+  dotsRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 12,
+    marginBottom: 24,
+  },
+  dot: {
+    height: 10,
+    width: 10,
+    borderRadius: 999,
+    backgroundColor: '#13ec5b',
+  },
+  dotWide: {
+    width: 32,
+  },
+  dotMuted: {
+    height: 10,
+    width: 10,
+    borderRadius: 999,
+    backgroundColor: '#D1D5DB',
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: '800',
+    color: '#111813',
+  },
+  subtitle: {
+    marginTop: 12,
+    fontSize: 14,
+    color: '#61896f',
+  },
+  content: {
+    paddingHorizontal: 24,
+    gap: 16,
+  },
+  row: {
+    flexDirection: 'row',
+    gap: 16,
+  },
+  flex1: {
+    flex: 1,
+  },
+  divider: {
+    height: 1,
+    backgroundColor: '#E5E7EB',
+    marginVertical: 8,
+  },
+  regularRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#111813',
+  },
+  sectionHint: {
+    marginTop: 2,
+    fontSize: 12,
+    color: '#6B7280',
+  },
+  block: {
+    marginTop: 8,
+  },
+  label: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#374151',
+    marginBottom: 8,
+  },
+  dateButton: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    paddingHorizontal: 16,
+    height: 56,
+    justifyContent: 'center',
+  },
+  dateRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  dateText: {
+    fontSize: 16,
+    color: '#111813',
+  },
+  card: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: '#F3F4F6',
+    padding: 16,
+  },
+  cardHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    justifyContent: 'space-between',
+    marginBottom: 12,
+  },
+  cardLabel: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#4B5563',
+  },
+  cardValueRow: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    gap: 4,
+  },
+  cardValue: {
+    fontSize: 22,
+    fontWeight: '800',
+    color: '#13ec5b',
+  },
+  cardValueUnit: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#13ec5b',
+  },
+  slider: {
+    width: '100%',
+    height: 40,
+  },
+  sliderHints: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 2,
+  },
+  sliderHintText: {
+    fontSize: 11,
+    color: '#9CA3AF',
+  },
+  footer: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    padding: 24,
+    backgroundColor: 'rgba(255,255,255,0.92)',
+    borderTopWidth: 1,
+    borderTopColor: '#F3F4F6',
+  },
+  cta: {
+    backgroundColor: '#13ec5b',
+  },
+});

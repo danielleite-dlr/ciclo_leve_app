@@ -1,8 +1,17 @@
-import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, RefreshControl, Alert } from 'react-native';
-import { useRouter } from 'expo-router';
-import { Colors } from '@/constants/Colors';
-import { Bell, Calendar as CalendarIcon, Droplets } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import {
+  ActivityIndicator,
+  Alert,
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import { useRouter } from 'expo-router';
+import { Bell, Calendar as CalendarIcon, Droplets } from 'lucide-react-native';
+import { Colors } from '@/constants/Colors';
 import api from '@/services/api';
 
 type PerfilResponse = {
@@ -58,15 +67,15 @@ export default function Home() {
     setRefreshing(false);
   }, [fetchPerfil]);
 
-  const PhaseCard = ({ title, active }: { title: string, active?: boolean }) => (
-    <View className={`mr-4 px-4 py-2 rounded-full border ${active ? 'bg-teal-100 border-teal-500' : 'bg-white border-gray-200'}`}>
-      <Text className={`${active ? 'text-teal-800 font-bold' : 'text-gray-500'}`}>{title}</Text>
+  const PhaseCard = ({ title, active }: { title: string; active?: boolean }) => (
+    <View style={[styles.phaseChip, active ? styles.phaseChipActive : null]}>
+      <Text style={[styles.phaseChipText, active ? styles.phaseChipTextActive : null]}>{title}</Text>
     </View>
   );
 
   if (loading) {
     return (
-      <View className="flex-1 justify-center items-center bg-white dark:bg-gray-900">
+      <View style={styles.loading}>
         <ActivityIndicator size="large" color={Colors.primary.DEFAULT} />
       </View>
     );
@@ -74,56 +83,50 @@ export default function Home() {
 
   return (
     <ScrollView
-      className="flex-1 bg-gray-50 dark:bg-gray-900"
+      contentContainerStyle={styles.scrollContent}
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
     >
       {/* Header */}
-      <View className="flex-row justify-between items-center px-6 pt-12 pb-6 bg-white dark:bg-gray-800 rounded-b-[30px] shadow-sm">
+      <View style={styles.header}>
         <View>
-          <Text className="text-gray-500 dark:text-gray-400 text-sm">Olá, {userFirstName}</Text>
-          <Text className="text-gray-900 dark:text-white text-2xl font-bold">
-            Hoje é o <Text className="text-teal-600">Dia {cycleDay || '—'}</Text>
+          <Text style={styles.hello}>Olá, {userFirstName}</Text>
+          <Text style={styles.headline}>
+            Hoje é o <Text style={styles.headlineAccent}>Dia {cycleDay || '—'}</Text>
           </Text>
         </View>
-        <TouchableOpacity className="p-2 bg-gray-100 dark:bg-gray-700 rounded-full">
+        <TouchableOpacity style={styles.bellButton}>
           <Bell size={24} color={Colors.text} />
         </TouchableOpacity>
       </View>
 
       {/* Main Cycle Display */}
-      <View className="items-center py-10">
-        <View className="w-64 h-64 rounded-full border-[6px] border-teal-100 justify-center items-center bg-white shadow-lg relative">
-            <View className="absolute top-0 w-full h-full rounded-full border-[6px] border-teal-500 border-t-transparent -rotate-45 opacity-60" />
-            <Text className="text-gray-900 dark:text-teal-900 text-5xl font-bold">{cycleDay || '—'}</Text>
-            <Text className="text-teal-600 font-medium mt-1">Dia do Ciclo</Text>
-            <Text className="text-gray-400 text-xs mt-2">Fase {cyclePhase}</Text>
+      <View style={styles.centerBlock}>
+        <View style={styles.circle}>
+          <View style={styles.circleArc} />
+          <Text style={styles.circleDay}>{cycleDay || '—'}</Text>
+          <Text style={styles.circleLabel}>Dia do Ciclo</Text>
+          <Text style={styles.circlePhase}>Fase {cyclePhase}</Text>
         </View>
-        <Text className="mt-6 text-gray-500 text-center px-10">
-          Sua fase atual é <Text className="font-bold text-teal-600">{cyclePhase}</Text>.
+        <Text style={styles.centerText}>
+          Sua fase atual é <Text style={styles.centerTextAccent}>{cyclePhase}</Text>.
         </Text>
       </View>
 
       {/* Action Buttons */}
-      <View className="flex-row justify-center space-x-4 px-6 mb-8">
-        <TouchableOpacity 
-          className="flex-1 bg-teal-600 py-3 rounded-2xl flex-row justify-center items-center shadow-md"
-          onPress={() => router.push('/(app)/registro')}
-        >
-          <Droplets color="white" size={20} className="mr-2" />
-          <Text className="text-white font-bold">Registrar Sintoma</Text>
+      <View style={styles.actionsRow}>
+        <TouchableOpacity style={styles.primaryAction} onPress={() => router.push('/(app)/registro')}>
+          <Droplets color="#FFFFFF" size={20} style={styles.actionIcon} />
+          <Text style={styles.primaryActionText}>Registrar Sintoma</Text>
         </TouchableOpacity>
-        
-        <TouchableOpacity 
-          className="bg-white border border-gray-200 py-3 px-6 rounded-2xl flex-row justify-center items-center shadow-sm"
-          onPress={() => router.push('/(app)/calendario')}
-        >
+
+        <TouchableOpacity style={styles.secondaryAction} onPress={() => router.push('/(app)/calendario')}>
           <CalendarIcon color={Colors.text} size={20} />
         </TouchableOpacity>
       </View>
 
       {/* Cycle Phases Scroll */}
-      <View className="px-6 mb-8">
-        <Text className="text-gray-800 dark:text-white font-bold text-lg mb-4">Seu Ciclo</Text>
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Seu Ciclo</Text>
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           <PhaseCard title="Menstruação" />
           <PhaseCard title="Folicular" />
@@ -133,9 +136,9 @@ export default function Home() {
       </View>
 
       {/* Daily Tip (mínimo viável) */}
-      <View className="mx-6 mb-10 bg-pink-50 p-6 rounded-2xl border border-pink-100">
-        <Text className="text-pink-800 font-bold mb-2">Dica do Dia</Text>
-        <Text className="text-pink-900 leading-6">
+      <View style={styles.tipCard}>
+        <Text style={styles.tipTitle}>Dica do Dia</Text>
+        <Text style={styles.tipText}>
           {cyclePhase === '—'
             ? 'Complete seu onboarding para ver recomendações personalizadas.'
             : `Hoje você está na fase ${cyclePhase}. Hidrate-se, priorize sono e ajuste sua rotina conforme sua energia.`}
@@ -144,3 +147,183 @@ export default function Home() {
     </ScrollView>
   );
 }
+
+const styles = StyleSheet.create({
+  scrollContent: {
+    flexGrow: 1,
+    backgroundColor: '#F3F4F6',
+    paddingBottom: 24,
+  },
+  loading: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#FFFFFF',
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 24,
+    paddingTop: 48,
+    paddingBottom: 24,
+    backgroundColor: '#FFFFFF',
+    borderBottomLeftRadius: 30,
+    borderBottomRightRadius: 30,
+  },
+  hello: {
+    fontSize: 12,
+    color: '#6B7280',
+  },
+  headline: {
+    marginTop: 4,
+    fontSize: 22,
+    fontWeight: '800',
+    color: '#111827',
+  },
+  headlineAccent: {
+    color: '#0D9488',
+  },
+  bellButton: {
+    padding: 10,
+    borderRadius: 999,
+    backgroundColor: '#F3F4F6',
+  },
+  centerBlock: {
+    alignItems: 'center',
+    paddingVertical: 40,
+  },
+  circle: {
+    width: 256,
+    height: 256,
+    borderRadius: 128,
+    borderWidth: 6,
+    borderColor: '#CCFBF1',
+    backgroundColor: '#FFFFFF',
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'relative',
+  },
+  circleArc: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    borderRadius: 128,
+    borderWidth: 6,
+    borderColor: '#14B8A6',
+    borderTopColor: 'transparent',
+    transform: [{ rotate: '-45deg' }],
+    opacity: 0.6,
+  },
+  circleDay: {
+    fontSize: 52,
+    fontWeight: '900',
+    color: '#111827',
+  },
+  circleLabel: {
+    marginTop: 4,
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#0D9488',
+  },
+  circlePhase: {
+    marginTop: 8,
+    fontSize: 11,
+    color: '#9CA3AF',
+  },
+  centerText: {
+    marginTop: 20,
+    paddingHorizontal: 40,
+    textAlign: 'center',
+    color: '#6B7280',
+  },
+  centerTextAccent: {
+    fontWeight: '800',
+    color: '#0D9488',
+  },
+  actionsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    paddingHorizontal: 24,
+    marginBottom: 24,
+  },
+  primaryAction: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    backgroundColor: '#0D9488',
+    paddingVertical: 12,
+    borderRadius: 16,
+  },
+  actionIcon: {
+    marginRight: 4,
+  },
+  primaryActionText: {
+    color: '#FFFFFF',
+    fontWeight: '800',
+  },
+  secondaryAction: {
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  section: {
+    paddingHorizontal: 24,
+    marginBottom: 24,
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: '900',
+    color: '#1F2937',
+    marginBottom: 12,
+  },
+  phaseChip: {
+    marginRight: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    backgroundColor: '#FFFFFF',
+  },
+  phaseChipActive: {
+    backgroundColor: '#CCFBF1',
+    borderColor: '#14B8A6',
+  },
+  phaseChipText: {
+    color: '#6B7280',
+    fontWeight: '700',
+  },
+  phaseChipTextActive: {
+    color: '#115E59',
+    fontWeight: '900',
+  },
+  tipCard: {
+    marginHorizontal: 24,
+    marginBottom: 20,
+    backgroundColor: '#FCE7F3',
+    padding: 20,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: '#FBCFE8',
+  },
+  tipTitle: {
+    color: '#9D174D',
+    fontWeight: '900',
+    marginBottom: 8,
+  },
+  tipText: {
+    color: '#831843',
+    lineHeight: 20,
+  },
+});

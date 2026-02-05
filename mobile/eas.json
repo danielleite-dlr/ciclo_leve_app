@@ -7,6 +7,9 @@
     "preview": {
       "distribution": "internal",
       "channel": "preview",
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://innovations-til-connecticut-atlanta.trycloudflare.com/api/v1"
+      },
       "android": {
         "buildType": "apk",
         "autoIncrement": true
@@ -16,6 +19,9 @@
       "developmentClient": true,
       "distribution": "internal",
       "channel": "development",
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://innovations-til-connecticut-atlanta.trycloudflare.com/api/v1"
+      },
       "android": {
         "buildType": "apk",
         "autoIncrement": true

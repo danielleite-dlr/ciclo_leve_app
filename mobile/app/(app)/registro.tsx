@@ -3,6 +3,7 @@ import { Alert, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View 
 import { useRouter } from 'expo-router';
 import { X, Check } from 'lucide-react-native';
 import { Colors } from '@/constants/Colors';
+import { Button } from '@/components/ui/Button';
 import api from '@/services/api';
 
 export default function Registro() {
@@ -141,6 +142,11 @@ export default function Registro() {
           />
         </View>
       </ScrollView>
+
+      <View style={styles.footer}>
+        <Button title="Cancelar" onPress={() => router.back()} variant="outline" style={styles.footerBtn} />
+        <Button title="Salvar" onPress={handleSave} isLoading={loading} style={[styles.footerBtn, styles.footerBtnPrimary]} />
+      </View>
     </View>
   );
 }
@@ -171,7 +177,7 @@ const styles = StyleSheet.create({
   scrollContent: {
     paddingHorizontal: 24,
     paddingTop: 24,
-    paddingBottom: 40,
+    paddingBottom: 120,
   },
   intro: {
     color: '#6B7280',
@@ -221,5 +227,23 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     color: '#111827',
     minHeight: 120,
+  },
+  footer: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    padding: 16,
+    backgroundColor: 'rgba(255,255,255,0.96)',
+    borderTopWidth: 1,
+    borderTopColor: '#F3F4F6',
+    flexDirection: 'row',
+    gap: 12,
+  },
+  footerBtn: {
+    flex: 1,
+  },
+  footerBtnPrimary: {
+    backgroundColor: '#13ec5b',
   },
 });

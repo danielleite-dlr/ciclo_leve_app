@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, Alert } from 'react-native';
-import { useRouter, Link } from 'expo-router';
+import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Link, useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -71,33 +71,24 @@ export default function CadastroScreen() {
   };
 
   return (
-    <ScrollView 
-      contentContainerStyle={{ flexGrow: 1 }} 
-      className="bg-[#f6f8f6] dark:bg-[#102216]"
-      keyboardShouldPersistTaps="handled"
-    >
+    <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
       {/* Navbar simple */}
-      <View className="flex-row items-center p-4 sticky top-0 z-10 bg-[#f6f8f6]/90 dark:bg-[#102216]/90">
-        <TouchableOpacity 
-          onPress={() => router.back()}
-          className="size-12 items-center justify-center rounded-full bg-white/50"
-        >
+      <View style={styles.navbar}>
+        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
           <MaterialIcons name="arrow-back" size={24} color="#111813" />
         </TouchableOpacity>
-        <Text className="flex-1 text-center text-lg font-bold pr-12 text-[#111813] dark:text-white">
-          Cadastro
-        </Text>
+        <Text style={styles.navTitle}>Cadastro</Text>
       </View>
 
-      <View className="flex-1 px-6 pb-8">
-        <View className="py-4">
-          <Text className="text-[#111813] dark:text-white text-3xl font-bold text-center">Criar conta</Text>
-          <Text className="text-[#61896f] dark:text-[#a1b8aa] text-center mt-3">
+      <View style={styles.screen}>
+        <View style={styles.header}>
+          <Text style={styles.title}>Criar conta</Text>
+          <Text style={styles.subtitle}>
             Preencha os dados abaixo para começar seu acompanhamento personalizado.
           </Text>
         </View>
 
-        <View className="gap-5 py-6">
+        <View style={styles.form}>
           <Controller
             control={control}
             name="name"
@@ -144,31 +135,24 @@ export default function CadastroScreen() {
           />
 
           <Controller
-              control={control}
-              name="password"
-              render={({ field: { onChange, value } }) => (
-                <View className="relative">
-                   <Input
-                    label="Senha"
-                    placeholder="Mínimo 8 caracteres"
-                    secureTextEntry={!showPassword}
-                    value={value}
-                    onChangeText={onChange}
-                    error={errors.password?.message}
-                  />
-                  <TouchableOpacity 
-                    onPress={() => setShowPassword(!showPassword)}
-                    className="absolute right-4 top-[42px]"
-                  >
-                    <MaterialIcons 
-                      name={showPassword ? "visibility" : "visibility"} 
-                      size={22} 
-                      color="#9CA3AF" 
-                    />
-                  </TouchableOpacity>
-                </View>
-              )}
-            />
+            control={control}
+            name="password"
+            render={({ field: { onChange, value } }) => (
+              <View style={styles.passwordWrap}>
+                <Input
+                  label="Senha"
+                  placeholder="Mínimo 8 caracteres"
+                  secureTextEntry={!showPassword}
+                  value={value}
+                  onChangeText={onChange}
+                  error={errors.password?.message}
+                />
+                <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeButton}>
+                  <MaterialIcons name={showPassword ? 'visibility' : 'visibility-off'} size={22} color="#9CA3AF" />
+                </TouchableOpacity>
+              </View>
+            )}
+          />
 
             <Controller
               control={control}
@@ -186,18 +170,13 @@ export default function CadastroScreen() {
             />
         </View>
 
-        <Button 
-          title="Cadastrar" 
-          onPress={handleSubmit(onSubmit)}
-          isLoading={isLoading}
-          className="bg-[#13ec5b]"
-        />
+        <Button title="Cadastrar" onPress={handleSubmit(onSubmit)} isLoading={isLoading} style={styles.submit} />
 
-        <View className="flex-row justify-center gap-2 mt-8">
-          <Text className="text-[#61896f] dark:text-[#a1b8aa]">Já possui uma conta?</Text>
+        <View style={styles.footer}>
+          <Text style={styles.footerText}>Já possui uma conta?</Text>
           <Link href="/(auth)/login" asChild>
             <TouchableOpacity>
-              <Text className="font-bold text-[#13ec5b]">Fazer login</Text>
+              <Text style={styles.footerLink}>Fazer login</Text>
             </TouchableOpacity>
           </Link>
         </View>
@@ -205,3 +184,82 @@ export default function CadastroScreen() {
     </ScrollView>
   );
 }
+
+const styles = StyleSheet.create({
+  scrollContent: {
+    flexGrow: 1,
+    backgroundColor: '#F6F8F6',
+  },
+  navbar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+    backgroundColor: 'rgba(246, 248, 246, 0.92)',
+  },
+  backButton: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.7)',
+  },
+  navTitle: {
+    flex: 1,
+    textAlign: 'center',
+    paddingRight: 48,
+    fontSize: 18,
+    fontWeight: '800',
+    color: '#111813',
+  },
+  screen: {
+    flex: 1,
+    paddingHorizontal: 24,
+    paddingBottom: 32,
+  },
+  header: {
+    paddingTop: 16,
+    paddingBottom: 16,
+  },
+  title: {
+    fontSize: 30,
+    fontWeight: '800',
+    color: '#111813',
+    textAlign: 'center',
+  },
+  subtitle: {
+    marginTop: 12,
+    color: '#61896f',
+    textAlign: 'center',
+  },
+  form: {
+    paddingTop: 24,
+    gap: 20,
+  },
+  passwordWrap: {
+    position: 'relative',
+  },
+  eyeButton: {
+    position: 'absolute',
+    right: 16,
+    top: 44,
+    padding: 6,
+  },
+  submit: {
+    marginTop: 8,
+    backgroundColor: '#13ec5b',
+  },
+  footer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 8,
+    marginTop: 32,
+  },
+  footerText: {
+    color: '#61896f',
+  },
+  footerLink: {
+    fontWeight: '800',
+    color: '#13ec5b',
+  },
+});

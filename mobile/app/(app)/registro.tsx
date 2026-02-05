@@ -200,8 +200,16 @@ export default function Registro() {
         pesoKg,
       });
 
-      Alert.alert('Salvo!', 'Seu registro de hoje foi salvo.');
-      router.replace('/(app)/home');
+      // Após salvar, mostra feedback (Dica do Dia) no padrão do design.
+      router.replace({
+        pathname: '/(app)/dica-do-dia',
+        params: {
+          inchaco: String(values.inchaco),
+          fomeCompulsao: String(values.fomeCompulsao),
+          humorIrritacao: String(values.humorIrritacao),
+          qualidadeSono: String(values.qualidadeSono),
+        },
+      });
     } catch (error: any) {
       console.error(error);
       Alert.alert(

@@ -71,9 +71,14 @@ export default function CadastroScreen() {
         url: error?.config?.url,
       });
 
+      const serverMsg =
+        error?.response?.data?.message ||
+        error?.response?.data?.error ||
+        error?.response?.data?.errors?.[0]?.message;
+
       Alert.alert(
         'Erro ao cadastrar',
-        error.response?.data?.message || 'Tente novamente mais tarde.'
+        serverMsg || (error?.message?.includes('Network') ? 'Erro de conexão com o servidor.' : 'Tente novamente mais tarde.')
       );
     } finally {
       setIsLoading(false);
@@ -199,6 +204,7 @@ const styles = StyleSheet.create({
   scrollContent: {
     flexGrow: 1,
     backgroundColor: '#F6F8F6',
+    paddingBottom: 24,
   },
   navbar: {
     flexDirection: 'row',
@@ -225,7 +231,7 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
     paddingHorizontal: 24,
-    paddingBottom: 32,
+    paddingBottom: 56,
   },
   header: {
     paddingTop: 16,

@@ -37,10 +37,24 @@ export default function LoginScreen() {
       await setToken(response.data.token);
       router.replace('/(app)/home');
     } catch (error: any) {
-      console.error(error);
+      // eslint-disable-next-line no-console
+      console.error('[LOGIN] erro', {
+        message: error?.message,
+        code: error?.code,
+        status: error?.response?.status,
+        data: error?.response?.data,
+        baseURL: error?.config?.baseURL,
+        url: error?.config?.url,
+      });
+
+      const serverMsg =
+        error?.response?.data?.message ||
+        error?.response?.data?.error ||
+        error?.response?.data?.errors?.[0]?.message;
+
       Alert.alert(
         'Erro ao entrar',
-        error.response?.data?.message || 'Verifique suas credenciais e tente novamente.'
+        serverMsg || (error?.message?.includes('Network') ? 'Erro de conexão com o servidor.' : 'Verifique suas credenciais e tente novamente.')
       );
     } finally {
       setIsLoading(false);
@@ -128,11 +142,13 @@ const styles = StyleSheet.create({
   scrollContent: {
     flexGrow: 1,
     backgroundColor: '#F6F8F6',
+    paddingBottom: 24,
   },
   screen: {
     flex: 1,
     paddingHorizontal: 24,
     paddingTop: 48,
+    paddingBottom: 24,
   },
   header: {
     alignItems: 'center',
@@ -187,7 +203,8 @@ const styles = StyleSheet.create({
   },
   footer: {
     marginTop: 'auto',
-    paddingVertical: 40,
+    paddingTop: 24,
+    paddingBottom: 56,
     flexDirection: 'row',
     justifyContent: 'center',
     gap: 4,

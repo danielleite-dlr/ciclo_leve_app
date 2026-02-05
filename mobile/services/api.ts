@@ -8,6 +8,8 @@ import { getToken } from './storage';
 // 3) fallback (localhost = EMULADOR/SIMULATOR, NUNCA device real)
 const extraApiUrl = (Constants.expoConfig?.extra as any)?.apiUrl as string | undefined;
 const envApiUrl = (process.env.EXPO_PUBLIC_API_URL || '').trim();
+
+// IMPORTANTE: em APK, env pode vir vazio. Preferimos o valor embutido em app.config.js (extra.apiUrl).
 const baseURL = (extraApiUrl || envApiUrl || '').trim() || 'http://localhost:3000/api/v1';
 
 // eslint-disable-next-line no-console

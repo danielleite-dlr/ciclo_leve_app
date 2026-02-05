@@ -142,11 +142,13 @@ const styles = StyleSheet.create({
   scrollContent: {
     flexGrow: 1,
     backgroundColor: '#F6F8F6',
+    paddingBottom: 24,
   },
   screen: {
     flex: 1,
     paddingHorizontal: 24,
     paddingTop: 48,
+    paddingBottom: 24,
   },
   header: {
     alignItems: 'center',
@@ -201,7 +203,8 @@ const styles = StyleSheet.create({
   },
   footer: {
     marginTop: 'auto',
-    paddingVertical: 40,
+    paddingTop: 24,
+    paddingBottom: 56,
     flexDirection: 'row',
     justifyContent: 'center',
     gap: 4,

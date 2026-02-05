@@ -204,6 +204,7 @@ const styles = StyleSheet.create({
   scrollContent: {
     flexGrow: 1,
     backgroundColor: '#F6F8F6',
+    paddingBottom: 24,
   },
   navbar: {
     flexDirection: 'row',
@@ -230,7 +231,7 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
     paddingHorizontal: 24,
-    paddingBottom: 32,
+    paddingBottom: 56,
   },
   header: {
     paddingTop: 16,

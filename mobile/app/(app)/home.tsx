@@ -33,7 +33,13 @@ export default function Home() {
   }, [perfil]);
 
   const cycleDay = perfil?.faseAtual?.diaCiclo ?? 0;
-  const cyclePhase = perfil?.faseAtual?.nomeFase ?? '—';
+  const rawPhase = perfil?.faseAtual?.nomeFase ?? '—';
+  const phaseName = useMemo(() => {
+    const v = (rawPhase || '').trim();
+    if (!v || v === '—') return '—';
+    // backend pode retornar "Fase Folicular"; evitamos duplicar "Fase Fase ..."
+    return v.replace(/^Fase\s+/i, '').trim();
+  }, [rawPhase]);
 
   const fetchPerfil = useCallback(async () => {
     try {
@@ -91,7 +97,11 @@ export default function Home() {
         <View>
           <Text style={styles.hello}>Olá, {userFirstName}</Text>
           <Text style={styles.headline}>
-            Hoje é o <Text style={styles.headlineAccent}>Dia {cycleDay || '—'}</Text>
+            Hoje é o{' '}
+            <Text style={styles.headlineAccent}>
+              {cycleDay ? `${cycleDay}º` : '—'}
+            </Text>{' '}
+            dia do Ciclo
           </Text>
         </View>
         <TouchableOpacity style={styles.bellButton}>
@@ -105,10 +115,11 @@ export default function Home() {
           <View style={styles.circleArc} />
           <Text style={styles.circleDay}>{cycleDay || '—'}</Text>
           <Text style={styles.circleLabel}>Dia do Ciclo</Text>
-          <Text style={styles.circlePhase}>Fase {cyclePhase}</Text>
+          <Text style={styles.circlePhase}>Fase {phaseName}</Text>
         </View>
         <Text style={styles.centerText}>
-          Sua fase atual é <Text style={styles.centerTextAccent}>{cyclePhase}</Text>.
+          Sua fase atual é{' '}
+          <Text style={styles.centerTextAccent}>Fase {phaseName}</Text>.
         </Text>
       </View>
 
@@ -139,9 +150,15 @@ export default function Home() {
       <View style={styles.tipCard}>
         <Text style={styles.tipTitle}>Dica do Dia</Text>
         <Text style={styles.tipText}>
-          {cyclePhase === '—'
+          {phaseName === '—'
             ? 'Complete seu onboarding para ver recomendações personalizadas.'
-            : `Hoje você está na fase ${cyclePhase}. Hidrate-se, priorize sono e ajuste sua rotina conforme sua energia.`}
+            : null}
+          {phaseName !== '—' ? (
+            <>
+              Hoje você está na fase:{' '}
+              <Text style={styles.tipTextBold}>Fase {phaseName}</Text>. Hidrate-se, priorize sono e ajuste sua rotina conforme sua energia.
+            </>
+          ) : null}
         </Text>
       </View>
     </ScrollView>
@@ -325,5 +342,9 @@ const styles = StyleSheet.create({
   tipText: {
     color: '#831843',
     lineHeight: 20,
+  },
+  tipTextBold: {
+    fontWeight: '900',
+    color: '#831843',
   },
 });

@@ -1,9 +1,22 @@
-import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
-import { Colors } from '@/constants/Colors';
+import { useMemo, useState } from 'react';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { ChevronLeft, ChevronRight } from 'lucide-react-native';
-import { useState } from 'react';
-import { format, addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, isToday } from 'date-fns';
+import {
+  addMonths,
+  eachDayOfInterval,
+  endOfMonth,
+  format,
+  getDay,
+  isSameDay,
+  isSameMonth,
+  isToday,
+  startOfMonth,
+  subMonths,
+} from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { Colors } from '@/constants/Colors';
+
+type CycleDayType = 'period' | 'fertile';
 
 export default function Calendario() {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -13,11 +26,17 @@ export default function Calendario() {
 
   const monthStart = startOfMonth(currentDate);
   const monthEnd = endOfMonth(currentDate);
-  const daysInMonth = eachDayOfInterval({ start: monthStart, end: monthEnd });
 
-  // Simple placeholder for cycle data
-  // In a real app, this would come from the backend/store
-  const cycleData = [
+  const daysInMonth = useMemo(() => {
+    return eachDayOfInterval({ start: monthStart, end: monthEnd });
+  }, [monthStart, monthEnd]);
+
+  // Padding correto: alinhar o 1º dia do mês ao dia da semana.
+  // getDay: 0=domingo, 6=sabado
+  const padStart = getDay(monthStart);
+
+  // Placeholder (MVP). Depois isso deve vir do backend.
+  const cycleData: Array<{ date: Date; type: CycleDayType }> = [
     { date: new Date(2025, 0, 10), type: 'period' },
     { date: new Date(2025, 0, 11), type: 'period' },
     { date: new Date(2025, 0, 12), type: 'period' },
@@ -25,92 +44,230 @@ export default function Calendario() {
     { date: new Date(2025, 0, 25), type: 'fertile' },
   ];
 
-  const getDayStatus = (date: Date) => {
-    const found = cycleData.find(d => isSameDay(d.date, date));
-    if (found?.type === 'period') return 'bg-pink-500 rounded-full';
-    if (found?.type === 'fertile') return 'bg-teal-500 rounded-full';
-    return '';
-  };
+  const getType = (date: Date) => cycleData.find((d) => isSameDay(d.date, date))?.type;
 
-  const getDayTextColor = (date: Date, isStatus: boolean) => {
-    if (isStatus) return 'text-white font-bold';
-    if (!isSameMonth(date, currentDate)) return 'text-gray-300';
-    if (isToday(date)) return 'text-teal-600 font-bold';
-    return 'text-gray-800 dark:text-gray-200';
-  };
+  const monthLabel = format(currentDate, 'MMMM yyyy', { locale: ptBR });
 
   return (
-    <View className="flex-1 bg-white dark:bg-gray-900">
-      <View className="px-6 pt-12 pb-4 border-b border-gray-100 dark:border-gray-800">
-        <Text className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Calendário</Text>
-        
-        <View className="flex-row justify-between items-center bg-gray-50 dark:bg-gray-800 p-2 rounded-xl">
-          <TouchableOpacity onPress={prevMonth} className="p-2">
+    <View style={styles.screen}>
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>Calendário</Text>
+
+        <View style={styles.monthRow}>
+          <TouchableOpacity onPress={prevMonth} style={styles.navBtn}>
             <ChevronLeft color={Colors.text} size={24} />
           </TouchableOpacity>
-          <Text className="text-lg font-semibold text-gray-800 dark:text-white capitalize">
-            {format(currentDate, 'MMMM yyyy', { locale: ptBR })}
-          </Text>
-          <TouchableOpacity onPress={nextMonth} className="p-2">
+
+          <Text style={styles.monthText}>{monthLabel.charAt(0).toUpperCase() + monthLabel.slice(1)}</Text>
+
+          <TouchableOpacity onPress={nextMonth} style={styles.navBtn}>
             <ChevronRight color={Colors.text} size={24} />
           </TouchableOpacity>
         </View>
       </View>
 
-      <ScrollView className="flex-1 px-4 pt-6">
-        <View className="flex-row flex-wrap justify-between">
-          {/* Weekday Headers */}
-          {['D', 'S', 'T', 'Q', 'Q', 'S', 'S'].map((day, index) => (
-            <View key={`header-${index}`} className="w-[14%] items-center mb-4">
-              <Text className="text-gray-400 font-medium">{day}</Text>
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        <View style={styles.grid}>
+          {['D', 'S', 'T', 'Q', 'Q', 'S', 'S'].map((d) => (
+            <View key={d} style={styles.weekHeaderCell}>
+              <Text style={styles.weekHeaderText}>{d}</Text>
             </View>
           ))}
 
-          {/* Days */}
-          {/* Note: This is a simplified view. 
-              Real calendar logic needs to pad start of month with empty/prev month days 
-              to align correctly with weekdays. 
-              For MVP, we just list days (this might be misaligned visually if not padded).
-          */}
-          {Array.from({ length: 4 }).map((_, i) => <View key={`pad-${i}`} className="w-[14%]" />) /* Quick padding fix hack for example */}
-          
-          {daysInMonth.map((date, index) => {
-            const statusClass = getDayStatus(date);
-            const hasStatus = !!statusClass;
-            
+          {Array.from({ length: padStart }).map((_, i) => (
+            <View key={`pad-${i}`} style={styles.dayCell} />
+          ))}
+
+          {daysInMonth.map((date) => {
+            const type = getType(date);
+            const sameMonth = isSameMonth(date, currentDate);
+            const today = isToday(date);
+
+            const dayContainerStyle = [
+              styles.dayBubble,
+              type === 'period' ? styles.periodBubble : null,
+              type === 'fertile' ? styles.fertileBubble : null,
+              today && !type ? styles.todayBubble : null,
+            ];
+
+            const dayTextStyle = [
+              styles.dayText,
+              !sameMonth ? styles.dayTextMuted : null,
+              today && !type ? styles.dayTextToday : null,
+              type ? styles.dayTextOnColor : null,
+            ];
+
             return (
-              <TouchableOpacity 
-                key={index} 
-                className={`w-[14%] aspect-square items-center justify-center mb-2`}
-              >
-                <View className={`w-10 h-10 items-center justify-center ${statusClass}`}>
-                  <Text className={`${getDayTextColor(date, hasStatus)}`}>
-                    {format(date, 'd')}
-                  </Text>
+              <TouchableOpacity key={date.toISOString()} style={styles.dayCell}>
+                <View style={dayContainerStyle}>
+                  <Text style={dayTextStyle}>{format(date, 'd')}</Text>
                 </View>
               </TouchableOpacity>
             );
           })}
         </View>
 
-        <View className="mt-8 px-4">
-          <Text className="text-gray-900 dark:text-white font-bold mb-4">Legenda</Text>
-          <View className="flex-row items-center mb-3">
-            <View className="w-4 h-4 bg-pink-500 rounded-full mr-3" />
-            <Text className="text-gray-600 dark:text-gray-300">Menstruação</Text>
+        <View style={styles.legend}>
+          <Text style={styles.legendTitle}>Legenda</Text>
+
+          <View style={styles.legendRow}>
+            <View style={[styles.legendDot, styles.legendDotPeriod]} />
+            <Text style={styles.legendText}>Menstruação</Text>
           </View>
-          <View className="flex-row items-center mb-3">
-            <View className="w-4 h-4 bg-teal-500 rounded-full mr-3" />
-            <Text className="text-gray-600 dark:text-gray-300">Período Fértil</Text>
+
+          <View style={styles.legendRow}>
+            <View style={[styles.legendDot, styles.legendDotFertile]} />
+            <Text style={styles.legendText}>Período Fértil</Text>
           </View>
-          <View className="flex-row items-center">
-            <View className="w-4 h-4 border border-teal-600 rounded-full mr-3 items-center justify-center">
-               <View className="w-1 h-1 bg-teal-600 rounded-full" />
+
+          <View style={styles.legendRow}>
+            <View style={styles.legendToday}>
+              <View style={styles.legendTodayInner} />
             </View>
-            <Text className="text-gray-600 dark:text-gray-300">Hoje</Text>
+            <Text style={styles.legendText}>Hoje</Text>
           </View>
         </View>
       </ScrollView>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  screen: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+  },
+  header: {
+    paddingHorizontal: 24,
+    paddingTop: 48,
+    paddingBottom: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F3F4F6',
+  },
+  headerTitle: {
+    fontSize: 22,
+    fontWeight: '900',
+    color: '#111827',
+    marginBottom: 12,
+  },
+  monthRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: '#F9FAFB',
+    borderRadius: 14,
+    padding: 8,
+  },
+  navBtn: {
+    padding: 8,
+  },
+  monthText: {
+    fontSize: 16,
+    fontWeight: '800',
+    color: '#111827',
+    textTransform: 'capitalize',
+  },
+  scrollContent: {
+    paddingHorizontal: 16,
+    paddingTop: 16,
+    paddingBottom: 32,
+  },
+  grid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  weekHeaderCell: {
+    width: '14.2857%',
+    alignItems: 'center',
+    paddingVertical: 8,
+    marginBottom: 4,
+  },
+  weekHeaderText: {
+    color: '#9CA3AF',
+    fontWeight: '800',
+  },
+  dayCell: {
+    width: '14.2857%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 8,
+  },
+  dayBubble: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  periodBubble: {
+    backgroundColor: '#EC4899',
+  },
+  fertileBubble: {
+    backgroundColor: '#14B8A6',
+  },
+  todayBubble: {
+    borderWidth: 2,
+    borderColor: '#0D9488',
+  },
+  dayText: {
+    color: '#111827',
+    fontWeight: '700',
+  },
+  dayTextMuted: {
+    color: '#D1D5DB',
+    fontWeight: '600',
+  },
+  dayTextOnColor: {
+    color: '#FFFFFF',
+    fontWeight: '900',
+  },
+  dayTextToday: {
+    color: '#0D9488',
+    fontWeight: '900',
+  },
+  legend: {
+    marginTop: 24,
+    paddingHorizontal: 8,
+  },
+  legendTitle: {
+    fontWeight: '900',
+    color: '#111827',
+    marginBottom: 12,
+  },
+  legendRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  legendDot: {
+    width: 14,
+    height: 14,
+    borderRadius: 7,
+    marginRight: 10,
+  },
+  legendDotPeriod: {
+    backgroundColor: '#EC4899',
+  },
+  legendDotFertile: {
+    backgroundColor: '#14B8A6',
+  },
+  legendToday: {
+    width: 14,
+    height: 14,
+    borderRadius: 7,
+    borderWidth: 2,
+    borderColor: '#0D9488',
+    marginRight: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  legendTodayInner: {
+    width: 4,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: '#0D9488',
+  },
+  legendText: {
+    color: '#4B5563',
+  },
+});

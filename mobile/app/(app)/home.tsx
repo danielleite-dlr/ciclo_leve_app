@@ -152,7 +152,7 @@ export default function Home() {
               <Text style={styles.phaseChipText}>Fase {phaseName}</Text>
             </View>
 
-            <Text style={styles.dayTag}>Dia {cycleDay || '—'}</Text>
+            <Text style={styles.dayTag}>DIA {cycleDay || '—'}</Text>
           </View>
 
           <Text style={styles.h1}>
@@ -312,25 +312,26 @@ const styles = StyleSheet.create({
   statusRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
+    gap: 12,
   },
   phaseChip: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    height: 32,
-    paddingLeft: 12,
-    paddingRight: 14,
+    height: 34,
+    paddingLeft: 14,
+    paddingRight: 16,
     borderRadius: 999,
-    backgroundColor: 'rgba(19,236,91,0.18)',
+    backgroundColor: '#D1FAE5',
     borderWidth: 1,
-    borderColor: 'rgba(19,236,91,0.22)',
+    borderColor: 'rgba(19,236,91,0.25)',
   },
   pulseDot: {
     width: 8,
     height: 8,
     borderRadius: 4,
     backgroundColor: '#13ec5b',
+    opacity: 0.95,
   },
   phaseChipText: {
     fontSize: 14,
@@ -339,10 +340,10 @@ const styles = StyleSheet.create({
   },
   dayTag: {
     fontSize: 12,
-    fontWeight: '800',
+    fontWeight: '900',
     color: '#9CA3AF',
     textTransform: 'uppercase',
-    letterSpacing: 0.6,
+    letterSpacing: 1.2,
   },
   h1: {
     fontSize: 30,
@@ -359,11 +360,11 @@ const styles = StyleSheet.create({
   },
   card: {
     backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 16,
+    borderRadius: 24,
+    padding: 18,
     borderWidth: 1,
     borderColor: '#F3F4F6',
-    marginBottom: 12,
+    marginBottom: 14,
   },
   cardHeader: {
     flexDirection: 'row',
@@ -395,9 +396,9 @@ const styles = StyleSheet.create({
   listItem: {
     flexDirection: 'row',
     gap: 10,
-    padding: 12,
-    borderRadius: 12,
-    backgroundColor: '#F6F8F6',
+    padding: 14,
+    borderRadius: 18,
+    backgroundColor: '#F3F4F6',
   },
   listItemIcon: {
     marginTop: 2,
@@ -419,11 +420,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
-    padding: 12,
-    borderRadius: 12,
+    padding: 14,
+    borderRadius: 18,
     borderWidth: 1,
     borderColor: 'rgba(239,68,68,0.18)',
-    backgroundColor: 'rgba(254,226,226,0.55)',
+    backgroundColor: '#FEE2E2',
   },
   avoidText: {
     flex: 1,
@@ -432,11 +433,11 @@ const styles = StyleSheet.create({
     color: '#374151',
   },
   noteCard: {
-    borderRadius: 16,
-    padding: 16,
+    borderRadius: 24,
+    padding: 18,
     borderWidth: 1,
     borderColor: 'rgba(19,236,91,0.22)',
-    backgroundColor: 'rgba(19,236,91,0.10)',
+    backgroundColor: 'rgba(19,236,91,0.18)',
     marginBottom: 12,
   },
   noteLabel: {

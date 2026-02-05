@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, Alert } from 'react-native';
-import { useRouter, Link } from 'expo-router';
+import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Link, useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -48,25 +48,19 @@ export default function LoginScreen() {
   };
 
   return (
-    <ScrollView 
-      contentContainerStyle={{ flexGrow: 1 }} 
-      className="bg-[#f6f8f6] dark:bg-[#102216]"
-      keyboardShouldPersistTaps="handled"
-    >
-      <View className="flex-1 px-6 pt-12">
+    <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
+      <View style={styles.screen}>
         {/* Header */}
-        <View className="items-center mb-8">
-          <View className="size-20 rounded-3xl bg-[#13ec5b]/20 items-center justify-center mb-6">
+        <View style={styles.header}>
+          <View style={styles.iconWrap}>
             <MaterialIcons name="female" size={40} color="#13ec5b" />
           </View>
-          <Text className="text-[#111813] dark:text-white text-3xl font-bold mb-2">Entrar</Text>
-          <Text className="text-gray-500 dark:text-gray-400 text-center max-w-xs">
-            Acesse sua conta para acompanhar seu ciclo e gerenciar sua saúde.
-          </Text>
+          <Text style={styles.title}>Entrar</Text>
+          <Text style={styles.subtitle}>Acesse sua conta para acompanhar seu ciclo e gerenciar sua saúde.</Text>
         </View>
 
         {/* Form */}
-        <View className="w-full gap-5">
+        <View style={styles.form}>
           <Controller
             control={control}
             name="email"
@@ -88,8 +82,8 @@ export default function LoginScreen() {
               control={control}
               name="password"
               render={({ field: { onChange, value } }) => (
-                <View className="relative">
-                   <Input
+                <View style={styles.passwordWrap}>
+                  <Input
                     label="Senha"
                     placeholder="Digite sua senha"
                     secureTextEntry={!showPassword}
@@ -97,49 +91,31 @@ export default function LoginScreen() {
                     onChangeText={onChange}
                     error={errors.password?.message}
                   />
-                  {/* Eye Icon Override/Overlay - A bit hacky with current Input component, but works */}
-                  <TouchableOpacity 
-                    onPress={() => setShowPassword(!showPassword)}
-                    className="absolute right-4 top-[42px]" // Adjusted position based on Input style
-                  >
-                    <MaterialIcons 
-                      name={showPassword ? "visibility" : "visibility-off"} 
-                      size={22} 
-                      color="#9CA3AF" 
-                    />
+
+                  <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeButton}>
+                    <MaterialIcons name={showPassword ? 'visibility' : 'visibility-off'} size={22} color="#9CA3AF" />
                   </TouchableOpacity>
                 </View>
               )}
             />
-            <View className="flex-row justify-end mt-1">
+            <View style={styles.forgotRow}>
               <Link href="/(auth)/recuperar-senha" asChild>
                 <TouchableOpacity>
-                  <Text className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                    Esqueci minha senha
-                  </Text>
+                  <Text style={styles.forgotText}>Esqueci minha senha</Text>
                 </TouchableOpacity>
               </Link>
             </View>
           </View>
 
-          <Button 
-            title="Entrar"
-            onPress={handleSubmit(onSubmit)}
-            isLoading={isLoading}
-            className="mt-4 bg-[#13ec5b]"
-          />
+          <Button title="Entrar" onPress={handleSubmit(onSubmit)} isLoading={isLoading} style={styles.submit} />
         </View>
 
         {/* Footer */}
-        <View className="mt-auto py-10 flex-row justify-center gap-1">
-          <Text className="text-gray-600 dark:text-gray-400 text-sm">
-            Não tem uma conta?
-          </Text>
+        <View style={styles.footer}>
+          <Text style={styles.footerText}>Não tem uma conta?</Text>
           <Link href="/(auth)/cadastro" asChild>
             <TouchableOpacity>
-              <Text className="font-bold text-[#111813] dark:text-white text-sm">
-                Cadastre-se
-              </Text>
+              <Text style={styles.footerLink}>Cadastre-se</Text>
             </TouchableOpacity>
           </Link>
         </View>
@@ -147,3 +123,82 @@ export default function LoginScreen() {
     </ScrollView>
   );
 }
+
+const styles = StyleSheet.create({
+  scrollContent: {
+    flexGrow: 1,
+    backgroundColor: '#F6F8F6',
+  },
+  screen: {
+    flex: 1,
+    paddingHorizontal: 24,
+    paddingTop: 48,
+  },
+  header: {
+    alignItems: 'center',
+    marginBottom: 32,
+  },
+  iconWrap: {
+    width: 80,
+    height: 80,
+    borderRadius: 24,
+    backgroundColor: 'rgba(19, 236, 91, 0.20)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 24,
+  },
+  title: {
+    fontSize: 30,
+    fontWeight: '800',
+    color: '#111813',
+    marginBottom: 8,
+  },
+  subtitle: {
+    color: '#6B7280',
+    textAlign: 'center',
+    maxWidth: 320,
+  },
+  form: {
+    width: '100%',
+    gap: 20,
+  },
+  passwordWrap: {
+    position: 'relative',
+  },
+  eyeButton: {
+    position: 'absolute',
+    right: 16,
+    top: 44,
+    padding: 6,
+  },
+  forgotRow: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    marginTop: 4,
+  },
+  forgotText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#4B5563',
+  },
+  submit: {
+    marginTop: 12,
+    backgroundColor: '#13ec5b',
+  },
+  footer: {
+    marginTop: 'auto',
+    paddingVertical: 40,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 4,
+  },
+  footerText: {
+    color: '#4B5563',
+    fontSize: 14,
+  },
+  footerLink: {
+    fontWeight: '800',
+    color: '#111813',
+    fontSize: 14,
+  },
+});

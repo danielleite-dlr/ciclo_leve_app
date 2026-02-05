@@ -1,69 +1,68 @@
 import { Tabs } from 'expo-router';
+import { Platform, StyleSheet } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
 import { Colors } from '@/constants/Colors';
-import { Platform, View } from 'react-native';
-import { Home, Calendar, PlusCircle, BookOpen, User } from 'lucide-react-native';
 
+// Bottom nav (modelo): Home | Ciclo | Insights | Perfil
+// O CTA "Registrar meu dia" fica como FAB dentro da Home (não como tab), para bater com a referência.
 export default function AppLayout() {
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: Colors.primary.DEFAULT,
-        tabBarInactiveTintColor: Colors.textLight,
-        tabBarStyle: {
-          borderTopWidth: 1,
-          borderTopColor: Colors.border,
-          height: Platform.OS === 'ios' ? 88 : 60,
-          paddingBottom: Platform.OS === 'ios' ? 28 : 8,
-          paddingTop: 8,
-          backgroundColor: Colors.background,
-        },
-        tabBarLabelStyle: {
-          fontSize: 12,
-          fontWeight: '500',
-        },
+        tabBarActiveTintColor: '#13ec5b',
+        tabBarInactiveTintColor: '#9CA3AF',
+        tabBarStyle: styles.tabBar,
+        tabBarLabelStyle: styles.label,
       }}
     >
-      <Tabs.Screen 
-        name="home" 
+      <Tabs.Screen
+        name="home"
         options={{
-          title: 'Início',
-          tabBarIcon: ({ color, size }) => <Home color={color} size={size} />,
-        }} 
+          title: 'Home',
+          tabBarIcon: ({ color, size }) => <MaterialIcons name="home" size={size} color={color} />,
+        }}
       />
-      <Tabs.Screen 
-        name="calendario" 
+      <Tabs.Screen
+        name="calendario"
         options={{
-          title: 'Calendário',
-          tabBarIcon: ({ color, size }) => <Calendar color={color} size={size} />,
-        }} 
+          title: 'Ciclo',
+          tabBarIcon: ({ color, size }) => <MaterialIcons name="calendar-month" size={size} color={color} />,
+        }}
       />
-      <Tabs.Screen 
-        name="registro" 
+      <Tabs.Screen
+        name="insights"
         options={{
-          title: 'Registrar',
-          tabBarIcon: ({ color, size }) => (
-            <View className="mb-4 bg-teal-600 rounded-full p-2 shadow-lg shadow-teal-600/30">
-              <PlusCircle color="white" size={32} />
-            </View>
-          ),
-          tabBarLabel: () => null, // Hide label for the FAB-like button
-        }} 
+          title: 'Insights',
+          tabBarIcon: ({ color, size }) => <MaterialIcons name="insights" size={size} color={color} />,
+        }}
       />
-      <Tabs.Screen 
-        name="conteudo" 
-        options={{
-          title: 'Dicas',
-          tabBarIcon: ({ color, size }) => <BookOpen color={color} size={size} />,
-        }} 
-      />
-      <Tabs.Screen 
-        name="perfil" 
+      <Tabs.Screen
+        name="perfil"
         options={{
           title: 'Perfil',
-          tabBarIcon: ({ color, size }) => <User color={color} size={size} />,
-        }} 
+          tabBarIcon: ({ color, size }) => <MaterialIcons name="person" size={size} color={color} />,
+        }}
       />
+
+      {/* Mantém rota existente fora do tab bar */}
+      <Tabs.Screen name="registro" options={{ href: null }} />
+      <Tabs.Screen name="conteudo" options={{ href: null }} />
     </Tabs>
   );
 }
+
+const styles = StyleSheet.create({
+  tabBar: {
+    borderTopWidth: 1,
+    borderTopColor: Colors.border,
+    height: Platform.OS === 'ios' ? 88 : 68,
+    paddingBottom: Platform.OS === 'ios' ? 28 : 10,
+    paddingTop: 8,
+    backgroundColor: '#FFFFFF',
+  },
+  label: {
+    fontSize: 10,
+    fontWeight: '600',
+  },
+});

@@ -457,7 +457,8 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: 0,
     right: 0,
-    bottom: 24,
+    // acima do bottom tab bar
+    bottom: 84,
     paddingHorizontal: 16,
     alignItems: 'center',
   },

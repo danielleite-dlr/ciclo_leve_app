@@ -35,7 +35,6 @@ export default function AppLayout() {
         name="spacer"
         options={{
           title: '',
-          href: null,
           tabBarLabel: () => null,
           tabBarButton: () => <View style={styles.spacer} />, // abre espaco pro FAB
         }}

@@ -4,8 +4,7 @@
 // to stay compatible with Expo Go native modules like react-native-safe-area-context.
 
 const { getDefaultConfig } = require('expo/metro-config');
-const { withNativeWind } = require('nativewind/metro');
 
 const config = getDefaultConfig(__dirname);
 
-module.exports = withNativeWind(config, { input: './global.css' });
+module.exports = config;

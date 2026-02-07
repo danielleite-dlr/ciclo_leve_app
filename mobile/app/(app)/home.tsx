@@ -86,16 +86,52 @@ export default function Home() {
     setRefreshing(false);
   }, [fetchPerfil]);
 
-  // MVP: headline/descricao (depois podemos amarrar em recomendacoes reais por fase)
-  const headlineTitle = useMemo(() => {
-    if (phaseName === '—') return 'Complete seu onboarding';
-    return 'Energia em Alta';
+  // Lógica dinâmica de fases
+  const phaseData = useMemo(() => {
+    const p = phaseName.toLowerCase();
+
+    if (p.includes('menstrua') || p.includes('sangramento')) {
+      return {
+        title: 'Recarregue as energias',
+        emoji: '🔋',
+        desc: 'Seu corpo está pedindo descanso. É o momento ideal para introspecção e atividades leves.',
+      };
+    }
+    if (p.includes('folicular')) {
+      return {
+        title: 'Energia em Alta',
+        emoji: '⚡',
+        desc: 'Seus níveis de estrogênio estão subindo. É um ótimo momento para criar, planejar e treinar forte.',
+      };
+    }
+    if (p.includes('ovulat') || p.includes('fértil')) {
+      return {
+        title: 'Auge da Confiança',
+        emoji: '✨',
+        desc: 'Sua comunicação e magnetismo estão no máximo. Aproveite para reuniões importantes e socializar.',
+      };
+    }
+    if (p.includes('lútea') || p.includes('pre-menstru')) {
+      return {
+        title: 'Hora de Desacelerar',
+        emoji: '🌙',
+        desc: 'A progesterona sobe, trazendo calma ou TPM. Priorize o conforto e evite sobrecarga.',
+      };
+    }
+
+    // Default
+    if (phaseName === '—') return { title: 'Complete seu onboarding', emoji: '📝', desc: 'Finalize seu onboarding para ver recomendações personalizadas.' };
+    
+    return {
+      title: 'Energia em Alta',
+      emoji: '⚡',
+      desc: 'Siga seu ritmo e observe os sinais do seu corpo hoje.',
+    };
   }, [phaseName]);
 
-  const headlineDesc = useMemo(() => {
-    if (phaseName === '—') return 'Finalize seu onboarding para ver recomendações personalizadas.';
-    return 'Seus níveis de estrogênio estão subindo. É um ótimo momento para atividades físicas e planejamento estratégico.';
-  }, [phaseName]);
+  const headlineTitle = phaseData.title;
+  const headlineEmoji = phaseData.emoji;
+  const headlineDesc = phaseData.desc;
 
   const doList = useMemo(
     () => [
@@ -169,7 +205,7 @@ export default function Home() {
           </View>
 
           <Text style={styles.h1}>
-            {headlineTitle} <Text style={styles.h1Emoji}>⚡</Text>
+            {headlineTitle} <Text style={styles.h1Emoji}>{headlineEmoji}</Text>
           </Text>
           <Text style={styles.h1Desc}>{headlineDesc}</Text>
         </View>
@@ -271,10 +307,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 12,
   },
+  // Header: Aumentar avatar e fontes
   avatarWrap: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 48,
+    height: 48,
+    borderRadius: 24,
     borderWidth: 2,
     borderColor: '#FFFFFF',
     backgroundColor: '#FFFFFF',
@@ -285,28 +322,28 @@ const styles = StyleSheet.create({
   },
   avatar: {
     flex: 1,
-    borderRadius: 20,
+    borderRadius: 24,
     backgroundColor: '#D1FAE5',
   },
   onlineDot: {
     position: 'absolute',
-    bottom: -1,
-    right: -1,
-    width: 12,
-    height: 12,
-    borderRadius: 6,
+    bottom: 0,
+    right: 0,
+    width: 14,
+    height: 14,
+    borderRadius: 7,
     backgroundColor: PRIMARY,
     borderWidth: 2,
     borderColor: '#FFFFFF',
   },
   dateText: {
-    fontSize: 12,
+    fontSize: 14,
     color: '#6B7280',
-    fontWeight: '600',
+    fontWeight: '700',
+    marginBottom: 2,
   },
   helloText: {
-    marginTop: 2,
-    fontSize: 18,
+    fontSize: 22,
     fontWeight: '900',
     color: '#111813',
   },

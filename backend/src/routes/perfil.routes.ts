@@ -73,28 +73,31 @@ const router = Router();
  *                   type: object
  *                 faseAtual:
  *                   type: object
- *                   properties:
- *                     fase:
- *                       type: string
- *                       example: "OVULATORIA"
- *                     nomeFase:
- *                       type: string
- *                       example: "Fase Ovulatória"
- *                     diaCiclo:
- *                       type: integer
- *                       example: 14
+ *             examples:
+ *               CenarioMenstruacao:
+ *                 summary: 🔴 Exemplo: Menstruação (Dia 3)
+ *                 value:
+ *                   user: { nomeCompleto: "Maria Silva" }
+ *                   faseAtual:
+ *                     fase: "MENSTRUAL"
+ *                     nomeFase: "Menstruação"
+ *                     diaCiclo: 3
  *                     insight:
- *                       type: object
- *                       properties:
- *                         titulo:
- *                           type: string
- *                           example: "Auge da Confiança"
- *                         emoji:
- *                           type: string
- *                           example: "✨"
- *                         descricao:
- *                           type: string
- *                           example: "Sua comunicação e magnetismo estão no máximo."
+ *                       titulo: "Recarregue as energias"
+ *                       emoji: "🔋"
+ *                       descricao: "Seu corpo pede descanso."
+ *               CenarioOvulacao:
+ *                 summary: ✨ Exemplo: Ovulação (Dia 14)
+ *                 value:
+ *                   user: { nomeCompleto: "Maria Silva" }
+ *                   faseAtual:
+ *                     fase: "OVULATORIA"
+ *                     nomeFase: "Fase Ovulatória"
+ *                     diaCiclo: 14
+ *                     insight:
+ *                       titulo: "Auge da Confiança"
+ *                       emoji: "✨"
+ *                       descricao: "Sua comunicação está no máximo."
  *       401:
  *         description: Não autorizado
  */

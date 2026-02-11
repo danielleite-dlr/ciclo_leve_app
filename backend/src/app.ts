@@ -3,6 +3,8 @@ import cors from 'cors';
 import helmet from 'helmet';
 import compression from 'compression';
 import 'express-async-errors';
+import swaggerUi from 'swagger-ui-express';
+import { swaggerSpec } from './config/swagger';
 
 // Routes
 import { routes } from './routes';
@@ -14,6 +16,9 @@ app.use(helmet());
 app.use(cors());
 app.use(compression());
 app.use(express.json());
+
+// Docs
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Routes
 app.use('/api/v1', routes);

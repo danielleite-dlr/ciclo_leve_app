@@ -19,13 +19,44 @@ const router = Router();
  *     summary: Retorna o perfil completo e cálculo do ciclo
  *     tags: [Perfil]
  *     description: |
- *       Retorna dados cadastrais e o status atual do ciclo menstrual.
+ *       <div style="font-family: sans-serif; color: #333;">
+ *         <h3>🔄 Lógica do Ciclo Menstrual</h3>
+ *         <p>O app calcula a fase atual automaticamente baseado na DUM (Data da Última Menstruação).</p>
  *
- *       ### Fases do Ciclo (base 28 dias)
- *       - **1-5**: Menstruação
- *       - **6-12**: Folicular (Energia ↑)
- *       - **13-16**: Ovulatória (Libido ↑)
- *       - **17-28**: Lútea (TPM/Calma)
+ *         <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+ *           <thead>
+ *             <tr style="background-color: #f3f4f6; text-align: left;">
+ *               <th style="padding: 8px; border: 1px solid #ddd;">Dia do Ciclo</th>
+ *               <th style="padding: 8px; border: 1px solid #ddd;">Fase</th>
+ *               <th style="padding: 8px; border: 1px solid #ddd;">Insight (Exemplo)</th>
+ *             </tr>
+ *           </thead>
+ *           <tbody>
+ *             <tr>
+ *               <td style="padding: 8px; border: 1px solid #ddd;">1 - 5</td>
+ *               <td style="padding: 8px; border: 1px solid #ddd; color: #ef4444; font-weight: bold;">MENSTRUAL</td>
+ *               <td style="padding: 8px; border: 1px solid #ddd;">🔋 Recarregue as energias</td>
+ *             </tr>
+ *             <tr>
+ *               <td style="padding: 8px; border: 1px solid #ddd;">6 - 12</td>
+ *               <td style="padding: 8px; border: 1px solid #ddd; color: #10b981; font-weight: bold;">FOLICULAR</td>
+ *               <td style="padding: 8px; border: 1px solid #ddd;">⚡ Energia em Alta</td>
+ *             </tr>
+ *             <tr>
+ *               <td style="padding: 8px; border: 1px solid #ddd;">13 - 16</td>
+ *               <td style="padding: 8px; border: 1px solid #ddd; color: #8b5cf6; font-weight: bold;">OVULATÓRIA</td>
+ *               <td style="padding: 8px; border: 1px solid #ddd;">✨ Auge da Confiança</td>
+ *             </tr>
+ *             <tr>
+ *               <td style="padding: 8px; border: 1px solid #ddd;">17 - 28</td>
+ *               <td style="padding: 8px; border: 1px solid #ddd; color: #f59e0b; font-weight: bold;">LÚTEA</td>
+ *               <td style="padding: 8px; border: 1px solid #ddd;">🌙 Hora de Desacelerar</td>
+ *             </tr>
+ *           </tbody>
+ *         </table>
+ *         <br>
+ *         <p><i>*Baseado em um ciclo padrão de 28 dias configurável no perfil.</i></p>
+ *       </div>
  *     security:
  *       - bearerAuth: []
  *     responses:

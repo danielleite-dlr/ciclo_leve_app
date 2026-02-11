@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import api from '@/services/api';
@@ -31,6 +32,7 @@ function capFirst(s: string) {
 
 export default function Home() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [perfil, setPerfil] = useState<PerfilResponse | null>(null);
@@ -162,6 +164,13 @@ export default function Home() {
     []
   );
 
+  const showCycleHelp = useCallback(() => {
+    Alert.alert(
+      'Dia do Ciclo',
+      'Este número indica quantos dias se passaram desde o primeiro dia da sua última menstruação.\n\nEle ajuda a entender em qual fase biológica você está agora.'
+    );
+  }, []);
+
   if (loading) {
     return (
       <View style={styles.loading}>
@@ -170,10 +179,13 @@ export default function Home() {
     );
   }
 
+  // Header height dinâmico (insets.top + altura do conteúdo ~60)
+  const headerHeight = insets.top + 64;
+
   return (
     <View style={styles.screen}>
       {/* Top App Bar (fixo) */}
-      <View style={styles.topBar}>
+      <View style={[styles.topBar, { paddingTop: insets.top + 12, height: headerHeight }]}>
         <View style={styles.topLeft}>
           <View style={styles.avatarWrap}>
             <View style={styles.avatar} />
@@ -191,7 +203,7 @@ export default function Home() {
       </View>
 
       <ScrollView
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={[styles.scrollContent, { paddingTop: headerHeight + 20 }]}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
       >
         {/* Status Chip & Headline */}
@@ -201,8 +213,13 @@ export default function Home() {
               <View style={styles.pulseDot} />
               <Text style={styles.phaseChipText}>Fase {phaseName}</Text>
             </View>
-            <Text style={styles.dayTag}>DIA {cycleDay || '—'}</Text>
           </View>
+
+          {/* Dia do Ciclo com Tooltip */}
+          <TouchableOpacity onPress={showCycleHelp} activeOpacity={0.7} style={styles.cycleDayRow}>
+            <Text style={styles.dayTag}>DIA {cycleDay || '—'} DO SEU CICLO MENSTRUAL</Text>
+            <MaterialIcons name="help-outline" size={14} color="#9CA3AF" />
+          </TouchableOpacity>
 
           <Text style={styles.h1}>
             {headlineTitle} <Text style={styles.h1Emoji}>{headlineEmoji}</Text>
@@ -292,10 +309,9 @@ const styles = StyleSheet.create({
     right: 0,
     top: 0,
     zIndex: 50,
-    paddingTop: 44,
     paddingHorizontal: 16,
-    paddingBottom: 12,
-    backgroundColor: 'rgba(246,248,246,0.86)',
+    // paddingTop/height definidos inline via style
+    backgroundColor: 'rgba(246,248,246,0.95)', // mais opacidade pra cobrir scroll
     borderBottomWidth: 1,
     borderBottomColor: '#E5E7EB',
     flexDirection: 'row',
@@ -358,18 +374,25 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   scrollContent: {
-    paddingTop: 96,
     paddingHorizontal: 16,
     paddingBottom: 24,
+    // paddingTop definido inline
   },
   section: {
-    gap: 12,
+    gap: 8,
     marginBottom: 14,
   },
   statusRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
+  },
+  cycleDayRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginTop: 4,
+    marginBottom: 4,
   },
   phaseChip: {
     flexDirection: 'row',

@@ -239,9 +239,7 @@ export default function Home() {
         <View style={styles.noteCard}>
           <MaterialIcons name="lightbulb" size={120} color="#000" style={styles.noteBgIcon} />
           <Text style={styles.noteLabel}>NOTA DA ESPECIALISTA</Text>
-          <Text style={styles.noteText}>
-            "Aproveite a clareza mental de hoje para resolver aquela pendência difícil. Seu cérebro está mais afiado!"
-          </Text>
+          <Text style={styles.noteText}>{insight?.notaEspecialista || 'Aproveite seu dia respeitando seu ritmo.'}</Text>
         </View>
 
         {/* Spacer pro FAB */}

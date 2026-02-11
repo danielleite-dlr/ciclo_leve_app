@@ -16,60 +16,13 @@ const router = Router();
  * @swagger
  * /perfil:
  *   get:
- *     summary: Retorna o perfil completo e cálculo do ciclo
+ *     summary: Retorna o perfil completo
  *     tags: [Perfil]
- *     description: |
- *       Retorna dados cadastrais e o status atual do ciclo menstrual.
- *
- *       ### Fases do Ciclo (base 28 dias)
- *       - **Dias 1-5 (Menstruação):** 🔴 Fase Menstrual. Insight: "Recarregue as energias".
- *       - **Dias 6-12 (Folicular):** ⚡ Fase Folicular. Insight: "Energia em Alta".
- *       - **Dias 13-16 (Ovulatória):** ✨ Fase Ovulatória. Insight: "Auge da Confiança".
- *       - **Dias 17-28 (Lútea):** 🌙 Fase Lútea. Insight: "Hora de Desacelerar".
- *
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: Sucesso
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 user:
- *                   $ref: '#/components/schemas/User'
- *                 ciclo:
- *                   type: object
- *                 faseAtual:
- *                   type: object
- *             examples:
- *               CenarioMenstruacao:
- *                 summary: 🔴 Exemplo: Menstruação (Dia 3)
- *                 value:
- *                   user: { nomeCompleto: "Maria Silva" }
- *                   faseAtual:
- *                     fase: "MENSTRUAL"
- *                     nomeFase: "Menstruação"
- *                     diaCiclo: 3
- *                     insight:
- *                       titulo: "Recarregue as energias"
- *                       emoji: "🔋"
- *                       descricao: "Seu corpo pede descanso."
- *               CenarioOvulacao:
- *                 summary: ✨ Exemplo: Ovulação (Dia 14)
- *                 value:
- *                   user: { nomeCompleto: "Maria Silva" }
- *                   faseAtual:
- *                     fase: "OVULATORIA"
- *                     nomeFase: "Fase Ovulatória"
- *                     diaCiclo: 14
- *                     insight:
- *                       titulo: "Auge da Confiança"
- *                       emoji: "✨"
- *                       descricao: "Sua comunicação está no máximo."
- *       401:
- *         description: Não autorizado
+ *         description: OK
  */
 router.get('/', authMiddleware, perfilController.getPerfil);
 

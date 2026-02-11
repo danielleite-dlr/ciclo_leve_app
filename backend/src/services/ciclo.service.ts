@@ -1,6 +1,7 @@
 import { prisma } from '../config/database';
 import { PerfilCiclo } from '@prisma/client';
 import { MENSAGENS_POR_FASE } from '../constants/mensagens-fase';
+import { NOTAS_POR_DIA } from '../constants/notas-especialista';
 
 interface AtualizarCicloDTO {
   modoCiclo: string;
@@ -94,13 +95,18 @@ export class CicloService {
     // Consumir biblioteca de mensagens
     const msg = MENSAGENS_POR_FASE[fase];
     
+    // Obter Nota da Especialista para o dia exato
+    const notaDoDia = NOTAS_POR_DIA.find(n => n.diaCiclo === diaCiclo)?.mensagem 
+      || 'Aproveite seu dia respeitando seu ritmo.';
+
     // Gerar Insight completo
     const insight = {
       titulo: msg?.titulo || 'Energia em Alta',
       emoji: msg?.emoji || '✨',
       descricao: msg?.tendeDia || 'Siga seu ritmo.',
       facaHoje: msg?.faca || [],
-      eviteHoje: msg?.evite || []
+      eviteHoje: msg?.evite || [],
+      notaEspecialista: notaDoDia
     };
 
     return { 

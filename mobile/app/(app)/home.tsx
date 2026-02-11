@@ -19,7 +19,15 @@ import api from '@/services/api';
 type PerfilResponse = {
   user: { nomeCompleto?: string };
   ciclo: any | null;
-  faseAtual: { nomeFase?: string; diaCiclo?: number } | null;
+  faseAtual: { 
+    nomeFase?: string; 
+    diaCiclo?: number;
+    insight?: {
+      titulo: string;
+      emoji: string;
+      descricao: string;
+    };
+  } | null;
 };
 
 const PRIMARY = '#13ec5b';
@@ -88,52 +96,16 @@ export default function Home() {
     setRefreshing(false);
   }, [fetchPerfil]);
 
-  // Lógica dinâmica de fases
-  const phaseData = useMemo(() => {
-    const p = phaseName.toLowerCase();
+  // Consome Insight direto da API (regra no backend)
+  const insight = perfil?.faseAtual?.insight || {
+    titulo: 'Energia em Alta',
+    emoji: '⚡',
+    descricao: 'Siga seu ritmo e observe os sinais do seu corpo hoje.',
+  };
 
-    if (p.includes('menstrua') || p.includes('sangramento')) {
-      return {
-        title: 'Recarregue as energias',
-        emoji: '🔋',
-        desc: 'Seu corpo está pedindo descanso. É o momento ideal para introspecção e atividades leves.',
-      };
-    }
-    if (p.includes('folicular')) {
-      return {
-        title: 'Energia em Alta',
-        emoji: '⚡',
-        desc: 'Seus níveis de estrogênio estão subindo. É um ótimo momento para criar, planejar e treinar forte.',
-      };
-    }
-    if (p.includes('ovulat') || p.includes('fértil')) {
-      return {
-        title: 'Auge da Confiança',
-        emoji: '✨',
-        desc: 'Sua comunicação e magnetismo estão no máximo. Aproveite para reuniões importantes e socializar.',
-      };
-    }
-    if (p.includes('lútea') || p.includes('pre-menstru')) {
-      return {
-        title: 'Hora de Desacelerar',
-        emoji: '🌙',
-        desc: 'A progesterona sobe, trazendo calma ou TPM. Priorize o conforto e evite sobrecarga.',
-      };
-    }
-
-    // Default
-    if (phaseName === '—') return { title: 'Complete seu onboarding', emoji: '📝', desc: 'Finalize seu onboarding para ver recomendações personalizadas.' };
-    
-    return {
-      title: 'Energia em Alta',
-      emoji: '⚡',
-      desc: 'Siga seu ritmo e observe os sinais do seu corpo hoje.',
-    };
-  }, [phaseName]);
-
-  const headlineTitle = phaseData.title;
-  const headlineEmoji = phaseData.emoji;
-  const headlineDesc = phaseData.desc;
+  const headlineTitle = insight.titulo;
+  const headlineEmoji = insight.emoji;
+  const headlineDesc = insight.descricao;
 
   const doList = useMemo(
     () => [

@@ -16,13 +16,19 @@ const router = Router();
  * @swagger
  * /perfil:
  *   get:
- *     summary: Retorna o perfil do usuário, dados do ciclo e fase atual
+ *     summary: Retorna o perfil completo (Usuário + Ciclo + Fase Atual)
+ *     description: |
+ *       Este endpoint é o coração da Home. Ele retorna:
+ *       - Dados cadastrais do usuário.
+ *       - Configuração do ciclo (duração, última menstruação).
+ *       - **Cálculo da Fase Atual**: Baseado na data da última menstruação, calcula se está na fase Menstrual, Folicular, Ovulatória ou Lútea.
+ *       - **Daily Insight**: Retorna a frase motivacional, emoji e dica do dia já processados pelo backend.
  *     tags: [Perfil]
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: Dados do perfil recuperados
+ *         description: Sucesso. Retorna objeto consolidado.
  *         content:
  *           application/json:
  *             schema:
@@ -32,24 +38,37 @@ const router = Router();
  *                   $ref: '#/components/schemas/User'
  *                 ciclo:
  *                   type: object
+ *                   description: Configurações salvas do ciclo.
  *                 faseAtual:
  *                   type: object
+ *                   description: Objeto calculado em tempo real.
  *                   properties:
  *                     fase:
  *                       type: string
+ *                       example: "OVULATORIA"
+ *                       description: Código interno da fase (MENSTRUAL, FOLICULAR, OVULATORIA, LUTEA).
  *                     nomeFase:
  *                       type: string
+ *                       example: "Fase Ovulatória"
+ *                       description: Nome amigável para exibição na UI.
+ *                     diaCiclo:
+ *                       type: integer
+ *                       example: 14
+ *                       description: Dia atual do ciclo (1 = primeiro dia da menstruação).
  *                     insight:
  *                       type: object
  *                       properties:
  *                         titulo:
  *                           type: string
+ *                           example: "Auge da Confiança"
  *                         emoji:
  *                           type: string
+ *                           example: "✨"
  *                         descricao:
  *                           type: string
+ *                           example: "Sua comunicação e magnetismo estão no máximo..."
  *       401:
- *         description: Não autorizado
+ *         description: Token ausente ou inválido.
  */
 router.get('/', authMiddleware, perfilController.getPerfil);
 
@@ -57,7 +76,10 @@ router.get('/', authMiddleware, perfilController.getPerfil);
  * @swagger
  * /perfil/ciclo:
  *   put:
- *     summary: Atualiza as configurações do ciclo menstrual
+ *     summary: Configura ou Atualiza o Ciclo Menstrual
+ *     description: |
+ *       Use este endpoint no Onboarding ou na tela de Configurações.
+ *       Ele define os parâmetros biológicos usados para calcular todas as previsões do app.
  *     tags: [Perfil]
  *     security:
  *       - bearerAuth: []
@@ -74,16 +96,30 @@ router.get('/', authMiddleware, perfilController.getPerfil);
  *               modoCiclo:
  *                 type: string
  *                 enum: [TENTANTE, GESTANTE, MONITORAMENTO]
+ *                 description: Objetivo principal da usuária.
+ *                 example: "MONITORAMENTO"
  *               duracaoCiclo:
  *                 type: integer
+ *                 description: Média de dias do ciclo (padrão 28).
+ *                 default: 28
+ *                 example: 28
  *               duracaoSangramento:
  *                 type: integer
+ *                 description: Média de dias de sangramento (padrão 5).
+ *                 default: 5
+ *                 example: 5
  *               dataUltimaMenstruacao:
  *                 type: string
  *                 format: date-time
+ *                 description: Data do início da última menstruação (ISO 8601).
+ *                 example: "2026-02-01T00:00:00.000Z"
+ *               cicloRegular:
+ *                 type: boolean
+ *                 description: Se o ciclo costuma variar pouco.
+ *                 default: true
  *     responses:
  *       200:
- *         description: Ciclo atualizado com sucesso
+ *         description: Ciclo atualizado e recalculo de fase executado.
  */
 router.put('/ciclo', authMiddleware, perfilController.atualizarCiclo.bind(perfilController));
 

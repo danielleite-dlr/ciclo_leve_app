@@ -26,6 +26,8 @@ type PerfilResponse = {
       titulo: string;
       emoji: string;
       descricao: string;
+      facaHoje?: string[];
+      eviteHoje?: string[];
     };
   } | null;
 };
@@ -101,40 +103,34 @@ export default function Home() {
     titulo: 'Energia em Alta',
     emoji: '⚡',
     descricao: 'Siga seu ritmo e observe os sinais do seu corpo hoje.',
+    facaHoje: ['Exercício Cardio', 'Folhas Verdes', 'Hidratação Extra'],
+    eviteHoje: ['Excesso de cafeína', 'Dormir tarde']
   };
 
   const headlineTitle = insight.titulo;
   const headlineEmoji = insight.emoji;
   const headlineDesc = insight.descricao;
 
-  const doList = useMemo(
-    () => [
-      {
-        icon: 'directions-run' as const,
-        title: 'Exercício Cardio',
-        subtitle: 'Corrida leve ou caminhada rápida (30min)',
-      },
-      {
-        icon: 'eco' as const,
-        title: 'Folhas Verdes',
-        subtitle: 'Espinafre ou couve no almoço',
-      },
-      {
-        icon: 'water-drop' as const,
-        title: 'Hidratação Extra',
-        subtitle: 'Beba pelo menos 2,5L de água',
-      },
-    ],
-    []
-  );
+  // Ícones mapeados para dicas (simples por enquanto)
+  const getIconForTip = (text: string) => {
+    const t = text.toLowerCase();
+    if (t.includes('treino') || t.includes('caminhada') || t.includes('exercício')) return 'directions-run';
+    if (t.includes('água') || t.includes('hidrata')) return 'water-drop';
+    if (t.includes('proteína') || t.includes('vegetais') || t.includes('fibra')) return 'restaurant';
+    if (t.includes('sono') || t.includes('dormir')) return 'bedtime';
+    return 'check-circle'; // default
+  };
 
-  const avoidList = useMemo(
-    () => [
-      { icon: 'coffee' as const, text: 'Excesso de cafeína após as 14h' },
-      { icon: 'bedtime-off' as const, text: 'Dormir depois das 23h' },
-    ],
-    []
-  );
+  const doList = (insight.facaHoje || []).map(item => ({
+    icon: getIconForTip(item),
+    title: item,
+    subtitle: 'Recomendado para hoje'
+  }));
+
+  const avoidList = (insight.eviteHoje || []).map(item => ({
+    icon: 'block', 
+    text: item
+  }));
 
   const showCycleHelp = useCallback(() => {
     Alert.alert(
@@ -209,12 +205,11 @@ export default function Home() {
           </View>
 
           <View style={styles.list}>
-            {doList.map((item) => (
-              <View key={item.title} style={styles.doItem}>
-                <MaterialIcons name={item.icon} size={20} color={PRIMARY} style={{ marginTop: 2 }} />
+            {doList.map((item, i) => (
+              <View key={i} style={styles.doItem}>
+                <MaterialIcons name={item.icon as any} size={20} color={PRIMARY} style={{ marginTop: 2 }} />
                 <View style={{ flex: 1 }}>
                   <Text style={styles.itemTitle}>{item.title}</Text>
-                  <Text style={styles.itemSubtitle}>{item.subtitle}</Text>
                 </View>
               </View>
             ))}
@@ -231,9 +226,9 @@ export default function Home() {
           </View>
 
           <View style={styles.list}>
-            {avoidList.map((item) => (
-              <View key={item.text} style={styles.avoidItem}>
-                <MaterialIcons name={item.icon} size={20} color="#F87171" />
+            {avoidList.map((item, i) => (
+              <View key={i} style={styles.avoidItem}>
+                <MaterialIcons name={item.icon as any} size={20} color="#F87171" />
                 <Text style={styles.avoidText}>{item.text}</Text>
               </View>
             ))}

@@ -18,7 +18,17 @@ const router = Router();
  *   get:
  *     summary: Retorna o perfil completo e cálculo do ciclo
  *     tags: [Perfil]
- *     description: Retorna dados cadastrais e o status atual do ciclo menstrual.
+ *     description: |
+ *       Retorna dados cadastrais e o status atual do ciclo menstrual.
+ *
+ *       ### 📅 Fases do Ciclo (base 28 dias)
+ *       | Dia | Fase | Insight (Exemplo) |
+ *       |---|---|---|
+ *       | **1-5** | 🔴 Menstruação | "Recarregue as energias" |
+ *       | **6-12** | ⚡ Folicular | "Energia em Alta" |
+ *       | **13-16** | ✨ Ovulatória | "Auge da Confiança" |
+ *       | **17-28** | 🌙 Lútea | "Hora de Desacelerar" |
+ *
  *     security:
  *       - bearerAuth: []
  *     responses:
@@ -35,6 +45,31 @@ const router = Router();
  *                   type: object
  *                 faseAtual:
  *                   type: object
+ *             examples:
+ *               CenarioMenstruacao:
+ *                 summary: 🔴 Exemplo: Menstruação (Dia 3)
+ *                 value:
+ *                   user: { nomeCompleto: "Maria Silva" }
+ *                   faseAtual:
+ *                     fase: "MENSTRUAL"
+ *                     nomeFase: "Menstruação"
+ *                     diaCiclo: 3
+ *                     insight:
+ *                       titulo: "Recarregue as energias"
+ *                       emoji: "🔋"
+ *                       descricao: "Seu corpo pede descanso."
+ *               CenarioOvulacao:
+ *                 summary: ✨ Exemplo: Ovulação (Dia 14)
+ *                 value:
+ *                   user: { nomeCompleto: "Maria Silva" }
+ *                   faseAtual:
+ *                     fase: "OVULATORIA"
+ *                     nomeFase: "Fase Ovulatória"
+ *                     diaCiclo: 14
+ *                     insight:
+ *                       titulo: "Auge da Confiança"
+ *                       emoji: "✨"
+ *                       descricao: "Sua comunicação está no máximo."
  *       401:
  *         description: Não autorizado
  */

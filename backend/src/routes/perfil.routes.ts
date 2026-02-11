@@ -21,13 +21,11 @@ const router = Router();
  *     description: |
  *       Retorna dados cadastrais e o status atual do ciclo menstrual.
  *
- *       ### 📅 Fases do Ciclo (base 28 dias)
- *       | Dia | Fase | Insight (Exemplo) |
- *       |---|---|---|
- *       | **1-5** | 🔴 Menstruação | "Recarregue as energias" |
- *       | **6-12** | ⚡ Folicular | "Energia em Alta" |
- *       | **13-16** | ✨ Ovulatória | "Auge da Confiança" |
- *       | **17-28** | 🌙 Lútea | "Hora de Desacelerar" |
+ *       ### Fases do Ciclo (base 28 dias)
+ *       - **Dias 1-5 (Menstruação):** 🔴 Fase Menstrual. Insight: "Recarregue as energias".
+ *       - **Dias 6-12 (Folicular):** ⚡ Fase Folicular. Insight: "Energia em Alta".
+ *       - **Dias 13-16 (Ovulatória):** ✨ Fase Ovulatória. Insight: "Auge da Confiança".
+ *       - **Dias 17-28 (Lútea):** 🌙 Fase Lútea. Insight: "Hora de Desacelerar".
  *
  *     security:
  *       - bearerAuth: []

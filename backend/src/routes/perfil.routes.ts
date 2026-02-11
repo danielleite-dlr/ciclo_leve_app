@@ -18,17 +18,33 @@ const router = Router();
  *   get:
  *     summary: Retorna o perfil completo (Usuário + Ciclo + Fase Atual)
  *     description: |
- *       Este endpoint é o coração da Home. Ele retorna:
- *       - Dados cadastrais do usuário.
- *       - Configuração do ciclo (duração, última menstruação).
- *       - **Cálculo da Fase Atual**: Baseado na data da última menstruação, calcula se está na fase Menstrual, Folicular, Ovulatória ou Lútea.
- *       - **Daily Insight**: Retorna a frase motivacional, emoji e dica do dia já processados pelo backend.
+ *       ### 🧠 Lógica de Negócio do Ciclo
+ *       O app calcula a fase atual com base na diferença entre a data atual e a data da última menstruação (DUM), módulo a duração do ciclo.
+ *
+ *       #### 📅 Intervalos de Fase (para um ciclo padrão de 28 dias)
+ *       | Dia do Ciclo | Fase | Nome Amigável | Descrição Biológica |
+ *       |---|---|---|---|
+ *       | 1 a 5 | **MENSTRUAL** | Menstruação | Descamação do endométrio. Energia baixa. |
+ *       | 6 a 12 | **FOLICULAR** | Fase Folicular | Aumento de estrogênio. Energia e disposição aumentam. |
+ *       | 13 a 16 | **OVULATORIA** | Fase Ovulatória | Pico de fertilidade. Máxima libido e sociabilidade. |
+ *       | 17 a 28 | **LUTEA** | Fase Lútea | Aumento de progesterona. TPM, inchaço e introspecção. |
+ *
+ *       ---
+ *
+ *       #### 💡 Insights Diários (Daily Insight)
+ *       O backend retorna automaticamente um texto motivacional baseado na fase:
+ *
+ *       - **MENSTRUAL** (🔋): "Recarregue as energias. Seu corpo está pedindo descanso..."
+ *       - **FOLICULAR** (⚡): "Energia em Alta. Seus níveis de estrogênio estão subindo..."
+ *       - **OVULATORIA** (✨): "Auge da Confiança. Sua comunicação e magnetismo estão no máximo..."
+ *       - **LUTEA** (🌙): "Hora de Desacelerar. A progesterona sobe, trazendo calma ou TPM..."
+ *
  *     tags: [Perfil]
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: Sucesso. Retorna objeto consolidado.
+ *         description: Retorna o estado atual do usuário e do ciclo.
  *         content:
  *           application/json:
  *             schema:
@@ -38,23 +54,24 @@ const router = Router();
  *                   $ref: '#/components/schemas/User'
  *                 ciclo:
  *                   type: object
- *                   description: Configurações salvas do ciclo.
+ *                   description: Configurações brutas (duração, DUM).
  *                 faseAtual:
  *                   type: object
- *                   description: Objeto calculado em tempo real.
+ *                   description: Objeto processado com a lógica de calendário.
  *                   properties:
  *                     fase:
  *                       type: string
+ *                       enum: [MENSTRUAL, FOLICULAR, OVULATORIA, LUTEA]
  *                       example: "OVULATORIA"
- *                       description: Código interno da fase (MENSTRUAL, FOLICULAR, OVULATORIA, LUTEA).
  *                     nomeFase:
  *                       type: string
  *                       example: "Fase Ovulatória"
- *                       description: Nome amigável para exibição na UI.
  *                     diaCiclo:
  *                       type: integer
- *                       example: 14
- *                       description: Dia atual do ciclo (1 = primeiro dia da menstruação).
+ *                       description: Dia atual (1-based). Ex: 14.
+ *                     diasProximaMenstruacao:
+ *                       type: integer
+ *                       description: Contagem regressiva para o próximo ciclo.
  *                     insight:
  *                       type: object
  *                       properties:
@@ -66,9 +83,11 @@ const router = Router();
  *                           example: "✨"
  *                         descricao:
  *                           type: string
- *                           example: "Sua comunicação e magnetismo estão no máximo..."
+ *                           example: "Sua comunicação e magnetismo estão no máximo. Aproveite para reuniões importantes."
  *       401:
- *         description: Token ausente ou inválido.
+ *         description: Token JWT inválido ou expirado.
+ *       404:
+ *         description: Usuário não encontrado.
  */
 router.get('/', authMiddleware, perfilController.getPerfil);
 

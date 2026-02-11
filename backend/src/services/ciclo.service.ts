@@ -90,12 +90,47 @@ export class CicloService {
 
     const diasProximaMenstruacao = perfil.duracaoCiclo - diaCiclo + 1;
 
+    // Gerar Insight do Dia baseado na fase
+    let insight = { titulo: '', emoji: '', descricao: '' };
+
+    switch (fase) {
+      case 'MENSTRUAL':
+        insight = {
+          titulo: 'Recarregue as energias',
+          emoji: '🔋',
+          descricao: 'Seu corpo está pedindo descanso. É o momento ideal para introspecção e atividades leves.'
+        };
+        break;
+      case 'FOLICULAR':
+        insight = {
+          titulo: 'Energia em Alta',
+          emoji: '⚡',
+          descricao: 'Seus níveis de estrogênio estão subindo. É um ótimo momento para criar, planejar e treinar forte.'
+        };
+        break;
+      case 'OVULATORIA':
+        insight = {
+          titulo: 'Auge da Confiança',
+          emoji: '✨',
+          descricao: 'Sua comunicação e magnetismo estão no máximo. Aproveite para reuniões importantes e socializar.'
+        };
+        break;
+      case 'LUTEA':
+        insight = {
+          titulo: 'Hora de Desacelerar',
+          emoji: '🌙',
+          descricao: 'A progesterona sobe, trazendo calma ou TPM. Priorize o conforto e evite sobrecarga.'
+        };
+        break;
+    }
+
     return { 
       fase, 
       nomeFase,
       diaCiclo, 
       diasProximaMenstruacao,
-      dataProximaMenstruacao: new Date(hojeStart.setDate(hojeStart.getDate() + diasProximaMenstruacao))
+      dataProximaMenstruacao: new Date(hojeStart.setDate(hojeStart.getDate() + diasProximaMenstruacao)),
+      insight
     };
   }
 }

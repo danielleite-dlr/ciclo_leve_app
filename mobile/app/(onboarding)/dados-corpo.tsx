@@ -37,7 +37,7 @@ export default function DadosCorpoScreen() {
           <View style={styles.dotMuted} />
           <View style={styles.dotMuted} />
         </View>
-        <Text style={styles.title}>Vamos personalizar{String.fromCharCode(10)}sua experiência</Text>
+        <Text style={styles.title}>Vamos personalizar{'\n'}sua experiência</Text>
         <Text style={styles.subtitle}>Esses dados nos ajudam a prever seus sintomas com precisão.</Text>
       </View>
 

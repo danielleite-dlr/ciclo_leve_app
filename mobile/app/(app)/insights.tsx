@@ -206,7 +206,7 @@ export default function InsightsScreen() {
                  <View style={styles.extraRow}>
                     <MaterialIcons name="psychology" size={20} color={PRIMARY} />
                     <Text style={styles.extraText}>
-                      <Text style={styles.extraBold}>Dica Extra{String.fromCharCode(10)}</Text>
+                      <Text style={styles.extraBold}>Dica Extra{'\n'}</Text>
                       {tip.extra}
                     </Text>
                  </View>

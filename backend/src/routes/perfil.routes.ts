@@ -16,14 +16,21 @@ const router = Router();
  * @swagger
  * /perfil:
  *   get:
- *     summary: Retorna o perfil completo (Usuário + Ciclo + Fase Atual)
- *     description: Retorna dados cadastrais, config do ciclo e cálculo da fase atual (Menstrual, Folicular, etc) com insights diários.
+ *     summary: Retorna o perfil completo e cálculo do ciclo
  *     tags: [Perfil]
+ *     description: |
+ *       Retorna dados cadastrais e o status atual do ciclo menstrual.
+ *
+ *       ### Fases do Ciclo (base 28 dias)
+ *       - **1-5**: Menstruação
+ *       - **6-12**: Folicular (Energia ↑)
+ *       - **13-16**: Ovulatória (Libido ↑)
+ *       - **17-28**: Lútea (TPM/Calma)
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: Retorna o estado atual do usuário e do ciclo.
+ *         description: Sucesso
  *         content:
  *           application/json:
  *             schema:
@@ -33,24 +40,18 @@ const router = Router();
  *                   $ref: '#/components/schemas/User'
  *                 ciclo:
  *                   type: object
- *                   description: Configurações brutas (duração, DUM).
  *                 faseAtual:
  *                   type: object
- *                   description: Objeto processado com a lógica de calendário.
  *                   properties:
  *                     fase:
  *                       type: string
- *                       enum: [MENSTRUAL, FOLICULAR, OVULATORIA, LUTEA]
  *                       example: "OVULATORIA"
  *                     nomeFase:
  *                       type: string
  *                       example: "Fase Ovulatória"
  *                     diaCiclo:
  *                       type: integer
- *                       description: Dia atual (1-based). Ex: 14.
- *                     diasProximaMenstruacao:
- *                       type: integer
- *                       description: Contagem regressiva para o próximo ciclo.
+ *                       example: 14
  *                     insight:
  *                       type: object
  *                       properties:
@@ -62,11 +63,9 @@ const router = Router();
  *                           example: "✨"
  *                         descricao:
  *                           type: string
- *                           example: "Sua comunicação e magnetismo estão no máximo. Aproveite para reuniões importantes."
+ *                           example: "Sua comunicação e magnetismo estão no máximo."
  *       401:
- *         description: Token JWT inválido ou expirado.
- *       404:
- *         description: Usuário não encontrado.
+ *         description: Não autorizado
  */
 router.get('/', authMiddleware, perfilController.getPerfil);
 

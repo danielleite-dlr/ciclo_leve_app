@@ -17,28 +17,7 @@ const router = Router();
  * /perfil:
  *   get:
  *     summary: Retorna o perfil completo (Usuário + Ciclo + Fase Atual)
- *     description: |
- *       ### 🧠 Lógica de Negócio do Ciclo
- *       O app calcula a fase atual com base na diferença entre a data atual e a data da última menstruação (DUM), módulo a duração do ciclo.
- *
- *       #### 📅 Intervalos de Fase (para um ciclo padrão de 28 dias)
- *       | Dia do Ciclo | Fase | Nome Amigável | Descrição Biológica |
- *       |---|---|---|---|
- *       | 1 a 5 | **MENSTRUAL** | Menstruação | Descamação do endométrio. Energia baixa. |
- *       | 6 a 12 | **FOLICULAR** | Fase Folicular | Aumento de estrogênio. Energia e disposição aumentam. |
- *       | 13 a 16 | **OVULATORIA** | Fase Ovulatória | Pico de fertilidade. Máxima libido e sociabilidade. |
- *       | 17 a 28 | **LUTEA** | Fase Lútea | Aumento de progesterona. TPM, inchaço e introspecção. |
- *
- *       ---
- *
- *       #### 💡 Insights Diários (Daily Insight)
- *       O backend retorna automaticamente um texto motivacional baseado na fase:
- *
- *       - **MENSTRUAL** (🔋): "Recarregue as energias. Seu corpo está pedindo descanso..."
- *       - **FOLICULAR** (⚡): "Energia em Alta. Seus níveis de estrogênio estão subindo..."
- *       - **OVULATORIA** (✨): "Auge da Confiança. Sua comunicação e magnetismo estão no máximo..."
- *       - **LUTEA** (🌙): "Hora de Desacelerar. A progesterona sobe, trazendo calma ou TPM..."
- *
+ *     description: Retorna dados cadastrais, config do ciclo e cálculo da fase atual (Menstrual, Folicular, etc) com insights diários.
  *     tags: [Perfil]
  *     security:
  *       - bearerAuth: []

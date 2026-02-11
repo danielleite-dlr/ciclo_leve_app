@@ -81,7 +81,7 @@ export class CicloService {
     }
     else if (diaCiclo <= 16) {
       fase = 'OVULATORIA';
-      nomeFase = 'Ovulação';
+      nomeFase = 'Fase Ovulatória';
     }
     else {
       fase = 'LUTEA';

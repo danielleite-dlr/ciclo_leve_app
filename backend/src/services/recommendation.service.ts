@@ -24,11 +24,21 @@ export class RecommendationService {
     sintomasHoje: Sintomas;
     sintomasOntem?: Sintomas | null;
   }): Recomendacoes {
-    // Implementação virá nas próximas etapas
+    const { fase, diaCiclo, sintomasHoje, sintomasOntem } = opts;
+
+    // 1) Mensagem da fase (Camada 1)
+    const mensagemFase: MensagemFase | null = fase ? MENSAGENS_POR_FASE[fase] ?? null : null;
+
+    // 2) Nota da especialista (Camada 3) – implementação completa virá em próxima etapa
+    const notaEspecialista = '';
+
+    // 3) Dicas extras (Camada 2) – implementação completa virá em próxima etapa
+    const dicasExtras: string[] = [];
+
     return {
-      mensagemFase: null,
-      notaEspecialista: '',
-      dicasExtras: [],
+      mensagemFase,
+      notaEspecialista,
+      dicasExtras,
     };
   }
 }

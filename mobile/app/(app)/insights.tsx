@@ -11,8 +11,11 @@ const BG = '#F6F8F6';
 
 type Registro = {
   id: string;
-  data: string;
-  sintomas: any;
+  dataRegistro: string;
+  inchaco?: number | null;
+  fomeCompulsao?: number | null;
+  humorIrritacao?: number | null;
+  qualidadeSono?: number | null;
 };
 
 export default function InsightsScreen() {
@@ -24,15 +27,17 @@ export default function InsightsScreen() {
   const fetchInsights = useCallback(async () => {
     try {
       const res = await api.get('/registros');
-      // Assumindo que vem array ordenado ou lista
-      // Se vier paginado ou desordenado, ideal seria ordenar.
-      // O endpoint default costuma retornar lista. Vamos pegar o[0] se for desc ou o ultimo.
-      // Assumindo lista simples
-      const lista = Array.isArray(res.data) ? res.data : [];
-      // Ordenar por data desc
-      lista.sort((a: any, b: any) => new Date(b.data).getTime() - new Date(a.data).getTime());
-      
-      setLastRegistro(lista[0] || null);
+
+      // Novo formato do backend: { data: RegistroDiario[], pagination: {...} }
+      const payload = res.data;
+      const listaRaw: any[] = Array.isArray(payload) ? payload : payload?.data || [];
+
+      // Ordenar por dataRegistro desc
+      const listaOrdenada = [...listaRaw].sort(
+        (a, b) => new Date(b.dataRegistro).getTime() - new Date(a.dataRegistro).getTime()
+      );
+
+      setLastRegistro(listaOrdenada[0] || null);
     } catch (error) {
       console.log('Erro ao buscar insights:', error);
     }
@@ -55,11 +60,10 @@ export default function InsightsScreen() {
   const tip = useMemo(() => {
     if (!lastRegistro) return null;
 
-    const s = lastRegistro.sintomas || {};
-    const inchaco = Number(s.inchaco || 0);
-    const fome = Number(s.fomeCompulsao || 0);
-    const humor = Number(s.humorIrritacao || 0);
-    const sono = Number(s.qualidadeSono || 0);
+    const inchaco = Number(lastRegistro.inchaco || 0);
+    const fome = Number(lastRegistro.fomeCompulsao || 0);
+    const humor = Number(lastRegistro.humorIrritacao || 0);
+    const sono = Number(lastRegistro.qualidadeSono || 0);
 
     const scores = [
       { key: 'inchaco', label: 'inchaço', value: inchaco },
@@ -139,7 +143,7 @@ export default function InsightsScreen() {
   const registroDate = useMemo(() => {
     if (!lastRegistro) return '';
     try {
-      const d = parseISO(lastRegistro.data);
+      const d = parseISO(lastRegistro.dataRegistro);
       if (isToday(d)) return 'Hoje';
       return format(d, "d 'de' MMMM", { locale: ptBR });
     } catch {

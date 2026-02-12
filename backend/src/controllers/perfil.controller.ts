@@ -54,10 +54,32 @@ export class PerfilController {
 
       const { passwordHash, ...userClean } = user;
 
+      // Monta insight consolidado a partir das recomendações
+      const mensagemFase = recomendacoes.mensagemFase;
+      const insight = mensagemFase
+        ? {
+            titulo: mensagemFase.titulo,
+            emoji: mensagemFase.emoji,
+            descricao: mensagemFase.tendeDia,
+            facaHoje: mensagemFase.faca,
+            eviteHoje: mensagemFase.evite,
+            notaEspecialista: recomendacoes.notaEspecialista,
+            dicasExtras: recomendacoes.dicasExtras,
+          }
+        : {
+            titulo: 'Energia em Alta',
+            emoji: '✨',
+            descricao: 'Siga seu ritmo.',
+            facaHoje: [],
+            eviteHoje: [],
+            notaEspecialista: recomendacoes.notaEspecialista,
+            dicasExtras: recomendacoes.dicasExtras,
+          };
+
       res.json({
         user: userClean,
         ciclo: perfilCiclo,
-        faseAtual
+        faseAtual: faseAtual ? { ...faseAtual, insight } : null,
       });
     } catch (error: any) {
       console.error(error);

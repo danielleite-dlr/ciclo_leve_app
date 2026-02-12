@@ -1,7 +1,5 @@
 import { prisma } from '../config/database';
 import { PerfilCiclo } from '@prisma/client';
-import { MENSAGENS_POR_FASE } from '../constants/mensagens-fase';
-import { NOTAS_POR_DIA } from '../constants/notas-especialista';
 
 interface AtualizarCicloDTO {
   modoCiclo: string;
@@ -92,22 +90,8 @@ export class CicloService {
 
     const diasProximaMenstruacao = perfil.duracaoCiclo - diaCiclo + 1;
 
-    // Consumir biblioteca de mensagens
-    const msg = MENSAGENS_POR_FASE[fase];
-    
-    // Obter Nota da Especialista para o dia exato
-    const notaDoDia = NOTAS_POR_DIA.find(n => n.diaCiclo === diaCiclo)?.mensagem 
-      || 'Aproveite seu dia respeitando seu ritmo.';
-
-    // Gerar Insight completo
-    const insight = {
-      titulo: msg?.titulo || 'Energia em Alta',
-      emoji: msg?.emoji || '✨',
-      descricao: msg?.tendeDia || 'Siga seu ritmo.',
-      facaHoje: msg?.faca || [],
-      eviteHoje: msg?.evite || [],
-      notaEspecialista: notaDoDia
-    };
+    // A partir de agora o cálculo de mensagens/notas é responsabilidade do RecommendationService.
+    // Este método retorna apenas os dados "brutos" da fase atual.
 
     return { 
       fase, 
@@ -115,7 +99,6 @@ export class CicloService {
       diaCiclo, 
       diasProximaMenstruacao,
       dataProximaMenstruacao: new Date(hojeStart.setDate(hojeStart.getDate() + diasProximaMenstruacao)),
-      insight
     };
   }
 }

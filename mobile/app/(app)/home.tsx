@@ -28,6 +28,8 @@ type PerfilResponse = {
       descricao: string;
       facaHoje?: string[];
       eviteHoje?: string[];
+      notaEspecialista?: string;
+      dicasExtras?: string[];
     };
   } | null;
 };

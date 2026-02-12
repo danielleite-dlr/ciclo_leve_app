@@ -25,6 +25,9 @@ export default function InsightsScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [lastRegistro, setLastRegistro] = useState<Registro | null>(null);
 
+   // DEBUG: saber se esse componente está realmente sendo montado
+  console.log('[INSIGHTS] componente montou');
+
   const fetchInsights = useCallback(async () => {
     try {
       const res = await api.get('/registros');

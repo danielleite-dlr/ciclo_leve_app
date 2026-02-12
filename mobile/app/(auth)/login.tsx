@@ -29,6 +29,22 @@ export default function LoginScreen() {
   const onSubmit = async (data: LoginFormData) => {
     setIsLoading(true);
     try {
+      // DEBUG: testar se o app consegue falar com a API (GET /health)
+      try {
+        const ping = await api.get('/health');
+        console.log('[LOGIN] ping /health ok', ping.status, ping.data);
+      } catch (pingErr: any) {
+        // eslint-disable-next-line no-console
+        console.error('[LOGIN] ping /health falhou', {
+          message: pingErr?.message,
+          code: pingErr?.code,
+          status: pingErr?.response?.status,
+          data: pingErr?.response?.data,
+          baseURL: pingErr?.config?.baseURL,
+          url: pingErr?.config?.url,
+        });
+      }
+
       // Backend usa `senha` (PT-BR). Mantemos `password` no form e adaptamos no payload.
       const response = await api.post('/auth/login', {
         email: data.email,
@@ -54,12 +70,16 @@ export default function LoginScreen() {
 
       Alert.alert(
         'Erro ao entrar',
-        serverMsg || (error?.message?.includes('Network') ? 'Erro de conexão com o servidor.' : 'Verifique suas credenciais e tente novamente.')
+        serverMsg ||
+          (error?.message?.includes('Network')
+            ? 'Erro de conexão com o servidor.'
+            : 'Verifique suas credenciais e tente novamente.')
       );
     } finally {
       setIsLoading(false);
     }
   };
+
 
   return (
     <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">

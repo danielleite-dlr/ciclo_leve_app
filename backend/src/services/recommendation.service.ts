@@ -26,7 +26,8 @@ export type Recomendacoes = {
  */
 export class RecommendationService {
   gerarRecomendacoes(opts: {
-    fase: 'MENSTRUAL' | 'FOLICULAR' | 'OVULATORIA' | 'LUTEA' | null;
+    // Fase pode vir como string genérica do banco, então mantemos mais flexível aqui
+    fase: 'MENSTRUAL' | 'FOLICULAR' | 'OVULATORIA' | 'LUTEA' | string | null;
     diaCiclo: number | null;
     sintomasHoje: Sintomas;
     sintomasOntem?: Sintomas | null;

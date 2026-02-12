@@ -17,6 +17,13 @@ export type Recomendacoes = {
   dicasExtras: string[];
 };
 
+/**
+ * Consolida todas as recomendações diárias (fase + nota + gatilhos de sintomas).
+ *
+ * Este service NÃO acessa banco nem requisições externas — só consome as
+ * bibliotecas de mensagens/notas/gatilhos. Ideal para ser usado em controllers
+ * como /perfil e /registros.
+ */
 export class RecommendationService {
   gerarRecomendacoes(opts: {
     fase: 'MENSTRUAL' | 'FOLICULAR' | 'OVULATORIA' | 'LUTEA' | null;

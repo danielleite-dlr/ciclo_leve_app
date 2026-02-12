@@ -122,12 +122,6 @@ export default function Perfil() {
           />
         </View>
 
-        {/* App */}
-        <Text style={styles.sectionTitle}>App</Text>
-        <View style={styles.sectionCard}>
-          <SettingItem icon={Moon} label="Tema Escuro" isSwitch switchValue={false} />
-        </View>
-
         {/* Logout */}
         <TouchableOpacity onPress={handleLogout} style={styles.logoutBtn}>
           <LogOut size={20} color="#EF4444" />

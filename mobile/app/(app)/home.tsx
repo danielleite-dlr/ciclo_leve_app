@@ -276,7 +276,7 @@ const styles = StyleSheet.create({
     zIndex: 50,
     paddingHorizontal: 16,
     // paddingTop/height definidos inline via style
-    backgroundColor: 'rgba(246,248,246,0.95)', // mais opacidade pra cobrir scroll
+    backgroundColor: BG_LIGHT, // sem transparência pra não vazar conteúdo por baixo
     borderBottomWidth: 1,
     borderBottomColor: '#E5E7EB',
     flexDirection: 'row',

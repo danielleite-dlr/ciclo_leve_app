@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import { ActivityIndicator, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -51,6 +52,7 @@ export default function InsightsScreen() {
     }
   }, []);
 
+  // Carrega uma vez na montagem
   useEffect(() => {
     (async () => {
       setLoading(true);
@@ -58,6 +60,19 @@ export default function InsightsScreen() {
       setLoading(false);
     })();
   }, [fetchInsights]);
+
+  // E recarrega sempre que a aba ganha foco
+  useFocusEffect(
+    useCallback(() => {
+      (async () => {
+        setLoading(true);
+        await fetchInsights();
+        setLoading(false);
+      })();
+
+      return () => {};
+    }, [fetchInsights])
+  );
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);

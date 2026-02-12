@@ -32,14 +32,27 @@ export class RecommendationService {
     // 2) Nota da especialista (Camada 3) – implementação completa virá em próxima etapa
     const notaEspecialista = '';
 
-    // 3) Dicas extras (Camada 2) – implementação completa virá em próxima etapa
-    const dicasExtras: string[] = [];
+    // 3) Dicas extras (Camada 2)
+    const dicasExtras = this.getDicasExtras(sintomasHoje);
 
     return {
       mensagemFase,
       notaEspecialista,
       dicasExtras,
     };
+  }
+
+  private getDicasExtras(sintomasHoje: Sintomas): string[] {
+    const mapeamento: Record<SintomaChave, number> = {
+      inchaco: sintomasHoje.inchaco,
+      fome_compulsao: sintomasHoje.fomeCompulsao,
+      qualidade_sono: sintomasHoje.qualidadeSono,
+      humor_irritacao: sintomasHoje.humorIrritacao,
+    };
+
+    return GATILHOS_SINTOMA
+      .filter((gatilho) => mapeamento[gatilho.sintoma] >= gatilho.nivelDisparo)
+      .map((gatilho) => `${gatilho.emoji} ${gatilho.mensagem}`);
   }
 }
 

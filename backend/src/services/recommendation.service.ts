@@ -66,7 +66,7 @@ export class RecommendationService {
   }
 
   private getNotaEspecialista(
-    fase: 'MENSTRUAL' | 'FOLICULAR' | 'OVULATORIA' | 'LUTEA' | null,
+    fase: string | null,
     diaCiclo: number | null,
     sintomasOntem?: Sintomas | null,
   ): string {

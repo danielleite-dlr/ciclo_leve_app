@@ -19,6 +19,8 @@ app.use(express.json());
 
 // Docs
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+// Também expõe Swagger em /api/v1/docs para quem acessa via base /api/v1
+app.use('/api/v1/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Routes
 app.use('/api/v1', routes);

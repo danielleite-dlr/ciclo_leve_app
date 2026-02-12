@@ -1,16 +1,49 @@
-import { View, Text, ScrollView, TouchableOpacity, Switch, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Switch, StyleSheet, ActivityIndicator, Alert } from 'react-native';
+import { useEffect, useState } from 'react';
 import { Colors } from '@/constants/Colors';
 import { useRouter } from 'expo-router';
 import { User, Settings, LogOut, ChevronRight, Moon, Bell } from 'lucide-react-native';
 import { removeToken } from '@/services/storage';
+import api from '@/services/api';
+
+type PerfilPayload = {
+  user: {
+    nomeCompleto?: string | null;
+    email?: string | null;
+  };
+  ciclo: {
+    duracaoCiclo?: number | null;
+    duracaoSangramento?: number | null;
+  } | null;
+};
 
 export default function Perfil() {
   const router = useRouter();
+  const [perfil, setPerfil] = useState<PerfilPayload | null>(null);
+  const [loading, setLoading] = useState(true);
 
   const handleLogout = async () => {
     await removeToken();
     router.replace('/(auth)/login');
   };
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await api.get('/perfil');
+        setPerfil(res.data);
+      } catch (error: any) {
+        // eslint-disable-next-line no-console
+        console.error('[PERFIL] erro ao carregar /perfil', error?.response?.data || error?.message);
+        Alert.alert(
+          'Erro ao carregar perfil',
+          error?.response?.data?.message || error?.response?.data?.error || 'Não foi possível carregar seus dados agora.'
+        );
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, []);
 
   const SettingItem = ({ icon: Icon, label, value, onPress, isSwitch }: any) => (
     <TouchableOpacity
@@ -39,6 +72,19 @@ export default function Perfil() {
     </TouchableOpacity>
   );
 
+  if (loading) {
+    return (
+      <View style={[styles.screen, { justifyContent: 'center', alignItems: 'center' }] }>
+        <ActivityIndicator size="large" color={Colors.primary.DEFAULT} />
+      </View>
+    );
+  }
+
+  const nome = (perfil?.user?.nomeCompleto || '').trim() || '—';
+  const email = (perfil?.user?.email || '').trim() || '—';
+  const duracaoCiclo = perfil?.ciclo?.duracaoCiclo ? `${perfil.ciclo.duracaoCiclo} dias` : '—';
+  const duracaoSangramento = perfil?.ciclo?.duracaoSangramento ? `${perfil.ciclo.duracaoSangramento} dias` : '—';
+
   return (
     <View style={styles.screen}>
       {/* Header */}
@@ -46,16 +92,16 @@ export default function Perfil() {
         <View style={styles.avatarWrap}>
           <User size={48} color={Colors.primary.DEFAULT} />
         </View>
-        <Text style={styles.name}>Daniela Silva</Text>
-        <Text style={styles.email}>daniela@email.com</Text>
+        <Text style={styles.name}>{nome}</Text>
+        <Text style={styles.email}>{email}</Text>
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Ciclo */}
         <Text style={styles.sectionTitle}>Configurações do Ciclo</Text>
         <View style={styles.sectionCard}>
-          <SettingItem icon={Settings} label="Duração do Ciclo" value="28 dias" />
-          <SettingItem icon={Settings} label="Duração da Menstruação" value="5 dias" />
+          <SettingItem icon={Settings} label="Duração do Ciclo" value={duracaoCiclo} />
+          <SettingItem icon={Settings} label="Duração da Menstruação" value={duracaoSangramento} />
           <SettingItem icon={Bell} label="Notificações" isSwitch />
         </View>
 

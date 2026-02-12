@@ -29,8 +29,8 @@ export class RecommendationService {
     // 1) Mensagem da fase (Camada 1)
     const mensagemFase: MensagemFase | null = fase ? MENSAGENS_POR_FASE[fase] ?? null : null;
 
-    // 2) Nota da especialista (Camada 3) – implementação completa virá em próxima etapa
-    const notaEspecialista = '';
+    // 2) Nota da especialista (Camada 3)
+    const notaEspecialista = this.getNotaEspecialista(fase, diaCiclo, sintomasOntem);
 
     // 3) Dicas extras (Camada 2)
     const dicasExtras = this.getDicasExtras(sintomasHoje);
@@ -53,6 +53,46 @@ export class RecommendationService {
     return GATILHOS_SINTOMA
       .filter((gatilho) => mapeamento[gatilho.sintoma] >= gatilho.nivelDisparo)
       .map((gatilho) => `${gatilho.emoji} ${gatilho.mensagem}`);
+  }
+
+  private getNotaEspecialista(
+    fase: 'MENSTRUAL' | 'FOLICULAR' | 'OVULATORIA' | 'LUTEA' | null,
+    diaCiclo: number | null,
+    sintomasOntem?: Sintomas | null,
+  ): string {
+    // Modo com ciclo: usa tabela de notas por dia de ciclo
+    if (fase && diaCiclo) {
+      const nota = NOTAS_POR_DIA.find((n) => n.diaCiclo === diaCiclo)?.mensagem;
+      if (nota) return nota;
+
+      // fallback genérico
+      return NOTAS_SEM_CICLO.find((n) => n.contexto === 'generica')!.mensagem;
+    }
+
+    // Modo sem ciclo: nota baseada em sintomas do dia anterior
+    if (!sintomasOntem) {
+      return NOTAS_SEM_CICLO.find((n) => n.contexto === 'generica')!.mensagem;
+    }
+
+    const valores = [
+      { contexto: 'inchaco' as const, valor: sintomasOntem.inchaco },
+      { contexto: 'fome' as const, valor: sintomasOntem.fomeCompulsao },
+      { contexto: 'sono' as const, valor: sintomasOntem.qualidadeSono },
+      { contexto: 'humor' as const, valor: sintomasOntem.humorIrritacao },
+    ];
+
+    // Se todos os sintomas estão baixos, celebração
+    if (valores.every((v) => v.valor <= 1)) {
+      return NOTAS_SEM_CICLO.find((n) => n.contexto === 'dia_bom')!.mensagem;
+    }
+
+    // Sintoma predominante
+    const predominante = valores.sort((a, b) => b.valor - a.valor)[0];
+
+    return (
+      NOTAS_SEM_CICLO.find((n) => n.contexto === predominante.contexto)?.mensagem ||
+      NOTAS_SEM_CICLO.find((n) => n.contexto === 'generica')!.mensagem
+    );
   }
 }
 

@@ -244,6 +244,18 @@ export default function Home() {
           <Text style={styles.noteText}>{insight?.notaEspecialista || 'Aproveite seu dia respeitando seu ritmo.'}</Text>
         </View>
 
+        {/* Dica extra de hoje (gatilhos de sintomas) */}
+        {insight?.dicasExtras && insight.dicasExtras.length > 0 && (
+          <View style={styles.extraCard}>
+            <Text style={styles.extraLabel}>DICA EXTRA DE HOJE</Text>
+            {insight.dicasExtras.map((texto, index) => (
+              <Text key={index} style={styles.extraText}>
+                • {texto}
+              </Text>
+            ))}
+          </View>
+        )}
+
         {/* Spacer pro FAB */}
         <View style={{ height: 120 }} />
       </ScrollView>
@@ -500,6 +512,27 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#1F2937',
     lineHeight: 20,
+  },
+  extraCard: {
+    borderRadius: 16,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(59,130,246,0.25)',
+    backgroundColor: 'rgba(219,234,254,0.6)',
+    marginBottom: 12,
+  },
+  extraLabel: {
+    fontSize: 12,
+    fontWeight: '900',
+    letterSpacing: 1.1,
+    color: '#1D4ED8',
+    marginBottom: 6,
+  },
+  extraText: {
+    fontSize: 14,
+    color: '#1F2937',
+    lineHeight: 20,
+    marginTop: 2,
   },
   fabWrap: {
     position: 'absolute',

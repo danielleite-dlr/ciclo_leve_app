@@ -28,6 +28,10 @@ export default function InsightsScreen() {
     try {
       const res = await api.get('/registros');
 
+      // DEBUG: logar payload real pra garantir formato
+      // eslint-disable-next-line no-console
+      console.log('[INSIGHTS] /registros payload', JSON.stringify(res.data));
+
       // Novo formato do backend: { data: RegistroDiario[], pagination: {...} }
       const payload = res.data;
       const listaRaw: any[] = Array.isArray(payload) ? payload : payload?.data || [];
@@ -37,7 +41,11 @@ export default function InsightsScreen() {
         (a, b) => new Date(b.dataRegistro).getTime() - new Date(a.dataRegistro).getTime()
       );
 
-      setLastRegistro(listaOrdenada[0] || null);
+      const primeiro = listaOrdenada[0] || null;
+      // eslint-disable-next-line no-console
+      console.log('[INSIGHTS] first registro', primeiro);
+
+      setLastRegistro(primeiro);
     } catch (error) {
       console.log('Erro ao buscar insights:', error);
     }

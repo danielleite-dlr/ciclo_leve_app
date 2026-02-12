@@ -96,6 +96,24 @@ O endpoint \`GET /perfil\` retorna um objeto \`insight\` com base na fase atual:
             role: { type: 'string', enum: ['USER', 'ADMIN', 'SPECIALIST'] },
           },
         },
+        Recomendacoes: {
+          type: 'object',
+          properties: {
+            mensagemFase: {
+              type: 'object',
+              description: 'Bloco com título, emoji, descrição e faça/evite hoje',
+            },
+            notaEspecialista: {
+              type: 'string',
+              description: 'Mensagem curta da especialista para o dia atual',
+            },
+            dicasExtras: {
+              type: 'array',
+              description: 'Dicas adicionais disparadas por sintomas intensos (ex: inchaço, fome, sono)',
+              items: { type: 'string' },
+            },
+          },
+        },
         Error: {
           type: 'object',
           properties: {

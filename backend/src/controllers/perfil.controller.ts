@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { prisma } from '../config/database';
 import { CicloService } from '../services/ciclo.service';
 import { AuthRequest } from '../middlewares/auth.middleware';
+import { recommendationService, Sintomas } from '../services/recommendation.service';
 
 const cicloService = new CicloService();
 
@@ -24,6 +25,27 @@ export class PerfilController {
 
       // Calculate current phase
       const faseAtual = cicloService.calcularFaseAtual(perfilCiclo);
+
+      // Buscar último registro diário para alimentar sintomasHoje
+      const ultimoRegistro = await prisma.registroDiario.findFirst({
+        where: { userId },
+        orderBy: { dataRegistro: 'desc' },
+      });
+
+      const sintomasHoje: Sintomas = {
+        inchaco: ultimoRegistro?.inchaco ?? 0,
+        fomeCompulsao: ultimoRegistro?.fomeCompulsao ?? 0,
+        humorIrritacao: ultimoRegistro?.humorIrritacao ?? 0,
+        qualidadeSono: ultimoRegistro?.qualidadeSono ?? 0,
+      };
+
+      // Gera recomendações consolidadas (ainda não expostas no payload na etapa 3.1)
+      const recomendacoes = recommendationService.gerarRecomendacoes({
+        fase: faseAtual?.fase ?? null,
+        diaCiclo: faseAtual?.diaCiclo ?? null,
+        sintomasHoje,
+        sintomasOntem: undefined,
+      });
 
       // Parse JSON fields if necessary (Prisma handles JSON, but sometimes it needs manual check)
       if (perfilCiclo && perfilCiclo.objetivos && typeof perfilCiclo.objetivos === 'string') {

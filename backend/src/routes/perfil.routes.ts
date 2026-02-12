@@ -16,13 +16,59 @@ const router = Router();
  * @swagger
  * /perfil:
  *   get:
- *     summary: Retorna o perfil completo
+ *     summary: Retorna o perfil completo e recomendações do dia
  *     tags: [Perfil]
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: OK
+ *         description: Perfil + fase atual + insight consolidado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 user:
+ *                   $ref: '#/components/schemas/User'
+ *                 ciclo:
+ *                   type: object
+ *                 faseAtual:
+ *                   type: object
+ *                   properties:
+ *                     fase:
+ *                       type: string
+ *                     nomeFase:
+ *                       type: string
+ *                     diaCiclo:
+ *                       type: integer
+ *                     diasProximaMenstruacao:
+ *                       type: integer
+ *                     dataProximaMenstruacao:
+ *                       type: string
+ *                       format: date-time
+ *                     insight:
+ *                       type: object
+ *                       properties:
+ *                         titulo:
+ *                           type: string
+ *                         emoji:
+ *                           type: string
+ *                         descricao:
+ *                           type: string
+ *                         facaHoje:
+ *                           type: array
+ *                           items:
+ *                             type: string
+ *                         eviteHoje:
+ *                           type: array
+ *                           items:
+ *                             type: string
+ *                         notaEspecialista:
+ *                           type: string
+ *                         dicasExtras:
+ *                           type: array
+ *                           items:
+ *                             type: string
  */
 router.get('/', authMiddleware, perfilController.getPerfil);
 

@@ -27,7 +27,7 @@ export type Recomendacoes = {
 export class RecommendationService {
   gerarRecomendacoes(opts: {
     // Fase pode vir como string genérica do banco, então mantemos mais flexível aqui
-    fase: 'MENSTRUAL' | 'FOLICULAR' | 'OVULATORIA' | 'LUTEA' | string | null;
+    fase: string | null;
     diaCiclo: number | null;
     sintomasHoje: Sintomas;
     sintomasOntem?: Sintomas | null;
@@ -35,7 +35,9 @@ export class RecommendationService {
     const { fase, diaCiclo, sintomasHoje, sintomasOntem } = opts;
 
     // 1) Mensagem da fase (Camada 1)
-    const mensagemFase: MensagemFase | null = fase ? MENSAGENS_POR_FASE[fase] ?? null : null;
+    const mensagemFase: MensagemFase | null = fase
+      ? MENSAGENS_POR_FASE[fase as keyof typeof MENSAGENS_POR_FASE] ?? null
+      : null;
 
     // 2) Nota da especialista (Camada 3)
     const notaEspecialista = this.getNotaEspecialista(fase, diaCiclo, sintomasOntem);

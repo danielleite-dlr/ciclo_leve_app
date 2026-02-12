@@ -45,11 +45,11 @@ export default function Perfil() {
     })();
   }, []);
 
-  const SettingItem = ({ icon: Icon, label, value, onPress, isSwitch }: any) => (
+  const SettingItem = ({ icon: Icon, label, value, onPress, isSwitch, switchValue, onToggle }: any) => (
     <TouchableOpacity
       onPress={onPress}
       style={styles.settingItem}
-      disabled={isSwitch}
+      disabled={isSwitch && !onPress}
     >
       <View style={styles.settingLeft}>
         <View style={styles.settingIconBg}>
@@ -63,7 +63,8 @@ export default function Perfil() {
           <Switch
             trackColor={{ false: '#D1D5DB', true: Colors.primary.light }}
             thumbColor={Colors.primary.DEFAULT}
-            value={true}
+            value={!!switchValue}
+            onValueChange={onToggle}
           />
         ) : (
           <ChevronRight size={20} color={Colors.textLight} />
@@ -100,15 +101,31 @@ export default function Perfil() {
         {/* Ciclo */}
         <Text style={styles.sectionTitle}>Configurações do Ciclo</Text>
         <View style={styles.sectionCard}>
-          <SettingItem icon={Settings} label="Duração do Ciclo" value={duracaoCiclo} />
-          <SettingItem icon={Settings} label="Duração da Menstruação" value={duracaoSangramento} />
-          <SettingItem icon={Bell} label="Notificações" isSwitch />
+          <SettingItem
+            icon={Settings}
+            label="Duração do Ciclo"
+            value={duracaoCiclo}
+            onPress={() => router.push('/(onboarding)/dados-corpo')}
+          />
+          <SettingItem
+            icon={Settings}
+            label="Duração da Menstruação"
+            value={duracaoSangramento}
+            onPress={() => router.push('/(onboarding)/dados-corpo')}
+          />
+          <SettingItem
+            icon={Bell}
+            label="Notificações"
+            isSwitch
+            switchValue={true}
+            onPress={() => router.push('/(app)/notificacoes')}
+          />
         </View>
 
         {/* App */}
         <Text style={styles.sectionTitle}>App</Text>
         <View style={styles.sectionCard}>
-          <SettingItem icon={Moon} label="Tema Escuro" isSwitch />
+          <SettingItem icon={Moon} label="Tema Escuro" isSwitch switchValue={false} />
         </View>
 
         {/* Logout */}

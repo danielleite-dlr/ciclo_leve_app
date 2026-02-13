@@ -164,9 +164,9 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(19,236,91,0.12)',
   },
   chipText: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: '#374151',
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#111827',
   },
   chipTextActive: {
     color: '#065F46',

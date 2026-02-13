@@ -2,7 +2,7 @@ import { View, Text, ScrollView, TouchableOpacity, Switch, StyleSheet, ActivityI
 import { useEffect, useState } from 'react';
 import { Colors } from '@/constants/Colors';
 import { useRouter } from 'expo-router';
-import { Settings, LogOut, ChevronRight, Bell, Target, CalendarDays, Clock, ShieldCheck, FileText } from 'lucide-react-native';
+import { Settings, LogOut, ChevronRight, Bell, Target, CalendarDays, Clock, ShieldCheck, FileText, Pencil } from 'lucide-react-native';
 import { removeToken } from '@/services/storage';
 import api from '@/services/api';
 
@@ -120,6 +120,13 @@ export default function Perfil() {
             <Text style={styles.email}>{email}</Text>
             <Text style={styles.memberSince}>Membro desde 2024</Text>
           </View>
+          <TouchableOpacity
+            onPress={() => { /* TODO: editar dados básicos (futuro) */ }}
+            style={styles.editBtn}
+            activeOpacity={0.7}
+          >
+            <Pencil size={18} color="#6B7280" />
+          </TouchableOpacity>
         </View>
 
         {/* Meus dados */}
@@ -233,9 +240,19 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     borderWidth: 1,
     borderColor: '#E5E7EB',
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   headerTextBlock: {
     flex: 1,
+  },
+  editBtn: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#F3F4F6',
   },
   name: {
     fontSize: 20,

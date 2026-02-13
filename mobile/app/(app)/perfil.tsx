@@ -141,7 +141,7 @@ export default function Perfil() {
             subtitle="TPM, Menopausa, Bem-estar"
             iconColor="#7C3AED"
             iconBgColor="rgba(129,140,248,0.15)"
-            onPress={() => { /* TODO: tela de objetivos */ }}
+            onPress={() => router.push('/(app)/objetivos')}
           />
           <SettingItem
             icon={CalendarDays}

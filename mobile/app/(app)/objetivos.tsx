@@ -157,6 +157,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#E5E7EB',
     backgroundColor: '#FFFFFF',
+    width: '100%',
   },
   chipActive: {
     borderColor: PRIMARY,

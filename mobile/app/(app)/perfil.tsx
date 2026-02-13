@@ -2,7 +2,7 @@ import { View, Text, ScrollView, TouchableOpacity, Switch, StyleSheet, ActivityI
 import { useEffect, useState } from 'react';
 import { Colors } from '@/constants/Colors';
 import { useRouter } from 'expo-router';
-import { User, Settings, LogOut, ChevronRight, Moon, Bell } from 'lucide-react-native';
+import { User, Settings, LogOut, ChevronRight, Bell, Target, CalendarDays, Clock, ShieldCheck, FileText } from 'lucide-react-native';
 import { removeToken } from '@/services/storage';
 import api from '@/services/api';
 
@@ -88,44 +88,90 @@ export default function Perfil() {
 
   return (
     <View style={styles.screen}>
-      {/* Header */}
-      <View style={styles.header}>
-        <View style={styles.avatarWrap}>
-          <User size={48} color={Colors.primary.DEFAULT} />
-        </View>
-        <Text style={styles.name}>{nome}</Text>
-        <Text style={styles.email}>{email}</Text>
+      {/* Top bar simples com título */}
+      <View style={styles.topBar}>
+        <Text style={styles.topTitle}>Perfil</Text>
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        {/* Ciclo */}
-        <Text style={styles.sectionTitle}>Configurações do Ciclo</Text>
+        {/* Header */}
+        <View style={styles.headerCard}>
+          <View style={styles.avatarWrap}>
+            <User size={48} color={Colors.primary.DEFAULT} />
+          </View>
+          <View style={styles.headerTextBlock}>
+            <Text style={styles.name}>{nome}</Text>
+            <Text style={styles.email}>{email}</Text>
+            <Text style={styles.memberSince}>Membro desde 2024</Text>
+          </View>
+        </View>
+
+        {/* Meus dados */}
+        <Text style={styles.sectionTitle}>Meus dados</Text>
         <View style={styles.sectionCard}>
           <SettingItem
-            icon={Settings}
-            label="Duração do Ciclo"
-            value={duracaoCiclo}
-            onPress={() => router.push('/(onboarding)/dados-corpo')}
+            icon={Target}
+            label="Editar Objetivos"
+            value={undefined}
+            onPress={() => { /* TODO: tela de objetivos */ }}
           />
           <SettingItem
-            icon={Settings}
-            label="Duração da Menstruação"
-            value={duracaoSangramento}
+            icon={CalendarDays}
+            label="Dados do Ciclo"
+            value={`${duracaoCiclo} • ${duracaoSangramento}`}
             onPress={() => router.push('/(onboarding)/dados-corpo')}
+          />
+        </View>
+
+        {/* Preferências */}
+        <Text style={styles.sectionTitle}>Preferências</Text>
+        <View style={styles.sectionCard}>
+          <SettingItem
+            icon={Clock}
+            label="Lembrete diário"
+            value="09:00"
+            onPress={() => { /* TODO: tela de lembrete diário */ }}
           />
           <SettingItem
             icon={Bell}
-            label="Notificações"
+            label="Notificações Push"
             isSwitch
             switchValue={true}
             onPress={() => router.push('/(app)/notificacoes')}
           />
         </View>
 
-        {/* Logout */}
+        {/* Assinatura */}
+        <Text style={styles.sectionTitle}>Assinatura</Text>
+        <View style={styles.sectionCardHighlighted}>
+          <SettingItem
+            icon={ShieldCheck}
+            label="Gerenciar Assinatura"
+            value="Plano Free"
+            onPress={() => { /* TODO: tela de assinatura */ }}
+          />
+        </View>
+
+        {/* Termos e conta */}
+        <View style={styles.sectionCard}>
+          <SettingItem
+            icon={FileText}
+            label="Termos e Política"
+            onPress={() => { /* TODO: tela de termos */ }}
+          />
+        </View>
+
+        {/* Logout / Excluir conta */}
         <TouchableOpacity onPress={handleLogout} style={styles.logoutBtn}>
           <LogOut size={20} color="#EF4444" />
-          <Text style={styles.logoutText}>Sair da Conta</Text>
+          <Text style={styles.logoutText}>Sair da conta</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={() => Alert.alert('Em breve', 'A exclusão de conta será liberada em uma próxima versão.')}
+          style={styles.deleteAccountBtn}
+        >
+          <Text style={styles.deleteAccountText}>Excluir minha conta</Text>
         </TouchableOpacity>
       </ScrollView>
     </View>
@@ -137,39 +183,57 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#F3F4F6',
   },
-  header: {
-    backgroundColor: '#FFFFFF',
-    paddingTop: 48,
-    paddingBottom: 24,
+  topBar: {
+    paddingTop: 44,
+    paddingBottom: 12,
     paddingHorizontal: 24,
+    backgroundColor: '#F3F4F6',
+  },
+  topTitle: {
+    fontSize: 16,
+    fontWeight: '900',
+    color: '#111827',
+  },
+  headerCard: {
+    flexDirection: 'row',
     alignItems: 'center',
-    borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
+    padding: 16,
+    marginBottom: 24,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
   },
   avatarWrap: {
-    width: 96,
-    height: 96,
-    borderRadius: 48,
+    width: 64,
+    height: 64,
+    borderRadius: 32,
     backgroundColor: '#DCFCE7',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 16,
-    borderWidth: 3,
-    borderColor: '#FFFFFF',
+    marginRight: 16,
+  },
+  headerTextBlock: {
+    flex: 1,
   },
   name: {
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: '800',
     color: '#111827',
   },
   email: {
-    marginTop: 4,
-    fontSize: 14,
+    marginTop: 2,
+    fontSize: 13,
     color: '#6B7280',
+  },
+  memberSince: {
+    marginTop: 6,
+    fontSize: 12,
+    color: '#9CA3AF',
   },
   scrollContent: {
     paddingHorizontal: 16,
-    paddingVertical: 24,
+    paddingVertical: 16,
     paddingBottom: 40,
   },
   sectionTitle: {
@@ -186,7 +250,15 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     borderWidth: 1,
     borderColor: '#E5E7EB',
-    marginBottom: 24,
+    marginBottom: 16,
+    overflow: 'hidden',
+  },
+  sectionCardHighlighted: {
+    backgroundColor: 'rgba(219,234,254,0.9)',
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(59,130,246,0.35)',
+    marginBottom: 16,
     overflow: 'hidden',
   },
   settingItem: {
@@ -224,7 +296,7 @@ const styles = StyleSheet.create({
     marginRight: 4,
   },
   logoutBtn: {
-    marginTop: 8,
+    marginTop: 16,
     marginHorizontal: 16,
     paddingVertical: 14,
     borderRadius: 999,
@@ -240,5 +312,16 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '800',
     color: '#B91C1C',
+  },
+  deleteAccountBtn: {
+    marginTop: 12,
+    marginHorizontal: 16,
+    paddingVertical: 10,
+    alignItems: 'center',
+  },
+  deleteAccountText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#EF4444',
   },
 });

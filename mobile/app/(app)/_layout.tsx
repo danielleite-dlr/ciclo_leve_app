@@ -60,6 +60,8 @@ export default function AppLayout() {
       <Tabs.Screen name="registro" options={{ href: null }} />
       <Tabs.Screen name="conteudo" options={{ href: null }} />
       <Tabs.Screen name="dica-do-dia" options={{ href: null }} />
+      <Tabs.Screen name="objetivos" options={{ href: null }} />
+      <Tabs.Screen name="notificacoes" options={{ href: null }} />
     </Tabs>
   );
 }

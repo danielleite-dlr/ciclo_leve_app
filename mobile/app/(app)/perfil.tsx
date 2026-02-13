@@ -2,7 +2,7 @@ import { View, Text, ScrollView, TouchableOpacity, Switch, StyleSheet, ActivityI
 import { useEffect, useState } from 'react';
 import { Colors } from '@/constants/Colors';
 import { useRouter } from 'expo-router';
-import { Settings, LogOut, ChevronRight, Bell, Target, CalendarDays, Clock, ShieldCheck, FileText, Pencil } from 'lucide-react-native';
+import { Settings, LogOut, ChevronRight, Bell, Target, CalendarDays, Clock, ShieldCheck, FileText, Pencil, User } from 'lucide-react-native';
 import { removeToken } from '@/services/storage';
 import api from '@/services/api';
 
@@ -115,6 +115,9 @@ export default function Perfil() {
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Header */}
         <View style={styles.headerCard}>
+          <View style={styles.avatarWrap}>
+            <User size={26} color="#7C3AED" />
+          </View>
           <View style={styles.headerTextBlock}>
             <Text style={styles.name}>{nome}</Text>
             <Text style={styles.email}>{email}</Text>
@@ -242,6 +245,15 @@ const styles = StyleSheet.create({
     borderColor: '#E5E7EB',
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  avatarWrap: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: 'rgba(129,140,248,0.16)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 14,
   },
   headerTextBlock: {
     flex: 1,

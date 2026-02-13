@@ -148,13 +148,11 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   chipGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
     gap: 10,
   },
   chip: {
     paddingHorizontal: 14,
-    paddingVertical: 8,
+    paddingVertical: 10,
     borderRadius: 999,
     borderWidth: 1,
     borderColor: '#E5E7EB',

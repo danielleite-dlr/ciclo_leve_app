@@ -45,15 +45,30 @@ export default function Perfil() {
     })();
   }, []);
 
-  const SettingItem = ({ icon: Icon, label, value, onPress, isSwitch, switchValue, onToggle }: any) => (
+  const SettingItem = ({
+    icon: Icon,
+    label,
+    value,
+    onPress,
+    isSwitch,
+    switchValue,
+    onToggle,
+    iconColor,
+    iconBgColor,
+  }: any) => (
     <TouchableOpacity
       onPress={onPress}
       style={styles.settingItem}
       disabled={isSwitch && !onPress}
     >
       <View style={styles.settingLeft}>
-        <View style={styles.settingIconBg}>
-          <Icon size={20} color={Colors.text} />
+        <View
+          style={[
+            styles.settingIconBg,
+            iconBgColor ? { backgroundColor: iconBgColor } : null,
+          ]}
+        >
+          <Icon size={20} color={iconColor || Colors.text} />
         </View>
         <Text style={styles.settingLabel}>{label}</Text>
       </View>
@@ -113,12 +128,16 @@ export default function Perfil() {
             icon={Target}
             label="Editar Objetivos"
             value={undefined}
+            iconColor="#7C3AED"
+            iconBgColor="rgba(129,140,248,0.15)"
             onPress={() => { /* TODO: tela de objetivos */ }}
           />
           <SettingItem
             icon={CalendarDays}
             label="Dados do Ciclo"
             value={`${duracaoCiclo} • ${duracaoSangramento}`}
+            iconColor="#0EA5E9"
+            iconBgColor="rgba(56,189,248,0.15)"
             onPress={() => router.push('/(onboarding)/dados-corpo')}
           />
         </View>
@@ -130,6 +149,8 @@ export default function Perfil() {
             icon={Clock}
             label="Lembrete diário"
             value="09:00"
+            iconColor="#F97316"
+            iconBgColor="rgba(251,146,60,0.15)"
             onPress={() => { /* TODO: tela de lembrete diário */ }}
           />
           <SettingItem
@@ -137,6 +158,8 @@ export default function Perfil() {
             label="Notificações Push"
             isSwitch
             switchValue={true}
+            iconColor="#22C55E"
+            iconBgColor="rgba(34,197,94,0.15)"
             onPress={() => router.push('/(app)/notificacoes')}
           />
         </View>
@@ -148,6 +171,8 @@ export default function Perfil() {
             icon={ShieldCheck}
             label="Gerenciar Assinatura"
             value="Plano Free"
+            iconColor="#16A34A"
+            iconBgColor="rgba(34,197,94,0.18)"
             onPress={() => { /* TODO: tela de assinatura */ }}
           />
         </View>
@@ -157,6 +182,8 @@ export default function Perfil() {
           <SettingItem
             icon={FileText}
             label="Termos e Política"
+            iconColor="#6B7280"
+            iconBgColor="rgba(209,213,219,0.3)"
             onPress={() => { /* TODO: tela de termos */ }}
           />
         </View>

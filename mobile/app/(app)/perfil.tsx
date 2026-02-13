@@ -49,6 +49,7 @@ export default function Perfil() {
     icon: Icon,
     label,
     value,
+    subtitle,
     onPress,
     isSwitch,
     switchValue,
@@ -70,7 +71,10 @@ export default function Perfil() {
         >
           <Icon size={20} color={iconColor || Colors.text} />
         </View>
-        <Text style={styles.settingLabel}>{label}</Text>
+        <View>
+          <Text style={styles.settingLabel}>{label}</Text>
+          {subtitle ? <Text style={styles.settingSubtitle}>{subtitle}</Text> : null}
+        </View>
       </View>
       <View style={styles.settingRight}>
         {value && <Text style={styles.settingValue}>{value}</Text>}
@@ -127,7 +131,7 @@ export default function Perfil() {
           <SettingItem
             icon={Target}
             label="Editar Objetivos"
-            value={undefined}
+            subtitle="TPM, Menopausa, Bem-estar"
             iconColor="#7C3AED"
             iconBgColor="rgba(129,140,248,0.15)"
             onPress={() => { /* TODO: tela de objetivos */ }}
@@ -135,7 +139,7 @@ export default function Perfil() {
           <SettingItem
             icon={CalendarDays}
             label="Dados do Ciclo"
-            value={`${duracaoCiclo} • ${duracaoSangramento}`}
+            subtitle={duracaoCiclo !== '—' ? `Duração: ${duracaoCiclo}` : undefined}
             iconColor="#0EA5E9"
             iconBgColor="rgba(56,189,248,0.15)"
             onPress={() => router.push('/(onboarding)/dados-corpo')}
@@ -149,6 +153,7 @@ export default function Perfil() {
             icon={Clock}
             label="Lembrete diário"
             value="09:00"
+            subtitle="Defina um horário para lembrar do registro"
             iconColor="#F97316"
             iconBgColor="rgba(251,146,60,0.15)"
             onPress={() => { /* TODO: tela de lembrete diário */ }}
@@ -158,6 +163,7 @@ export default function Perfil() {
             label="Notificações Push"
             isSwitch
             switchValue={true}
+            subtitle="Receber lembretes suaves do app"
             iconColor="#22C55E"
             iconBgColor="rgba(34,197,94,0.15)"
             onPress={() => router.push('/(app)/notificacoes')}
@@ -171,6 +177,7 @@ export default function Perfil() {
             icon={ShieldCheck}
             label="Gerenciar Assinatura"
             value="Plano Free"
+            subtitle="Plano Free ativo"
             iconColor="#16A34A"
             iconBgColor="rgba(34,197,94,0.18)"
             onPress={() => { /* TODO: tela de assinatura */ }}
@@ -182,6 +189,7 @@ export default function Perfil() {
           <SettingItem
             icon={FileText}
             label="Termos e Política"
+            subtitle="Uso do app e privacidade"
             iconColor="#6B7280"
             iconBgColor="rgba(209,213,219,0.3)"
             onPress={() => { /* TODO: tela de termos */ }}
@@ -309,8 +317,13 @@ const styles = StyleSheet.create({
   },
   settingLabel: {
     fontSize: 15,
-    fontWeight: '600',
+    fontWeight: '700',
     color: '#111827',
+  },
+  settingSubtitle: {
+    marginTop: 2,
+    fontSize: 12,
+    color: '#6B7280',
   },
   settingRight: {
     flexDirection: 'row',
@@ -318,7 +331,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   settingValue: {
-    fontSize: 14,
+    fontSize: 13,
     color: '#6B7280',
     marginRight: 4,
   },

@@ -1,4 +1,5 @@
 import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, ViewStyle } from 'react-native';
+import { Colors } from '@/constants/Colors';
 
 interface ButtonProps {
   title: string;
@@ -21,7 +22,7 @@ export function Button({
   const containerStyle = [styles.base, stylesByVariant[variant], disabled ? styles.disabled : null, style];
   const textStyle = [styles.textBase, textStylesByVariant[variant]];
 
-  const spinnerColor = variant === 'outline' || variant === 'ghost' ? '#0D9488' : '#FFFFFF';
+  const spinnerColor = variant === 'outline' || variant === 'ghost' ? Colors.primary.DEFAULT : '#FFFFFF';
 
   return (
     <TouchableOpacity onPress={onPress} disabled={disabled || isLoading} style={containerStyle}>
@@ -48,7 +49,7 @@ const styles = StyleSheet.create({
 
 const stylesByVariant: Record<NonNullable<ButtonProps['variant']>, ViewStyle> = {
   primary: {
-    backgroundColor: '#0D9488',
+    backgroundColor: Colors.primary.DEFAULT,
   },
   secondary: {
     backgroundColor: '#DB2777',
@@ -77,7 +78,7 @@ const textStylesByVariant = {
     fontWeight: '600' as const,
   },
   ghost: {
-    color: '#0D9488',
+    color: Colors.primary.DEFAULT,
     fontWeight: '600' as const,
   },
 };

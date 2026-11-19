@@ -20,8 +20,8 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/icon.png",
-        "backgroundColor": "#ffffff"
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#FBE0E9"
       },
       "package": "com.cicloleve.app"
     },
@@ -32,7 +32,14 @@
     },
     "plugins": [
       "expo-router",
-      "expo-secure-store"
+      "expo-secure-store",
+      "expo-notifications",
+      [
+        "expo-local-authentication",
+        {
+          "faceIDPermission": "Permita que o CicloLeve use o Face ID para proteger seus dados."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true

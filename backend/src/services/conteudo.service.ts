@@ -1,99 +1,80 @@
 import { prisma } from '../config/database';
+import { assinaturaService } from './assinatura.service';
+import { CicloService } from './ciclo.service';
 
-interface ListarConteudoDTO {
-  fase?: string;
-  objetivos?: string[];
-  limit?: number;
-  offset?: number;
-  userPlano?: string;
+const cicloService = new CicloService();
+
+export class ConteudoBloqueadoError extends Error {
+  constructor() {
+    super('Recurso disponível no plano Premium');
+  }
 }
 
+const fasesDe = (v: unknown): string[] => (Array.isArray(v) ? (v as string[]) : []);
+
 export class ConteudoService {
-  async listar(dto: ListarConteudoDTO) {
-    const { fase, objetivos, limit = 10, offset = 0, userPlano } = dto;
-    const isPremium = ['PREMIUM_MENSAL', 'PREMIUM_ANUAL'].includes(userPlano || 'FREE');
+  /** Fase atual da usuaria, para ordenar os artigos. */
+  private async faseAtual(userId: string) {
+    const perfil = await cicloService.getPerfil(userId);
+    return cicloService.calcularFaseAtual(perfil)?.fase ?? null;
+  }
 
-    // Build query
-    const where: any = {
-      publicado: true,
-      deletedAt: null,
-    };
+  /**
+   * Lista os artigos publicados. Os da fase atual vem primeiro.
+   * Artigos premium aparecem para todas, com `bloqueado: true` para quem nao tem o modulo.
+   */
+  async listar(userId: string, filtroFase?: string) {
+    const [fase, liberado] = await Promise.all([
+      this.faseAtual(userId),
+      assinaturaService.temModulo(userId, 'BIBLIOTECA'),
+    ]);
 
-    if (!isPremium) {
-      where.premiumOnly = false;
-    }
-
-    if (fase) {
-      // Assuming fasesAplicaveis store JSON array of strings
-      // We use array_contains logic via Prisma's JSON handling
-      // Note: In Prisma with PostgreSQL, we can use array operators on JSONB
-      // But for simplicity and broader compatibility, sometimes we do string matching or raw query
-      // Here we rely on Prisma's `array_contains` if using Json type
-      // OR operator for "fases_aplicaveis" containing the phase
-      // Since JSON filtering can be specific, we'll try standard `path` filter
-      // Alternatively, fetch more and filter in memory if volume is low, but let's try db filter
-      where.fasesAplicaveis = {
-        array_contains: fase
-      };
-    }
-
-    // Objetivo filtering is Tricky with JSON array column in Prisma + SQLite/Postgres differences
-    // For standard Postgres, array_contains works
-    if (objetivos && objetivos.length > 0) {
-      // Complex logic: content should match AT LEAST ONE objective
-      // Stored as tags? No, usually distinct logic. 
-      // PRD mentions "tags" jsonb. Let's filter by tags matching objectives
-      // Since Prisma OR logic with JSON arrays is verbose:
-      // We will skip strict database filtering for objectives for MVP simplicity OR do raw query
-      // Let's implement partial support:
-      // where.OR = objetivos.map(obj => ({ tags: { array_contains: obj.toLowerCase() } }));
-    }
-
-    const conteudos = await prisma.conteudoEducacional.findMany({
-      where,
-      take: limit,
-      skip: offset,
-      orderBy: { createdAt: 'desc' },
+    const artigos = await prisma.conteudoEducacional.findMany({
+      where: { publicado: true, deletedAt: null },
+      orderBy: { createdAt: 'asc' },
       select: {
         id: true,
         categoria: true,
-        tipo: true,
         titulo: true,
         descricao: true,
-        thumbnailUrl: true,
         tempoLeituraMin: true,
         premiumOnly: true,
         slug: true,
         fasesAplicaveis: true,
-        tags: true,
-      }
+      },
     });
 
-    const total = await prisma.conteudoEducacional.count({ where });
+    const lista = artigos
+      .map((a) => {
+        const fases = fasesDe(a.fasesAplicaveis);
+        return {
+          ...a,
+          fasesAplicaveis: fases,
+          daFaseAtual: !!fase && fases.includes(fase),
+          bloqueado: a.premiumOnly && !liberado,
+        };
+      })
+      .filter((a) => !filtroFase || a.fasesAplicaveis.includes(filtroFase))
+      .sort((a, b) => Number(b.daFaseAtual) - Number(a.daFaseAtual));
 
-    return {
-      data: conteudos,
-      pagination: {
-        total,
-        page: Math.floor(offset / limit) + 1,
-        limit,
-        totalPages: Math.ceil(total / limit)
-      }
-    };
+    return { faseAtual: fase, data: lista };
   }
 
-  async getBySlug(slug: string, userPlano?: string) {
-    const conteudo = await prisma.conteudoEducacional.findUnique({
-      where: { slug }
+  async getBySlug(userId: string, slug: string) {
+    const conteudo = await prisma.conteudoEducacional.findFirst({
+      where: { slug, publicado: true, deletedAt: null },
     });
-
     if (!conteudo) return null;
 
-    const isPremium = ['PREMIUM_MENSAL', 'PREMIUM_ANUAL'].includes(userPlano || 'FREE');
-    if (conteudo.premiumOnly && !isPremium) {
-      throw new Error('Conteúdo exclusivo para assinantes Premium');
+    if (conteudo.premiumOnly && !(await assinaturaService.temModulo(userId, 'BIBLIOTECA'))) {
+      throw new ConteudoBloqueadoError();
     }
 
-    return conteudo;
+    await prisma.conteudoEducacional.update({
+      where: { id: conteudo.id },
+      data: { visualizacoes: { increment: 1 } },
+    });
+
+    return { ...conteudo, fasesAplicaveis: fasesDe(conteudo.fasesAplicaveis) };
   }
 }

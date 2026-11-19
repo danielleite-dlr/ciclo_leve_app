@@ -122,5 +122,8 @@ router.get('/', authMiddleware, perfilController.getPerfil);
  *         description: Ciclo atualizado e recalculo de fase executado.
  */
 router.put('/ciclo', authMiddleware, perfilController.atualizarCiclo.bind(perfilController));
+router.delete('/', authMiddleware, perfilController.excluirConta.bind(perfilController));
+router.put('/', authMiddleware, perfilController.atualizarDados.bind(perfilController));
+router.put('/senha', authMiddleware, perfilController.alterarSenha.bind(perfilController));
 
 export { router as perfilRoutes };

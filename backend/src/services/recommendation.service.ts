@@ -62,7 +62,7 @@ export class RecommendationService {
 
     return GATILHOS_SINTOMA
       .filter((gatilho) => mapeamento[gatilho.sintoma] >= gatilho.nivelDisparo)
-      .map((gatilho) => `${gatilho.emoji} ${gatilho.mensagem}`);
+      .map((gatilho) => gatilho.mensagem);
   }
 
   private getNotaEspecialista(

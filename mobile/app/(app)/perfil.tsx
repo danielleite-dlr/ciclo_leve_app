@@ -1,382 +1,377 @@
-import { View, Text, ScrollView, TouchableOpacity, Switch, StyleSheet, ActivityIndicator, Alert } from 'react-native';
-import { useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
+import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useFocusEffect, useRouter } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Bell, CalendarDays, ChevronRight, Clock, FileHeart, FileText, Fingerprint, History, KeyRound, Lock, LogOut, ShieldCheck, Target } from 'lucide-react-native';
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 import { Colors } from '@/constants/Colors';
-import { useRouter } from 'expo-router';
-import { Settings, LogOut, ChevronRight, Bell, Target, CalendarDays, Clock, ShieldCheck, FileText, Pencil, User } from 'lucide-react-native';
+import { OBJETIVOS } from '@/constants/objetivos';
+import Constants from 'expo-constants';
 import { removeToken } from '@/services/storage';
+import { formatarHora, LembretePref, lerLembrete, limparLembrete } from '@/services/lembrete';
+import { bloqueioAtivo, definirBloqueio, limparBloqueio, nomeDoMetodo } from '@/services/bloqueio';
 import api from '@/services/api';
+import { useAssinatura } from '@/contexts/AssinaturaContext';
 
 type PerfilPayload = {
   user: {
     nomeCompleto?: string | null;
     email?: string | null;
+    createdAt?: string | null;
+    plano?: string | null;
+    consentimentoSaudeSexual?: boolean | null;
   };
-  ciclo: {
-    duracaoCiclo?: number | null;
-    duracaoSangramento?: number | null;
-  } | null;
+  ciclo: { duracaoCiclo?: number | null; duracaoSangramento?: number | null; objetivos?: string[] | null } | null;
 };
+
+const emBreve = (titulo: string) => Alert.alert(titulo, 'Disponível em uma próxima versão.');
+
+function SettingItem({
+  icon: Icon,
+  label,
+  subtitle,
+  value,
+  onPress,
+  last,
+}: {
+  icon: React.ComponentType<{ size?: number; color?: string }>;
+  label: string;
+  subtitle?: string;
+  value?: string;
+  onPress?: () => void;
+  last?: boolean;
+}) {
+  return (
+    <TouchableOpacity onPress={onPress} style={[styles.item, last && styles.itemLast]} activeOpacity={0.7}>
+      <View style={styles.itemIcon}>
+        <Icon size={20} color={Colors.primary.DEFAULT} />
+      </View>
+      <View style={styles.flex1}>
+        <Text style={styles.itemLabel}>{label}</Text>
+        {subtitle ? (
+          <Text style={styles.itemSubtitle} numberOfLines={1}>
+            {subtitle}
+          </Text>
+        ) : null}
+      </View>
+      {value ? <Text style={styles.itemValue}>{value}</Text> : null}
+      <ChevronRight size={20} color={Colors.textLight} />
+    </TouchableOpacity>
+  );
+}
 
 export default function Perfil() {
   const router = useRouter();
+  const assinatura = useAssinatura();
+  const insets = useSafeAreaInsets();
   const [perfil, setPerfil] = useState<PerfilPayload | null>(null);
   const [loading, setLoading] = useState(true);
+  const [lembrete, setLembrete] = useState<LembretePref | null>(null);
+  const [bloqueio, setBloqueio] = useState<{ ativo: boolean; metodo: string }>({ ativo: false, metodo: 'Face ID' });
 
-  const handleLogout = async () => {
-    await removeToken();
-    router.replace('/(auth)/login');
+  // Recarrega ao voltar para a aba (ex.: depois de editar objetivos ou dados do ciclo)
+  useFocusEffect(
+    useCallback(() => {
+      let active = true;
+      lerLembrete().then((l) => active && setLembrete(l));
+      Promise.all([bloqueioAtivo(), nomeDoMetodo()]).then(([ativo, metodo]) => active && setBloqueio({ ativo, metodo }));
+      (async () => {
+        try {
+          const res = await api.get('/perfil');
+          if (active) setPerfil(res.data);
+        } catch (error: any) {
+          if (active && !perfil) {
+            Alert.alert(
+              'Erro ao carregar perfil',
+              error?.response?.data?.error || 'Não foi possível carregar seus dados agora.'
+            );
+          }
+        } finally {
+          if (active) setLoading(false);
+        }
+      })();
+      return () => {
+        active = false;
+      };
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
+  );
+
+  const handleLogout = () => {
+    Alert.alert('Sair da conta', 'Deseja mesmo sair?', [
+      { text: 'Cancelar', style: 'cancel' },
+      {
+        text: 'Sair',
+        style: 'destructive',
+        onPress: async () => {
+          await removeToken();
+          await limparLembrete();
+          await limparBloqueio();
+          router.replace('/(auth)/login');
+        },
+      },
+    ]);
   };
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const res = await api.get('/perfil');
-        setPerfil(res.data);
-      } catch (error: any) {
-        // eslint-disable-next-line no-console
-        console.error('[PERFIL] erro ao carregar /perfil', error?.response?.data || error?.message);
-        Alert.alert(
-          'Erro ao carregar perfil',
-          error?.response?.data?.message || error?.response?.data?.error || 'Não foi possível carregar seus dados agora.'
-        );
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, []);
+  const alternarBloqueio = async () => {
+    const { ok, motivo } = await definirBloqueio(!bloqueio.ativo);
+    if (ok) setBloqueio((b) => ({ ...b, ativo: !b.ativo }));
+    else if (motivo) Alert.alert('Não foi possível ativar', motivo);
+  };
 
-  const SettingItem = ({
-    icon: Icon,
-    label,
-    value,
-    subtitle,
-    onPress,
-    isSwitch,
-    switchValue,
-    onToggle,
-    iconColor,
-    iconBgColor,
-  }: any) => (
-    <TouchableOpacity
-      onPress={onPress}
-      style={styles.settingItem}
-      disabled={isSwitch && !onPress}
-    >
-      <View style={styles.settingLeft}>
-        <View
-          style={[
-            styles.settingIconBg,
-            iconBgColor ? { backgroundColor: iconBgColor } : null,
-          ]}
-        >
-          <Icon size={20} color={iconColor || Colors.text} />
-        </View>
-        <View>
-          <Text style={styles.settingLabel}>{label}</Text>
-          {subtitle ? <Text style={styles.settingSubtitle}>{subtitle}</Text> : null}
-        </View>
-      </View>
-      <View style={styles.settingRight}>
-        {value && <Text style={styles.settingValue}>{value}</Text>}
-        {isSwitch ? (
-          <Switch
-            trackColor={{ false: '#D1D5DB', true: Colors.primary.light }}
-            thumbColor={Colors.primary.DEFAULT}
-            value={!!switchValue}
-            onValueChange={onToggle}
-          />
-        ) : (
-          <ChevronRight size={20} color={Colors.textLight} />
-        )}
-      </View>
-    </TouchableOpacity>
-  );
+  // LGPD: revogar o consentimento apaga todos os registros de relacao e testes.
+  const gerenciarDadosIntimos = () => {
+    if (!perfil?.user?.consentimentoSaudeSexual) {
+      Alert.alert(
+        'Privacidade dos dados íntimos',
+        'Você ainda não autorizou o registro de relações e testes. A autorização é pedida no primeiro registro.'
+      );
+      return;
+    }
+    Alert.alert(
+      'Apagar dados íntimos?',
+      'Vamos apagar todos os seus registros de relação e testes e revogar a autorização. Isso não pode ser desfeito.',
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Apagar e revogar',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              const res = await api.post('/fertilidade/consentimento', { aceito: false });
+              setPerfil((p) => (p ? { ...p, user: { ...p.user, consentimentoSaudeSexual: false } } : p));
+              Alert.alert('Pronto', `Autorização revogada. ${res.data?.apagados ?? 0} registro(s) apagado(s).`);
+            } catch {
+              Alert.alert('Erro', 'Não foi possível apagar agora. Tente novamente.');
+            }
+          },
+        },
+      ]
+    );
+  };
 
   if (loading) {
     return (
-      <View style={[styles.screen, { justifyContent: 'center', alignItems: 'center' }] }>
+      <View style={[styles.screen, styles.center]}>
         <ActivityIndicator size="large" color={Colors.primary.DEFAULT} />
       </View>
     );
   }
 
   const nome = (perfil?.user?.nomeCompleto || '').trim() || '—';
-  const email = (perfil?.user?.email || '').trim() || '—';
-  const duracaoCiclo = perfil?.ciclo?.duracaoCiclo ? `${perfil.ciclo.duracaoCiclo} dias` : '—';
-  const duracaoSangramento = perfil?.ciclo?.duracaoSangramento ? `${perfil.ciclo.duracaoSangramento} dias` : '—';
+  const email = (perfil?.user?.email || '').trim();
+  const iniciais = nome
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((p) => p[0]?.toUpperCase())
+    .join('');
+  const membroDesde = perfil?.user?.createdAt
+    ? `Membro desde ${format(new Date(perfil.user.createdAt), 'MMMM yyyy', { locale: ptBR })}`
+    : '';
+
+  const ciclo = perfil?.ciclo;
+  const objetivos = (ciclo?.objetivos ?? [])
+    .map((id) => OBJETIVOS.find((o) => o.id === id)?.title)
+    .filter(Boolean)
+    .join(', ');
+  const resumoCiclo = ciclo?.duracaoCiclo
+    ? `Ciclo de ${ciclo.duracaoCiclo} dias · sangramento de ${ciclo.duracaoSangramento} dias`
+    : 'Complete seus dados';
+  const plano = !assinatura.status
+    ? (perfil?.user?.plano || 'FREE').toUpperCase() === 'FREE' ? 'Gratuito' : 'Premium'
+    : assinatura.status.premium
+      ? assinatura.status.emTeste ? 'Premium (teste)' : 'Premium'
+      : 'Gratuito';
 
   return (
     <View style={styles.screen}>
-      {/* Top bar simples com título */}
-      <View style={styles.topBar}>
-        <Text style={styles.topTitle}>Perfil</Text>
+      <View style={[styles.header, { paddingTop: insets.top + 12 }]}>
+        <Text style={styles.headerTitle}>Perfil</Text>
       </View>
 
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        {/* Header */}
-        <View style={styles.headerCard}>
-          <View style={styles.avatarWrap}>
-            <User size={26} color="#7C3AED" />
+      <ScrollView contentContainerStyle={styles.content}>
+        <TouchableOpacity style={styles.profileCard} onPress={() => router.push('/(app)/editar-dados')} activeOpacity={0.8}>
+          <View style={styles.avatar}>
+            <Text style={styles.avatarText}>{iniciais || '?'}</Text>
           </View>
-          <View style={styles.headerTextBlock}>
+          <View style={styles.flex1}>
             <Text style={styles.name}>{nome}</Text>
-            <Text style={styles.email}>{email}</Text>
-            <Text style={styles.memberSince}>Membro desde 2024</Text>
+            {email ? <Text style={styles.email}>{email}</Text> : null}
+            {membroDesde ? <Text style={styles.memberSince}>{membroDesde}</Text> : null}
           </View>
-          <TouchableOpacity
-            onPress={() => { /* TODO: editar dados básicos (futuro) */ }}
-            style={styles.editBtn}
-            activeOpacity={0.7}
-          >
-            <Pencil size={18} color="#6B7280" />
-          </TouchableOpacity>
-        </View>
+          <View style={styles.editHint}>
+            <Text style={styles.editHintText}>Editar</Text>
+            <ChevronRight size={18} color={Colors.primary.DEFAULT} />
+          </View>
+        </TouchableOpacity>
 
-        {/* Meus dados */}
         <Text style={styles.sectionTitle}>Meus dados</Text>
-        <View style={styles.sectionCard}>
+        <View style={styles.section}>
           <SettingItem
             icon={Target}
-            label="Editar Objetivos"
-            subtitle="TPM, Menopausa, Bem-estar"
-            iconColor="#7C3AED"
-            iconBgColor="rgba(129,140,248,0.15)"
+            label="Objetivos"
+            subtitle={objetivos || 'Nenhum objetivo escolhido'}
             onPress={() => router.push('/(app)/objetivos')}
           />
           <SettingItem
             icon={CalendarDays}
-            label="Dados do Ciclo"
-            subtitle={duracaoCiclo !== '—' ? `Duração: ${duracaoCiclo}` : undefined}
-            iconColor="#0EA5E9"
-            iconBgColor="rgba(56,189,248,0.15)"
-            onPress={() => router.push('/(onboarding)/dados-corpo')}
+            label="Dados do ciclo"
+            subtitle={resumoCiclo}
+            onPress={() => router.push({ pathname: '/(onboarding)/passos', params: { modo: 'editar' } })}
+          />
+          <SettingItem
+            icon={History}
+            label="Histórico do ciclo"
+            subtitle="Menstruações registradas e médias"
+            onPress={() => router.push('/(app)/historico')}
+          />
+          <SettingItem
+            icon={FileHeart}
+            label="Relatório para o médico"
+            subtitle="PDF com ciclos e sintomas"
+            value={assinatura.temModulo('RELATORIO') ? undefined : 'Premium'}
+            onPress={() =>
+              assinatura.temModulo('RELATORIO') ? router.push('/(app)/relatorio') : assinatura.abrirPlanos('RELATORIO')
+            }
+            last
           />
         </View>
 
-        {/* Preferências */}
         <Text style={styles.sectionTitle}>Preferências</Text>
-        <View style={styles.sectionCard}>
+        <View style={styles.section}>
           <SettingItem
             icon={Clock}
             label="Lembrete diário"
-            value="09:00"
-            subtitle="Defina um horário para lembrar do registro"
-            iconColor="#F97316"
-            iconBgColor="rgba(251,146,60,0.15)"
-            onPress={() => { /* TODO: tela de lembrete diário */ }}
+            subtitle={lembrete?.ativo ? `Todos os dias às ${formatarHora(lembrete)}` : 'Desativado'}
+            onPress={() => router.push('/(app)/lembrete')}
           />
           <SettingItem
             icon={Bell}
-            label="Notificações Push"
-            isSwitch
-            switchValue={true}
-            subtitle="Receber lembretes suaves do app"
-            iconColor="#22C55E"
-            iconBgColor="rgba(34,197,94,0.15)"
+            label="Notificações"
+            subtitle="Lembretes e avisos do app"
             onPress={() => router.push('/(app)/notificacoes')}
+            last
           />
         </View>
 
-        {/* Assinatura */}
-        <Text style={styles.sectionTitle}>Assinatura</Text>
-        <View style={styles.sectionCardHighlighted}>
+        <Text style={styles.sectionTitle}>Conta</Text>
+        <View style={styles.section}>
+          <SettingItem icon={ShieldCheck} label="Assinatura" value={plano} onPress={() => router.push('/(app)/planos')} />
+          <SettingItem icon={KeyRound} label="Alterar senha" onPress={() => router.push('/(app)/alterar-senha')} />
           <SettingItem
-            icon={ShieldCheck}
-            label="Gerenciar Assinatura"
-            value="Plano Free"
-            subtitle="Plano Free ativo"
-            iconColor="#16A34A"
-            iconBgColor="rgba(34,197,94,0.18)"
-            onPress={() => { /* TODO: tela de assinatura */ }}
+            icon={Fingerprint}
+            label={`Bloquear com ${bloqueio.metodo}`}
+            subtitle={bloqueio.ativo ? 'Ativado · pede ao abrir o app' : 'Desativado'}
+            onPress={alternarBloqueio}
           />
-        </View>
-
-        {/* Termos e conta */}
-        <View style={styles.sectionCard}>
+          <SettingItem
+            icon={Lock}
+            label="Privacidade dos dados íntimos"
+            subtitle={perfil?.user?.consentimentoSaudeSexual ? 'Autorizado · toque para apagar' : 'Relações e testes'}
+            onPress={gerenciarDadosIntimos}
+          />
           <SettingItem
             icon={FileText}
-            label="Termos e Política"
-            subtitle="Uso do app e privacidade"
-            iconColor="#6B7280"
-            iconBgColor="rgba(209,213,219,0.3)"
-            onPress={() => { /* TODO: tela de termos */ }}
+            label="Termos e privacidade"
+            subtitle="Uso do app e seus dados"
+            onPress={() => emBreve('Termos e privacidade')}
+            last
           />
         </View>
 
-        {/* Logout / Excluir conta */}
-        <TouchableOpacity onPress={handleLogout} style={styles.logoutBtn}>
-          <LogOut size={20} color="#EF4444" />
+        <TouchableOpacity onPress={handleLogout} style={styles.logoutBtn} activeOpacity={0.7}>
+          <LogOut size={20} color={Colors.primary.dark} />
           <Text style={styles.logoutText}>Sair da conta</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity
-          onPress={() => Alert.alert('Em breve', 'A exclusão de conta será liberada em uma próxima versão.')}
-          style={styles.deleteAccountBtn}
-        >
-          <Text style={styles.deleteAccountText}>Excluir minha conta</Text>
+        <TouchableOpacity onPress={() => router.push('/(app)/excluir-conta')} style={styles.deleteBtn}>
+          <Text style={styles.deleteText}>Excluir minha conta</Text>
         </TouchableOpacity>
+
+        <Text style={styles.version}>CicloLeve · versão {Constants.expoConfig?.version ?? '—'}</Text>
       </ScrollView>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: '#F3F4F6',
-  },
-  topBar: {
-    paddingTop: 44,
-    paddingBottom: 12,
-    paddingHorizontal: 24,
-    backgroundColor: '#F3F4F6',
-  },
-  topTitle: {
-    fontSize: 16,
-    fontWeight: '900',
-    color: '#111827',
-  },
-  headerCard: {
-    padding: 16,
-    marginBottom: 24,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: '#E5E7EB',
+  screen: { flex: 1, backgroundColor: Colors.background },
+  center: { justifyContent: 'center', alignItems: 'center' },
+  flex1: { flex: 1 },
+  header: { paddingHorizontal: 24, paddingBottom: 12 },
+  headerTitle: { fontSize: 22, fontWeight: '900', color: Colors.text },
+  content: { paddingHorizontal: 16, paddingTop: 4, paddingBottom: 120 },
+
+  profileCard: {
     flexDirection: 'row',
     alignItems: 'center',
+    gap: 14,
+    backgroundColor: Colors.surface,
+    borderRadius: 24,
+    padding: 18,
+    marginBottom: 24,
   },
-  avatarWrap: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: 'rgba(129,140,248,0.16)',
+  avatar: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: Colors.primary.light,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 14,
   },
-  headerTextBlock: {
-    flex: 1,
-  },
-  editBtn: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#F3F4F6',
-  },
-  name: {
-    fontSize: 20,
-    fontWeight: '800',
-    color: '#111827',
-  },
-  email: {
-    marginTop: 2,
-    fontSize: 13,
-    color: '#6B7280',
-  },
-  memberSince: {
-    marginTop: 6,
-    fontSize: 12,
-    color: '#9CA3AF',
-  },
-  scrollContent: {
-    paddingHorizontal: 16,
-    paddingVertical: 16,
-    paddingBottom: 40,
-  },
+  avatarText: { fontSize: 20, fontWeight: '900', color: Colors.primary.dark },
+  name: { fontSize: 20, fontWeight: '900', color: Colors.text },
+  email: { marginTop: 2, fontSize: 14, color: Colors.textLight },
+  memberSince: { marginTop: 4, fontSize: 12, color: Colors.textLight },
+
   sectionTitle: {
     fontSize: 12,
     fontWeight: '800',
-    color: '#9CA3AF',
+    color: Colors.textLight,
     textTransform: 'uppercase',
     letterSpacing: 1,
     marginBottom: 8,
     marginLeft: 8,
   },
-  sectionCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: '#E5E7EB',
-    marginBottom: 16,
-    overflow: 'hidden',
-  },
-  sectionCardHighlighted: {
-    backgroundColor: 'rgba(219,234,254,0.9)',
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: 'rgba(59,130,246,0.35)',
-    marginBottom: 16,
-    overflow: 'hidden',
-  },
-  settingItem: {
+  section: { backgroundColor: Colors.surface, borderRadius: 20, marginBottom: 20, overflow: 'hidden' },
+  item: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    gap: 12,
     paddingHorizontal: 16,
     paddingVertical: 14,
     borderBottomWidth: 1,
-    borderBottomColor: '#F3F4F6',
+    borderBottomColor: Colors.background,
   },
-  settingLeft: {
-    flexDirection: 'row',
+  itemLast: { borderBottomWidth: 0 },
+  itemIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: Colors.primary.light,
     alignItems: 'center',
+    justifyContent: 'center',
   },
-  settingIconBg: {
-    padding: 8,
-    borderRadius: 999,
-    backgroundColor: '#F3F4F6',
-    marginRight: 12,
-  },
-  settingLabel: {
-    fontSize: 15,
-    fontWeight: '700',
-    color: '#111827',
-  },
-  settingSubtitle: {
-    marginTop: 2,
-    fontSize: 12,
-    color: '#6B7280',
-  },
-  settingRight: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  settingValue: {
-    fontSize: 13,
-    color: '#6B7280',
-    marginRight: 4,
-  },
+  itemLabel: { fontSize: 15, fontWeight: '700', color: Colors.text },
+  itemSubtitle: { marginTop: 2, fontSize: 13, color: Colors.textLight },
+  itemValue: { fontSize: 13, fontWeight: '700', color: Colors.textLight },
+
   logoutBtn: {
-    marginTop: 16,
-    marginHorizontal: 16,
-    paddingVertical: 14,
+    marginTop: 4,
+    paddingVertical: 16,
     borderRadius: 999,
-    backgroundColor: '#FEF2F2',
-    borderWidth: 1,
-    borderColor: '#FECACA',
+    backgroundColor: Colors.surface,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
   },
-  logoutText: {
-    fontSize: 15,
-    fontWeight: '800',
-    color: '#B91C1C',
-  },
-  deleteAccountBtn: {
-    marginTop: 12,
-    marginHorizontal: 16,
-    paddingVertical: 10,
-    alignItems: 'center',
-  },
-  deleteAccountText: {
-    fontSize: 13,
-    fontWeight: '700',
-    color: '#EF4444',
-  },
+  logoutText: { fontSize: 15, fontWeight: '800', color: Colors.primary.dark },
+  deleteBtn: { marginTop: 12, paddingVertical: 10, alignItems: 'center' },
+  deleteText: { fontSize: 13, fontWeight: '700', color: Colors.error },
+  version: { marginTop: 8, textAlign: 'center', fontSize: 12, color: Colors.textLight },
+  editHint: { flexDirection: 'row', alignItems: 'center' },
+  editHintText: { fontSize: 13, fontWeight: '800', color: Colors.primary.DEFAULT },
 });

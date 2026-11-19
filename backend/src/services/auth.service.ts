@@ -5,7 +5,7 @@ import { User } from '@prisma/client';
 
 export class AuthService {
   async register(data: any) {
-    const { nome, email, senha, dataNascimento } = data;
+    const { nome, email, senha, dataNascimento, consentimentoLgpd } = data;
 
     const existingUser = await prisma.user.findUnique({
       where: { email },
@@ -23,6 +23,9 @@ export class AuthService {
         email,
         passwordHash,
         dataNascimento: dataNascimento ? new Date(dataNascimento) : null,
+        // Aceite dos Termos e da Politica de Privacidade na criacao da conta
+        consentimentoLgpd: !!consentimentoLgpd,
+        consentimentoData: consentimentoLgpd ? new Date() : null,
       },
     });
 

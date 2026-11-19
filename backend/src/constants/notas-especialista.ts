@@ -11,47 +11,47 @@ export interface NotaSemCiclo {
 
 export const NOTAS_POR_DIA: NotaEspecialista[] = [
   // MENSTRUAL (Dias 1-5)
-  { diaCiclo: 1, fase: 'MENSTRUAL', mensagem: 'Primeiro dia. Seu corpo está se renovando. Se só der pra fazer uma coisa hoje, descanse. O resto pode esperar.' },
-  { diaCiclo: 2, fase: 'MENSTRUAL', mensagem: 'Se você acordou sem energia, tá certo. Não é preguiça — seus hormônios estão no ponto mais baixo do mês. Vai com calma.' },
-  { diaCiclo: 3, fase: 'MENSTRUAL', mensagem: 'Dia 3 costuma ser o mais pesado. Se só der pra fazer uma coisa, beba água. Sério, já é uma vitória.' },
-  { diaCiclo: 4, fase: 'MENSTRUAL', mensagem: 'Você tá quase saindo da fase mais difícil. Se bateu uma fome emocional, não se julgue. Coma algo que nutra e conforte.' },
-  { diaCiclo: 5, fase: 'MENSTRUAL', mensagem: 'Último dia de menstruação pra maioria. Já consegue sentir a energia voltando aos poucos? Amanhã tende a ser melhor.' },
+  { diaCiclo: 1, fase: 'MENSTRUAL', mensagem: 'Primeiro dia da menstruação. Se der para fazer só uma coisa hoje, descanse. O resto pode esperar.' },
+  { diaCiclo: 2, fase: 'MENSTRUAL', mensagem: 'Acordar sem energia hoje é comum: estrogênio e progesterona estão no ponto mais baixo do mês. Vá com calma.' },
+  { diaCiclo: 3, fase: 'MENSTRUAL', mensagem: 'Para muitas mulheres, o terceiro dia é o mais pesado. Se der para fazer só uma coisa, beba água ao longo do dia.' },
+  { diaCiclo: 4, fase: 'MENSTRUAL', mensagem: 'A fase mais difícil está terminando. Se bater fome emocional, coma algo que nutra e conforte, sem se julgar.' },
+  { diaCiclo: 5, fase: 'MENSTRUAL', mensagem: 'Para a maioria, é o último dia de menstruação. A energia costuma voltar aos poucos a partir de amanhã.' },
 
   // FOLICULAR (Dias 6-12)
-  { diaCiclo: 6, fase: 'FOLICULAR', mensagem: 'Bem-vinda à sua melhor fase. O estrogênio tá subindo e você vai sentir. Aproveita esse gás pra organizar a semana.' },
-  { diaCiclo: 7, fase: 'FOLICULAR', mensagem: 'Hoje é um ótimo dia pra começar algo novo — um treino, uma receita, um plano. Seu cérebro tá afiado.' },
-  { diaCiclo: 8, fase: 'FOLICULAR', mensagem: 'Se você tem vontade de comer bem e treinar, não é força de vontade: é hormônio ajudando. Surfa essa onda.' },
-  { diaCiclo: 9, fase: 'FOLICULAR', mensagem: 'Metade da fase folicular. Se tá se sentindo produtiva, é real. Use isso a seu favor sem se cobrar demais.' },
-  { diaCiclo: 10, fase: 'FOLICULAR', mensagem: 'Seu corpo tá respondendo bem a treino e alimentação agora. Qualquer esforço nessa fase rende mais.' },
-  { diaCiclo: 11, fase: 'FOLICULAR', mensagem: 'Amanhã ou depois começa a ovulação. Se quiser planejar algo social ou desafiador, agenda pra esses dias.' },
-  { diaCiclo: 12, fase: 'FOLICULAR', mensagem: 'Último dia antes do pico. Você provavelmente tá se sentindo bem — e isso não é ilusão. É biologia a seu favor.' },
+  { diaCiclo: 6, fase: 'FOLICULAR', mensagem: 'Começa a fase folicular. Com o estrogênio subindo, muitas mulheres sentem mais disposição. Se for seu caso, use para organizar a semana.' },
+  { diaCiclo: 7, fase: 'FOLICULAR', mensagem: 'Hoje pode ser um bom dia para começar algo novo, como um treino, uma receita ou um plano. Nessa fase o foco costuma estar melhor.' },
+  { diaCiclo: 8, fase: 'FOLICULAR', mensagem: 'Se bater vontade de comer bem e treinar, os hormônios dessa fase costumam ajudar. Aproveite enquanto durar.' },
+  { diaCiclo: 9, fase: 'FOLICULAR', mensagem: 'Metade da fase folicular. Se estiver se sentindo produtiva, use isso a seu favor sem se cobrar demais.' },
+  { diaCiclo: 10, fase: 'FOLICULAR', mensagem: 'Nessa fase o corpo costuma responder bem a treino e alimentação. Se a energia estiver boa, aproveite.' },
+  { diaCiclo: 11, fase: 'FOLICULAR', mensagem: 'A ovulação começa em um ou dois dias. Se quiser marcar algo social ou desafiador, esses dias costumam ser bons.' },
+  { diaCiclo: 12, fase: 'FOLICULAR', mensagem: 'Último dia antes do pico de estrogênio. Muitas mulheres se sentem bem agora. Se não for seu caso hoje, tudo bem, cada ciclo é diferente.' },
 
   // OVULATÓRIA (Dias 13-16)
-  { diaCiclo: 13, fase: 'OVULATORIA', mensagem: 'Pico de estrogênio. Você tá no auge do mês. Se sentir vontade de socializar, treinar forte ou resolver pendências — vai.' },
-  { diaCiclo: 14, fase: 'OVULATORIA', mensagem: 'Hoje seu corpo tá no modo "eu consigo". Aproveita pra fazer aquilo que você adia. Amanhã pode não ter o mesmo gás.' },
-  { diaCiclo: 15, fase: 'OVULATORIA', mensagem: 'Algumas mulheres incham um pouco na ovulação. Se acontecer, não é gordura — é retenção. Água e fibra resolvem.' },
-  { diaCiclo: 16, fase: 'OVULATORIA', mensagem: 'Último dia de pico. A partir de amanhã, a progesterona sobe e o ritmo muda. Tá tudo certo — é o ciclo fazendo o ciclo.' },
+  { diaCiclo: 13, fase: 'OVULATORIA', mensagem: 'Pico de estrogênio. Se sentir vontade de socializar, treinar mais forte ou resolver pendências, vá em frente. Se não, respeite seu ritmo.' },
+  { diaCiclo: 14, fase: 'OVULATORIA', mensagem: 'Para muitas mulheres, hoje é um dia de mais disposição. Se for seu caso, aproveite para fazer algo que você vem adiando.' },
+  { diaCiclo: 15, fase: 'OVULATORIA', mensagem: 'Algumas mulheres incham um pouco na ovulação. Esse inchaço vem da retenção de líquido e costuma melhorar com água e fibras.' },
+  { diaCiclo: 16, fase: 'OVULATORIA', mensagem: 'Último dia de pico. A partir de amanhã a progesterona sobe e o ritmo tende a mudar. Isso faz parte do ciclo.' },
 
   // LÚTEA / TPM (Dias 17-28)
-  { diaCiclo: 17, fase: 'LUTEA', mensagem: 'A progesterona começou a subir. Você pode sentir o ritmo desacelerar. Não force — adapte.' },
-  { diaCiclo: 18, fase: 'LUTEA', mensagem: 'Se você tá com mais fome hoje, é seu corpo pedindo energia pro que vem. Não é fraqueza. Planeje um lanche gostoso.' },
-  { diaCiclo: 19, fase: 'LUTEA', mensagem: 'Seu corpo tá retendo mais líquido agora. A balança pode subir, mas não é gordura. Confia no processo.' },
-  { diaCiclo: 20, fase: 'LUTEA', mensagem: 'Metade da fase lútea. Se a irritação aparecer, respira fundo. Não é frescura — é progesterona. Você não precisa resolver tudo hoje.' },
-  { diaCiclo: 21, fase: 'LUTEA', mensagem: 'Se o treino tá mais difícil, diminui a intensidade sem culpa. Caminhada conta. Alongamento conta. Descanso conta.' },
-  { diaCiclo: 22, fase: 'LUTEA', mensagem: 'Fome de carbo? Normal. Seu metabolismo tá mais acelerado agora e pede mais energia. Escolha carbo com fibra e segue em frente.' },
-  { diaCiclo: 23, fase: 'LUTEA', mensagem: 'Se você acordou se sentindo inchada e irritada, saiba: é a fase mais desafiadora do ciclo. Você não tá falhando. Seu corpo tá trabalhando.' },
-  { diaCiclo: 24, fase: 'LUTEA', mensagem: 'Hoje é dia de ser gentil consigo. Se der, caminha 20 min. Se não der, tá tudo bem. Amanhã é outro dia.' },
-  { diaCiclo: 25, fase: 'LUTEA', mensagem: 'Faltam poucos dias pra menstruação. O pior da TPM costuma ser agora. Se precisar de um chocolate, come. Sem drama.' },
-  { diaCiclo: 26, fase: 'LUTEA', mensagem: 'Se tá difícil dormir, tenta deitar mais cedo e desligar tela 30 min antes. O sono melhora muito a TPM do dia seguinte.' },
-  { diaCiclo: 27, fase: 'LUTEA', mensagem: 'Quase lá. Seu corpo tá se preparando pra recomeçar o ciclo. Tudo que você tá sentindo tem data pra passar.' },
-  { diaCiclo: 28, fase: 'LUTEA', mensagem: 'Último dia do ciclo. Amanhã recomeça — e com ele, a energia volta. Você passou por mais um mês inteiro. Isso merece respeito.' }
+  { diaCiclo: 17, fase: 'LUTEA', mensagem: 'A progesterona começou a subir e o ritmo pode desacelerar. Ajuste a rotina em vez de forçar.' },
+  { diaCiclo: 18, fase: 'LUTEA', mensagem: 'Mais fome hoje é comum nessa fase, porque o corpo gasta mais energia. Planeje um lanche que você goste.' },
+  { diaCiclo: 19, fase: 'LUTEA', mensagem: 'O corpo retém mais líquido nessa fase. Se a balança subir um pouco, é retenção e costuma passar com a menstruação.' },
+  { diaCiclo: 20, fase: 'LUTEA', mensagem: 'Metade da fase lútea. A progesterona alta pode deixar você mais irritada. Respire fundo e deixe o que puder para outro dia.' },
+  { diaCiclo: 21, fase: 'LUTEA', mensagem: 'Se o treino estiver mais difícil, diminua a intensidade sem culpa. Caminhada, alongamento e descanso também contam.' },
+  { diaCiclo: 22, fase: 'LUTEA', mensagem: 'Vontade de carboidrato é comum agora, porque o metabolismo está mais acelerado. Prefira carboidratos com fibra, como frutas, aveia e pães integrais.' },
+  { diaCiclo: 23, fase: 'LUTEA', mensagem: 'Inchaço e irritação são comuns nessa parte do ciclo, que costuma ser a mais desafiadora. Você não está fazendo nada de errado.' },
+  { diaCiclo: 24, fase: 'LUTEA', mensagem: 'Se der, caminhe 20 minutos hoje. Se não der, tudo bem.' },
+  { diaCiclo: 25, fase: 'LUTEA', mensagem: 'Faltam poucos dias para a menstruação, e os sintomas de TPM costumam ser mais fortes agora. Se quiser um pedaço de chocolate, coma sem culpa.' },
+  { diaCiclo: 26, fase: 'LUTEA', mensagem: 'Se estiver difícil dormir, deite mais cedo e desligue as telas 30 minutos antes. Dormir bem alivia a TPM do dia seguinte.' },
+  { diaCiclo: 27, fase: 'LUTEA', mensagem: 'O corpo está se preparando para um novo ciclo. Os sintomas dessa fase costumam passar quando a menstruação começa.' },
+  { diaCiclo: 28, fase: 'LUTEA', mensagem: 'Último dia do ciclo. Com a menstruação, um novo ciclo começa e a energia tende a voltar nos dias seguintes.' }
 ];
 
 export const NOTAS_SEM_CICLO: NotaSemCiclo[] = [
-  { contexto: 'generica', mensagem: 'Bom dia! Registra como você tá se sentindo hoje — leva 30 segundos e ajuda a entender seus padrões.' },
-  { contexto: 'inchaco', mensagem: 'Se você tá se sentindo inchada, não é culpa sua. Seu corpo retém líquido por vários motivos. Água e caminhada ajudam mais do que cortar comida.' },
-  { contexto: 'fome', mensagem: 'Fome intensa não é falta de controle. Seu corpo tá pedindo algo. Atende com proteína e um lanche planejado — sem culpa.' },
-  { contexto: 'sono', mensagem: 'Noite ruim? Hoje vai com calma. Evita cafeína da tarde em diante e tenta compensar com uma caminhada leve. Não se cobre demais.' },
-  { contexto: 'humor', mensagem: 'Se tá tudo pesado hoje, tá tudo bem sentir isso. Não precisa resolver nada agora. 5 minutos de respiração já muda o dia.' },
-  { contexto: 'dia_bom', mensagem: 'Dia bom, hein? Aproveita essa energia. Seu corpo tá te dizendo que algo tá funcionando — continua assim.' }
+  { contexto: 'generica', mensagem: 'Registre como você está se sentindo hoje. Leva 30 segundos e ajuda a entender seus padrões.' },
+  { contexto: 'inchaco', mensagem: 'O corpo retém líquido por vários motivos e isso não é culpa sua. Água e caminhada ajudam mais do que cortar comida.' },
+  { contexto: 'fome', mensagem: 'Fome intensa costuma ser sinal de que o corpo precisa de energia. Inclua proteína e um lanche planejado, sem culpa.' },
+  { contexto: 'sono', mensagem: 'Depois de uma noite ruim, vá com calma. Evite cafeína à tarde e, se puder, faça uma caminhada leve.' },
+  { contexto: 'humor', mensagem: 'Se o dia está pesado, você não precisa resolver tudo agora. Cinco minutos de respiração já ajudam.' },
+  { contexto: 'dia_bom', mensagem: 'Seus registros mostram um dia tranquilo. Aproveite a energia de hoje.' }
 ];

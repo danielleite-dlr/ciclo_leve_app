@@ -1,15 +1,55 @@
-import { Tabs } from 'expo-router';
-import { Platform, StyleSheet, View } from 'react-native';
+import { useEffect } from 'react';
+import { Tabs, useRouter } from 'expo-router';
+import * as Notifications from 'expo-notifications';
+import { Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
+import { Colors } from '@/constants/Colors';
+import { QuickLogProvider, useQuickLog } from '@/contexts/QuickLogContext';
+import { useAssinatura } from '@/contexts/AssinaturaContext';
 
-// Bottom nav (referencia): Home | Ciclo | (espaco FAB) | Insights | Perfil
-// O CTA "Registrar meu dia" fica como FAB dentro da Home (nao como tab).
-export default function AppLayout() {
+// Botao central "+": abre o registro rapido (menstruacao, sintomas, relacao, teste) em qualquer aba.
+function PlusTabButton() {
+  const { openMenu } = useQuickLog();
   return (
+    <View style={styles.plusSlot}>
+      <TouchableOpacity
+        onPress={openMenu}
+        style={styles.plusButton}
+        activeOpacity={0.85}
+        accessibilityRole="button"
+        accessibilityLabel="Registrar"
+      >
+        <MaterialIcons name="add" size={32} color={Colors.onPrimary} />
+      </TouchableOpacity>
+    </View>
+  );
+}
+
+// Tocar no lembrete diario abre a tela indicada na notificacao (ex.: Registro Diario).
+function useAbrirPelaNotificacao() {
+  const router = useRouter();
+  const ultima = Notifications.useLastNotificationResponse();
+  useEffect(() => {
+    const rota = ultima?.notification.request.content.data?.rota;
+    if (typeof rota === 'string') router.push(rota as any);
+  }, [ultima, router]);
+}
+
+// Bottom nav: Home | Ciclo | (+) | Insights | Perfil
+export default function AppLayout() {
+  useAbrirPelaNotificacao();
+  // Plano da usuaria (o que esta liberado) assim que entra no app.
+  const { refresh: carregarPlano } = useAssinatura();
+  useEffect(() => {
+    carregarPlano();
+  }, [carregarPlano]);
+  return (
+    <QuickLogProvider>
     <Tabs
+      backBehavior="history"
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: '#13ec5b',
+        tabBarActiveTintColor: Colors.primary.DEFAULT,
         tabBarInactiveTintColor: '#9CA3AF',
         tabBarStyle: styles.tabBar,
         tabBarLabelStyle: styles.label,
@@ -36,7 +76,7 @@ export default function AppLayout() {
         options={{
           title: '',
           tabBarLabel: () => null,
-          tabBarButton: () => <View style={styles.spacer} />, // abre espaco pro FAB
+          tabBarButton: () => <PlusTabButton />,
         }}
       />
 
@@ -59,10 +99,19 @@ export default function AppLayout() {
       {/* rotas existentes fora do tab bar */}
       <Tabs.Screen name="registro" options={{ href: null }} />
       <Tabs.Screen name="conteudo" options={{ href: null }} />
+      <Tabs.Screen name="artigo" options={{ href: null, tabBarStyle: { display: 'none' } }} />
       <Tabs.Screen name="dica-do-dia" options={{ href: null }} />
       <Tabs.Screen name="objetivos" options={{ href: null }} />
       <Tabs.Screen name="notificacoes" options={{ href: null }} />
+      <Tabs.Screen name="excluir-conta" options={{ href: null }} />
+      <Tabs.Screen name="historico" options={{ href: null }} />
+      <Tabs.Screen name="lembrete" options={{ href: null }} />
+      <Tabs.Screen name="relatorio" options={{ href: null }} />
+      <Tabs.Screen name="editar-dados" options={{ href: null }} />
+      <Tabs.Screen name="alterar-senha" options={{ href: null }} />
+      <Tabs.Screen name="planos" options={{ href: null, tabBarStyle: { display: 'none' } }} />
     </Tabs>
+    </QuickLogProvider>
   );
 }
 
@@ -79,7 +128,25 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: '600',
   },
-  spacer: {
-    width: 48,
+  plusSlot: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  // Circulo rose elevado, saindo um pouco acima da barra
+  plusButton: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    marginTop: -22,
+    backgroundColor: Colors.primary.DEFAULT,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 4,
+    borderColor: Colors.surface,
+    shadowColor: Colors.primary.dark,
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 6,
   },
 });

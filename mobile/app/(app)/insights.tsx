@@ -1,14 +1,15 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useFocusEffect } from '@react-navigation/native';
+import { useCallback, useMemo, useState } from 'react';
 import { ActivityIndicator, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
-import api from '@/services/api';
-import { format, isToday, parseISO } from 'date-fns';
+import { format, isToday } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-
-const PRIMARY = '#13ec5b';
-const BG = '#F6F8F6';
+import api from '@/services/api';
+import { parseDateOnly } from '@/services/cycle';
+import { Colors } from '@/constants/Colors';
+import { nivelTexto } from '@/constants/sintomas';
+import { gerarDica } from '@/services/dicaDoDia';
 
 type Registro = {
   id: string;
@@ -19,61 +20,60 @@ type Registro = {
   qualidadeSono?: number | null;
 };
 
+type SymptomKey = 'inchaco' | 'fomeCompulsao' | 'humorIrritacao' | 'qualidadeSono';
+
+// Escala do registro diario: 0 = sem queixa ... 3 = intenso (para todos, inclusive sono).
+const SYMPTOMS: { key: SymptomKey; label: string; tipLabel: string; icon: keyof typeof MaterialIcons.glyphMap }[] = [
+  { key: 'inchaco', label: 'Inchaço', tipLabel: 'inchaço', icon: 'water-drop' },
+  { key: 'fomeCompulsao', label: 'Fome', tipLabel: 'fome/compulsão', icon: 'restaurant' },
+  { key: 'humorIrritacao', label: 'Humor', tipLabel: 'irritabilidade', icon: 'sentiment-dissatisfied' },
+  { key: 'qualidadeSono', label: 'Sono', tipLabel: 'sono', icon: 'bedtime' },
+];
+// Texto do nivel por sintoma (mesmo do Registro).
+
+const val = (r: Registro | null | undefined, k: SymptomKey) => Number(r?.[k] || 0);
+
+type Tip = { title: string; icon: keyof typeof MaterialIcons.glyphMap; cardTitle: string; text: string; extra: string };
+
+// Sem sintomas no ultimo registro. Com sintomas, a dica vem de gerarDica (a mesma da Home e da Dica do Dia).
+const DIA_LEVE: Tip = {
+  title: 'Dia leve',
+  icon: 'spa',
+  cardTitle: 'Continue registrando',
+  text: 'Registrar todos os dias ajuda a perceber como o ciclo afeta você.',
+  extra: 'Se quiser, reserve 5 minutos para meditar.',
+};
+
 export default function InsightsScreen() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [lastRegistro, setLastRegistro] = useState<Registro | null>(null);
-
-   // DEBUG: saber se esse componente está realmente sendo montado
-  console.log('[INSIGHTS] componente montou');
+  const [registros, setRegistros] = useState<Registro[]>([]);
 
   const fetchInsights = useCallback(async () => {
     try {
       const res = await api.get('/registros');
-
-      // DEBUG: logar payload real pra garantir formato
-      // eslint-disable-next-line no-console
-      console.log('[INSIGHTS] /registros payload', JSON.stringify(res.data));
-
-      // Novo formato do backend: { data: RegistroDiario[], pagination: {...} }
-      const payload = res.data;
-      const listaRaw: any[] = Array.isArray(payload) ? payload : payload?.data || [];
-
-      // Ordenar por dataRegistro desc
-      const listaOrdenada = [...listaRaw].sort(
-        (a, b) => new Date(b.dataRegistro).getTime() - new Date(a.dataRegistro).getTime()
-      );
-
-      const primeiro = listaOrdenada[0] || null;
-      // eslint-disable-next-line no-console
-      console.log('[INSIGHTS] first registro', primeiro);
-
-      setLastRegistro(primeiro);
-    } catch (error) {
-      console.log('Erro ao buscar insights:', error);
+      // Backend: { data: RegistroDiario[], pagination } (aceita array puro por compatibilidade)
+      const lista: Registro[] = Array.isArray(res.data) ? res.data : res.data?.data || [];
+      setRegistros([...lista].sort((a, b) => b.dataRegistro.localeCompare(a.dataRegistro)));
+    } catch {
+      setRegistros([]);
     }
+
   }, []);
 
-  // Carrega uma vez na montagem
-  useEffect(() => {
-    (async () => {
-      setLoading(true);
-      await fetchInsights();
-      setLoading(false);
-    })();
-  }, [fetchInsights]);
-
-  // E recarrega sempre que a aba ganha foco
+  // Recarrega sempre que a aba ganha foco (ex.: depois de salvar um registro)
   useFocusEffect(
     useCallback(() => {
+      let active = true;
       (async () => {
-        setLoading(true);
         await fetchInsights();
-        setLoading(false);
+        if (active) setLoading(false);
       })();
-
-      return () => {};
+      return () => {
+        active = false;
+      };
     }, [fetchInsights])
   );
 
@@ -83,123 +83,51 @@ export default function InsightsScreen() {
     setRefreshing(false);
   }, [fetchInsights]);
 
-  const tip = useMemo(() => {
-    if (!lastRegistro) return null;
+  const last = registros[0] ?? null;
+  const previous = registros[1] ?? null;
+  // A API devolve "2026-11-19T00:00:00.000Z": usar so a data evita mostrar o dia anterior no fuso -03:00.
+  const lastDate = last ? parseDateOnly(last.dataRegistro) : null;
+  const registeredToday = !!lastDate && isToday(lastDate);
 
-    const inchaco = Number(lastRegistro.inchaco || 0);
-    const fome = Number(lastRegistro.fomeCompulsao || 0);
-    const humor = Number(lastRegistro.humorIrritacao || 0);
-    const sono = Number(lastRegistro.qualidadeSono || 0);
-
-    const scores = [
-      { key: 'inchaco', label: 'inchaço', value: inchaco },
-      { key: 'fome', label: 'fome/compulsão', value: fome },
-      { key: 'humor', label: 'irritabilidade', value: humor },
-      { key: 'sono', label: 'sono', value: sono },
-    ].sort((a, b) => b.value - a.value);
-
-    const top = scores[0];
-    const second = scores[1];
-    
-    // Se tudo for 0
-    if (top.value === 0) {
-      return {
-        badge: 'Tudo equilibrado',
-        title: 'Dia Leve',
-        basedText: 'Você não relatou sintomas intensos hoje.',
-        cardIcon: 'spa' as const,
-        cardTitle: 'Continue assim!',
-        cardText: 'Manter a constância nos registros ajuda a entender melhor seu corpo.',
-        extra: 'Que tal aproveitar para meditar um pouco?'
-      };
-    }
-
-    const basedOn = [top, second].filter((s) => s.value > 0).map((s) => s.label);
-    const basedText = `Baseado no ${basedOn.map((x) => `"${x}"`).join(' e ')} do seu último registro.`;
-
-    if (top.key === 'inchaco') {
-      return {
-        badge: 'Seu Feedback',
-        title: 'Priorize o conforto',
-        basedText,
-        cardIcon: 'water-drop' as const,
-        cardTitle: 'Hidratação é chave',
-        cardText:
-          'Para reduzir o inchaço, beba mais água e evite sódio. Chá de hibisco pode ajudar.',
-        extra: 'Reserve 10 min para pernas para cima antes de dormir.',
-      };
-    }
-    if (top.key === 'sono') {
-      return {
-        badge: 'Seu Feedback',
-        title: 'Sono Restaurador',
-        basedText,
-        cardIcon: 'bedtime' as const,
-        cardTitle: 'Higiene do sono',
-        cardText:
-          'Priorize luz baixa e evite telas 1h antes de deitar. Um banho morno ajuda a relaxar.',
-        extra: 'Evite cafeína após o almoço amanhã.',
-      };
-    }
-    if (top.key === 'humor') {
-      return {
-        badge: 'Seu Feedback',
-        title: 'Pegue leve',
-        basedText,
-        cardIcon: 'self-improvement' as const,
-        cardTitle: 'Pausas estratégicas',
-        cardText:
-          'Faça pausas de 5 min para respiração (4s in, 6s out). Ajuda a baixar o cortisol.',
-        extra: 'Evite decisões complexas hoje se possível.',
-      };
-    }
-    // fome
+  const { tip, basedText } = useMemo(() => {
+    if (!last) return { tip: null, basedText: '' };
+    const ranked = SYMPTOMS.map((s) => ({ ...s, v: val(last, s.key) })).sort((a, b) => b.v - a.v);
+    if (ranked[0].v === 0) return { tip: DIA_LEVE, basedText: 'Você não relatou sintomas no último registro.' };
+    const top = ranked.slice(0, 2).filter((s) => s.v > 0);
+    const d = gerarDica({
+      inchaco: val(last, 'inchaco'),
+      fomeCompulsao: val(last, 'fomeCompulsao'),
+      humorIrritacao: val(last, 'humorIrritacao'),
+      qualidadeSono: val(last, 'qualidadeSono'),
+    });
     return {
-      badge: 'Seu Feedback',
-      title: 'Nutrição Inteligente',
-      basedText,
-      cardIcon: 'restaurant' as const,
-      cardTitle: 'Fibras + Proteína',
-      cardText:
-        'Combine fibras e proteínas para aumentar a saciedade e evitar picos de glicose.',
-      extra: 'Tenha lanches saudáveis à mão para evitar impulsos.',
+      tip: { title: d.title, icon: d.icon, cardTitle: d.cardTitle, text: d.cardText, extra: d.extra } as Tip,
+      basedText: `Baseado em ${top.map((s) => `"${s.tipLabel}"`).join(' e ')} do seu último registro.`,
     };
-  }, [lastRegistro]);
-
-  const registroDate = useMemo(() => {
-    if (!lastRegistro) return '';
-    try {
-      const d = parseISO(lastRegistro.dataRegistro);
-      if (isToday(d)) return 'Hoje';
-      return format(d, "d 'de' MMMM", { locale: ptBR });
-    } catch {
-      return '';
-    }
-  }, [lastRegistro]);
+  }, [last]);
 
   if (loading) {
     return (
       <View style={styles.loading}>
-        <ActivityIndicator size="large" color={PRIMARY} />
+        <ActivityIndicator size="large" color={Colors.primary.DEFAULT} />
       </View>
     );
   }
 
   return (
     <View style={styles.screen}>
-       {/* Top Bar */}
-       <View style={styles.topBar}>
-        <Text style={styles.topTitle}>Insights</Text>
+      <View style={[styles.header, { paddingTop: insets.top + 12 }]}>
+        <Text style={styles.headerTitle}>Insights</Text>
       </View>
 
-      <ScrollView 
+      <ScrollView
         contentContainerStyle={styles.content}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
       >
-        {!lastRegistro ? (
+        {!last ? (
           <View style={styles.emptyState}>
             <View style={styles.emptyIconBg}>
-              <MaterialIcons name="insights" size={48} color={PRIMARY} />
+              <MaterialIcons name="insights" size={44} color={Colors.primary.DEFAULT} />
             </View>
             <Text style={styles.emptyTitle}>Sem dados ainda</Text>
             <Text style={styles.emptyText}>
@@ -211,39 +139,81 @@ export default function InsightsScreen() {
           </View>
         ) : (
           <>
-            <View style={styles.dateBadge}>
-              <Text style={styles.dateBadgeText}>REGISTRO DE: {registroDate.toUpperCase()}</Text>
-            </View>
+            {!registeredToday ? (
+              <TouchableOpacity
+                style={styles.reminder}
+                onPress={() => router.push('/(app)/registro')}
+                activeOpacity={0.8}
+              >
+                <MaterialIcons name="edit" size={18} color={Colors.primary.dark} />
+                <Text style={styles.reminderText}>Você ainda não registrou hoje. Registrar meu dia</Text>
+                <MaterialIcons name="chevron-right" size={20} color={Colors.primary.dark} />
+              </TouchableOpacity>
+            ) : null}
 
-            {tip && (
-              <>
-                 <View style={styles.header}>
-                    <Text style={styles.badge}>{tip.badge}</Text>
-                    <Text style={styles.h1}>{tip.title}</Text>
-                    <Text style={styles.sub}>{tip.basedText}</Text>
-                 </View>
+            {/* Dica principal */}
+            {tip ? (
+              <View style={styles.tipCard}>
+                <Text style={styles.eyebrow}>Seu feedback</Text>
+                <Text style={styles.h1}>{tip.title}</Text>
+                <Text style={styles.based}>{basedText}</Text>
 
-                 <View style={styles.card}>
-                    <View style={styles.cardHeader}>
-                      <View style={styles.cardIcon}>
-                        <MaterialIcons name={tip.cardIcon} size={20} color={PRIMARY} />
+                <View style={styles.tipRow}>
+                  <View style={styles.tipIcon}>
+                    <MaterialIcons name={tip.icon} size={20} color={Colors.primary.DEFAULT} />
+                  </View>
+                  <View style={styles.flex1}>
+                    <Text style={styles.tipTitle}>{tip.cardTitle}</Text>
+                    <Text style={styles.tipText}>{tip.text}</Text>
+                  </View>
+                </View>
+
+                <View style={styles.extraRow}>
+                  <MaterialIcons name="lightbulb-outline" size={18} color={Colors.primary.dark} />
+                  <Text style={styles.extraText}>
+                    <Text style={styles.extraBold}>Dica extra: </Text>
+                    {tip.extra}
+                  </Text>
+                </View>
+              </View>
+            ) : null}
+
+            {/* Sintomas do ultimo registro */}
+            <View style={styles.card}>
+              <View style={styles.cardHeaderRow}>
+                <Text style={styles.cardTitle}>Seu último registro</Text>
+                <Text style={styles.cardDate}>
+                  {registeredToday ? 'Hoje' : lastDate ? format(lastDate, "d 'de' MMM", { locale: ptBR }) : ''}
+                </Text>
+              </View>
+
+              {SYMPTOMS.map((s) => {
+                const v = val(last, s.key);
+                const prev = previous ? val(previous, s.key) : null;
+                const trend = prev == null || prev === v ? null : v < prev ? 'better' : 'worse';
+                return (
+                  <View key={s.key} style={styles.symptomRow}>
+                    <MaterialIcons name={s.icon} size={18} color={Colors.primary.DEFAULT} style={styles.symptomIcon} />
+                    <View style={styles.flex1}>
+                      <View style={styles.symptomTop}>
+                        <Text style={styles.symptomLabel}>{s.label}</Text>
+                        <Text style={styles.symptomLevel}>{nivelTexto(s.key, v)}</Text>
                       </View>
-                      <Text style={styles.cardTitle}>{tip.cardTitle}</Text>
+                      <View style={styles.levelBar}>
+                        {[1, 2, 3].map((n) => (
+                          <View key={n} style={[styles.levelSeg, n <= v && styles.levelSegOn]} />
+                        ))}
+                      </View>
+                      {trend ? (
+                        <Text style={[styles.trend, trend === 'better' ? styles.trendBetter : styles.trendWorse]}>
+                          {trend === 'better' ? '↓ Melhorou' : '↑ Piorou'} desde o registro anterior
+                        </Text>
+                      ) : null}
                     </View>
-                    <Text style={styles.cardText}>{tip.cardText}</Text>
-                 </View>
-
-                 <View style={styles.extraRow}>
-                    <MaterialIcons name="psychology" size={20} color={PRIMARY} />
-                    <Text style={styles.extraText}>
-                      <Text style={styles.extraBold}>Dica Extra{'\n'}</Text>
-                      {tip.extra}
-                    </Text>
-                 </View>
-              </>
-            )}
-            
-            <View style={{ height: 40 }} />
+                  </View>
+                );
+              })}
+            </View>
           </>
         )}
       </ScrollView>
@@ -252,163 +222,85 @@ export default function InsightsScreen() {
 }
 
 const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: BG,
-  },
-  loading: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  topBar: {
-    paddingTop: 48,
-    paddingBottom: 16,
-    paddingHorizontal: 24,
-    backgroundColor: '#fff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#F3F4F6',
-    alignItems: 'center',
-  },
-  topTitle: {
-    fontSize: 16,
-    fontWeight: '900',
-    color: '#111813',
-  },
-  content: {
-    padding: 24,
-    minHeight: '100%',
-  },
-  emptyState: {
-    marginTop: 60,
-    alignItems: 'center',
-  },
+  screen: { flex: 1, backgroundColor: Colors.background },
+  loading: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.background },
+  header: { paddingHorizontal: 24, paddingBottom: 12 },
+  headerTitle: { fontSize: 22, fontWeight: '900', color: Colors.text },
+  content: { paddingHorizontal: 16, paddingTop: 4, paddingBottom: 120 },
+  flex1: { flex: 1 },
+
+  emptyState: { marginTop: 60, alignItems: 'center', paddingHorizontal: 16 },
   emptyIconBg: {
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: 'rgba(19,236,91,0.1)',
+    backgroundColor: Colors.primary.light,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 24,
   },
-  emptyTitle: {
-    fontSize: 22,
-    fontWeight: '900',
-    color: '#111813',
-    marginBottom: 12,
-  },
-  emptyText: {
-    fontSize: 16,
-    color: '#6B7280',
-    textAlign: 'center',
-    lineHeight: 24,
-    marginBottom: 32,
-  },
-  btnPrimary: {
-    backgroundColor: '#111813',
-    paddingHorizontal: 32,
-    paddingVertical: 16,
-    borderRadius: 999,
-  },
-  btnPrimaryText: {
-    color: '#FFFFFF',
-    fontWeight: '900',
-    fontSize: 16,
-  },
-  dateBadge: {
-    alignSelf: 'center',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 8,
-    backgroundColor: '#E5E7EB',
-    marginBottom: 24,
-  },
-  dateBadgeText: {
-    fontSize: 11,
-    fontWeight: '800',
-    color: '#374151',
-    letterSpacing: 0.5,
-  },
-  header: {
+  emptyTitle: { fontSize: 22, fontWeight: '900', color: Colors.text, marginBottom: 12 },
+  emptyText: { fontSize: 16, color: Colors.textLight, textAlign: 'center', lineHeight: 24, marginBottom: 32 },
+  btnPrimary: { backgroundColor: Colors.primary.DEFAULT, paddingHorizontal: 32, paddingVertical: 16, borderRadius: 999 },
+  btnPrimaryText: { color: Colors.onPrimary, fontWeight: '900', fontSize: 16 },
+
+  reminder: {
+    flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 24,
+    gap: 10,
+    backgroundColor: Colors.primary.light,
+    borderRadius: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    marginBottom: 16,
   },
-  badge: {
+  reminderText: { flex: 1, color: Colors.primary.dark, fontWeight: '800', fontSize: 14 },
+
+  tipCard: { backgroundColor: Colors.surface, borderRadius: 24, padding: 20, marginBottom: 16 },
+  eyebrow: {
     fontSize: 12,
     fontWeight: '800',
-    color: PRIMARY,
+    color: Colors.primary.DEFAULT,
     textTransform: 'uppercase',
     letterSpacing: 1.2,
-    marginBottom: 8,
   },
-  h1: {
-    fontSize: 28,
-    fontWeight: '900',
-    color: '#111813',
-    textAlign: 'center',
-    marginBottom: 8,
-  },
-  sub: {
-    fontSize: 14,
-    color: '#6B7280',
-    textAlign: 'center',
-    maxWidth: 280,
-    lineHeight: 20,
-  },
-  card: {
-    backgroundColor: '#FFFFFF',
+  h1: { fontSize: 26, fontWeight: '900', color: Colors.text, marginTop: 6 },
+  based: { fontSize: 13, color: Colors.textLight, marginTop: 4, lineHeight: 18 },
+  tipRow: { flexDirection: 'row', gap: 12, marginTop: 18 },
+  tipIcon: {
+    width: 40,
+    height: 40,
     borderRadius: 20,
-    padding: 20,
-    borderWidth: 1,
-    borderColor: '#E5E7EB',
-    marginBottom: 16,
-    shadowColor: '#000',
-    shadowOpacity: 0.03,
-    shadowRadius: 12,
-    shadowOffset: { width: 0, height: 4 },
-  },
-  cardHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    marginBottom: 12,
-  },
-  cardIcon: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: 'rgba(19,236,91,0.15)',
+    backgroundColor: Colors.primary.light,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  cardTitle: {
-    fontSize: 18,
-    fontWeight: '900',
-    color: '#111813',
-  },
-  cardText: {
-    fontSize: 15,
-    color: '#4B5563',
-    lineHeight: 22,
-  },
+  tipTitle: { fontSize: 16, fontWeight: '900', color: Colors.text, marginBottom: 4 },
+  tipText: { fontSize: 15, color: Colors.text, opacity: 0.8, lineHeight: 22 },
   extraRow: {
     flexDirection: 'row',
-    gap: 12,
-    padding: 16,
+    gap: 10,
+    marginTop: 16,
+    padding: 14,
     borderRadius: 16,
-    backgroundColor: 'rgba(19,236,91,0.06)',
-    borderWidth: 1,
-    borderColor: 'rgba(19,236,91,0.12)',
+    backgroundColor: Colors.primary.light,
   },
-  extraText: {
-    flex: 1,
-    fontSize: 13,
-    color: '#4B5563',
-    lineHeight: 19,
-  },
-  extraBold: {
-    fontWeight: '800',
-    color: '#166534',
-  },
+  extraText: { flex: 1, fontSize: 14, color: Colors.text, lineHeight: 20 },
+  extraBold: { fontWeight: '800', color: Colors.primary.dark },
+
+  card: { backgroundColor: Colors.surface, borderRadius: 24, padding: 20 },
+  cardHeaderRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 8 },
+  cardTitle: { fontSize: 17, fontWeight: '900', color: Colors.text },
+  cardDate: { fontSize: 13, fontWeight: '700', color: Colors.textLight },
+  symptomRow: { flexDirection: 'row', paddingVertical: 10 },
+  symptomIcon: { marginTop: 1, marginRight: 12 },
+  symptomTop: { flexDirection: 'row', justifyContent: 'space-between' },
+  symptomLabel: { fontSize: 15, fontWeight: '700', color: Colors.text },
+  symptomLevel: { fontSize: 14, fontWeight: '700', color: Colors.textLight },
+  levelBar: { flexDirection: 'row', gap: 4, marginTop: 8 },
+  levelSeg: { flex: 1, height: 6, borderRadius: 3, backgroundColor: Colors.border },
+  levelSegOn: { backgroundColor: Colors.primary.DEFAULT },
+  trend: { fontSize: 12, fontWeight: '700', marginTop: 6 },
+  trendBetter: { color: Colors.accent.dark },
+  trendWorse: { color: Colors.primary.dark },
 });

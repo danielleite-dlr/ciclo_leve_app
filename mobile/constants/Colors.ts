@@ -1,17 +1,27 @@
+// Paleta oficial do CicloLeve. Altere as cores aqui (e em tailwind.config.js) para mudar o app inteiro.
 export const Colors = {
+  // Rose: cor principal (botoes, menu, destaques, menstruacao)
   primary: {
-    DEFAULT: '#0D9488', // teal-600
-    light: '#2DD4BF',   // teal-400
-    dark: '#0F766E',    // teal-700
+    DEFAULT: '#E37C96',
+    light: '#F9DCE4',
+    dark: '#C85A77',
+  },
+  // Verde-agua: cor de apoio (selecionado, sucesso, periodo fertil)
+  accent: {
+    DEFAULT: '#14B8A6',
+    light: '#CCF2EC',
+    dark: '#0F766E',
   },
   secondary: {
     DEFAULT: '#DB2777', // pink-600
-    light: '#F472B6',   // pink-400
+    light: '#F472B6', // pink-400
   },
-  background: '#FFFFFF',
-  text: '#1F2937', // gray-800
-  textLight: '#6B7280', // gray-500
+  background: '#f6f3f4',
+  surface: '#FFFFFF',
+  text: '#111813',
+  textLight: '#7f7f7f',
+  onPrimary: '#FFFFFF', // texto/icone sobre fundo rose ou verde-agua
+  border: '#e0e0e0',
   error: '#EF4444',
-  success: '#10B981',
-  border: '#E5E7EB',
+  success: '#14B8A6',
 };

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Link, useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
+import { Simbolo } from '@/components/Marca';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -9,6 +10,7 @@ import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import api from '@/services/api';
 import { setToken } from '@/services/storage';
+import { Colors } from '@/constants/Colors';
 
 const loginSchema = z.object({
   email: z.string().email('E-mail inválido'),
@@ -29,22 +31,6 @@ export default function LoginScreen() {
   const onSubmit = async (data: LoginFormData) => {
     setIsLoading(true);
     try {
-      // DEBUG: testar se o app consegue falar com a API (GET /health)
-      try {
-        const ping = await api.get('/health');
-        console.log('[LOGIN] ping /health ok', ping.status, ping.data);
-      } catch (pingErr: any) {
-        // eslint-disable-next-line no-console
-        console.error('[LOGIN] ping /health falhou', {
-          message: pingErr?.message,
-          code: pingErr?.code,
-          status: pingErr?.response?.status,
-          data: pingErr?.response?.data,
-          baseURL: pingErr?.config?.baseURL,
-          url: pingErr?.config?.url,
-        });
-      }
-
       // Backend usa `senha` (PT-BR). Mantemos `password` no form e adaptamos no payload.
       const response = await api.post('/auth/login', {
         email: data.email,
@@ -87,7 +73,7 @@ export default function LoginScreen() {
         {/* Header */}
         <View style={styles.header}>
           <View style={styles.iconWrap}>
-            <MaterialIcons name="female" size={40} color="#13ec5b" />
+            <Simbolo tamanho={44} />
           </View>
           <Text style={styles.title}>Entrar</Text>
           <Text style={styles.subtitle}>Acesse sua conta para acompanhar seu ciclo e gerenciar sua saúde.</Text>
@@ -147,7 +133,7 @@ export default function LoginScreen() {
         {/* Footer */}
         <View style={styles.footer}>
           <Text style={styles.footerText}>Não tem uma conta?</Text>
-          <Link href="/(auth)/cadastro" asChild>
+          <Link href="/(onboarding)/inicio" asChild>
             <TouchableOpacity>
               <Text style={styles.footerLink}>Cadastre-se</Text>
             </TouchableOpacity>
@@ -161,7 +147,7 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   scrollContent: {
     flexGrow: 1,
-    backgroundColor: '#F6F8F6',
+    backgroundColor: Colors.background,
     paddingBottom: 24,
   },
   screen: {
@@ -178,7 +164,7 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 24,
-    backgroundColor: 'rgba(19, 236, 91, 0.20)',
+    backgroundColor: 'rgba(227,124,150, 0.20)',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 24,
@@ -186,7 +172,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 30,
     fontWeight: '800',
-    color: '#111813',
+    color: Colors.text,
     marginBottom: 8,
   },
   subtitle: {
@@ -219,7 +205,7 @@ const styles = StyleSheet.create({
   },
   submit: {
     marginTop: 12,
-    backgroundColor: '#13ec5b',
+    backgroundColor: Colors.primary.DEFAULT,
   },
   footer: {
     marginTop: 'auto',
@@ -235,7 +221,7 @@ const styles = StyleSheet.create({
   },
   footerLink: {
     fontWeight: '800',
-    color: '#111813',
+    color: Colors.text,
     fontSize: 14,
   },
 });

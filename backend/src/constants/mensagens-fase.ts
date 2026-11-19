@@ -14,7 +14,7 @@ export const MENSAGENS_POR_FASE: Record<string, MensagemFase> = {
     fase: 'MENSTRUAL',
     diasCiclo: '1-5',
     contextoHormonal: 'Estrogênio e progesterona em baixa',
-    tendeDia: 'Baixa energia + mais fome emocional.',
+    tendeDia: 'A energia costuma cair e a fome emocional pode aumentar.',
     emoji: '🔋',
     titulo: 'Recarregue as energias',
     faca: [
@@ -31,7 +31,7 @@ export const MENSAGENS_POR_FASE: Record<string, MensagemFase> = {
     fase: 'FOLICULAR',
     diasCiclo: '6-12',
     contextoHormonal: 'Estrogênio subindo',
-    tendeDia: 'Mais energia + mais disciplina.',
+    tendeDia: 'Energia e disposição costumam subir.',
     emoji: '⚡',
     titulo: 'Energia em Alta',
     faca: [
@@ -48,7 +48,7 @@ export const MENSAGENS_POR_FASE: Record<string, MensagemFase> = {
     fase: 'OVULATORIA',
     diasCiclo: '13-16',
     contextoHormonal: 'Pico de estrogênio',
-    tendeDia: 'Pico de energia/social, mas algumas incham.',
+    tendeDia: 'Muitas sentem pico de energia; algumas incham.',
     emoji: '✨',
     titulo: 'Auge da Confiança',
     faca: [
@@ -65,7 +65,7 @@ export const MENSAGENS_POR_FASE: Record<string, MensagemFase> = {
     fase: 'LUTEA',
     diasCiclo: '17-28',
     contextoHormonal: 'Progesterona alta, depois queda',
-    tendeDia: 'Retenção + irritação + fome/carbo.',
+    tendeDia: 'Podem aparecer retenção, irritação e mais fome.',
     emoji: '🌙',
     titulo: 'Hora de Desacelerar',
     faca: [

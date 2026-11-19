@@ -12,24 +12,24 @@ export const GATILHOS_SINTOMA: DicaGatilho[] = [
     sintoma: 'inchaco',
     nivelDisparo: 3,
     emoji: '💧',
-    mensagem: 'Hoje: água + caminhada + reduzir ultraprocessado e refrigerante.',
+    mensagem: 'Beba mais água, faça uma caminhada e reduza ultraprocessados e refrigerante.',
   },
   {
     sintoma: 'fome_compulsao',
     nivelDisparo: 3,
     emoji: '🍎',
-    mensagem: 'Inclua 1 lanche planejado: iogurte/ovo/fruta + castanhas.',
+    mensagem: 'Inclua um lanche planejado, como iogurte, ovo ou fruta com castanhas.',
   },
   {
     sintoma: 'qualidade_sono',
     nivelDisparo: 3,
     emoji: '🌙',
-    mensagem: 'Corte cafeína após 14h + banho morno + tela off 30 min antes.',
+    mensagem: 'Evite cafeína depois das 14h, tome um banho morno e desligue as telas 30 minutos antes de deitar.',
   },
   {
     sintoma: 'humor_irritacao',
     nivelDisparo: 3,
     emoji: '🧘‍♀️',
-    mensagem: 'Faça 5 min de respiração + caminhe 10 min. Não decida nada importante irritada.',
+    mensagem: 'Faça 5 minutos de respiração e caminhe 10 minutos. Deixe decisões importantes para depois.',
   },
 ];

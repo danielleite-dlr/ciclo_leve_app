@@ -28,11 +28,16 @@ model User {
   plano         String    @default("FREE") @db.VarChar(20)
   planoExpiraEm DateTime? @map("plano_expira_em") @db.Timestamp
   trialUsado    Boolean   @default(false) @map("trial_usado")
+  // true enquanto o plano atual estiver no periodo de teste gratis
+  planoEmTeste  Boolean   @default(false) @map("plano_em_teste")
   
   // LGPD
   consentimentoLgpd Boolean   @default(false) @map("consentimento_lgpd")
   consentimentoData DateTime? @map("consentimento_data") @db.Timestamp
   ipConsentimento   String?   @map("ip_consentimento") @db.Inet
+  // Consentimento especifico para dados de relacao sexual e testes (dado sensivel, LGPD art. 11)
+  consentimentoSaudeSexual     Boolean   @default(false) @map("consentimento_saude_sexual")
+  consentimentoSaudeSexualData DateTime? @map("consentimento_saude_sexual_data") @db.Timestamp
   
   // Meta
   createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp
@@ -43,6 +48,7 @@ model User {
   perfilCiclo        PerfilCiclo?
   registrosDiarios   RegistroDiario[]
   historicoMenstrual HistoricoMenstrual[]
+  registrosFertilidade RegistroFertilidade[]
   interacoes         InteracoesConteudo[]
   notificacoes       NotificacoesPush[]
   pagamentos         Pagamentos[]
@@ -238,4 +244,24 @@ model EventosAnalytics {
   @@map("eventos_analytics")
   @@index([userId, createdAt(sort: Desc)])
   @@index([evento, createdAt(sort: Desc)])
+}
+
+// Relacao sexual e testes (ovulacao/gravidez) por dia. Separado de registros_diarios por ser
+// dado sensivel: so e gravado com consentimento e e apagado por completo se ele for revogado.
+model RegistroFertilidade {
+  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId        String   @map("user_id") @db.Uuid
+  data          DateTime @db.Date
+  relacao       String?  @db.VarChar(20) // SEM_RELACAO | PROTEGIDA | SEM_PROTECAO
+  testeOvulacao String?  @map("teste_ovulacao") @db.VarChar(10) // POSITIVO | NEGATIVO
+  testeGravidez String?  @map("teste_gravidez") @db.VarChar(10) // POSITIVO | NEGATIVO
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamp
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamp
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("registros_fertilidade")
+  @@unique([userId, data])
+  @@index([userId, data(sort: Desc)])
 }

@@ -9,17 +9,27 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import api from '@/services/api';
+import { Colors } from '@/constants/Colors';
+import { FertilityHero, getFertilityGoal } from '@/components/FertilityHero';
+import { QuickActions } from '@/components/QuickActions';
+import { useQuickLog } from '@/contexts/QuickLogContext';
+import { useAssinatura } from '@/contexts/AssinaturaContext';
+import { PremiumAviso } from '@/components/PremiumAviso';
+import { ParaLer } from '@/components/conteudo/ParaLer';
+import { Respiro } from '@/components/Respiro';
+import { ajustarDia, gerarDica, sintomasRelevantes, textoRelato } from '@/services/dicaDoDia';
 
 type PerfilResponse = {
   user: { nomeCompleto?: string };
   ciclo: any | null;
   faseAtual: { 
+    fase?: string;
     nomeFase?: string; 
     diaCiclo?: number;
     insight?: {
@@ -34,8 +44,8 @@ type PerfilResponse = {
   } | null;
 };
 
-const PRIMARY = '#13ec5b';
-const BG_LIGHT = '#F6F8F6';
+const PRIMARY = Colors.primary.DEFAULT;
+const BG_LIGHT = Colors.background;
 
 function capFirst(s: string) {
   if (!s) return s;
@@ -48,6 +58,11 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [perfil, setPerfil] = useState<PerfilResponse | null>(null);
+  // Atalhos de registro (status do dia e janelas) vem do provedor compartilhado com o botao "+"
+  const quickLog = useQuickLog();
+  const assinatura = useAssinatura();
+  const podeAdaptar = assinatura.temModulo('DICAS_ADAPTADAS');
+  const podeFertilidade = assinatura.temModulo('FERTILIDADE');
 
   const userFirstName = useMemo(() => {
     const full = (perfil?.user?.nomeCompleto || '').trim();
@@ -63,6 +78,15 @@ export default function Home() {
     return v.replace(/^Fase\s+/i, '').trim();
   }, [rawPhase]);
 
+  // Destaque de fertilidade para quem quer engravidar ou evitar (objetivos do onboarding).
+  const fertilityGoal = useMemo(() => getFertilityGoal(perfil?.ciclo), [perfil]);
+
+  // Cor do chip segue a fase, igual ao calendario: ovulatoria = verde-agua (fertil), demais = rose.
+  const phaseColors =
+    perfil?.faseAtual?.fase === 'OVULATORIA'
+      ? { bg: Colors.accent.light, dot: Colors.accent.DEFAULT, text: Colors.accent.dark }
+      : { bg: Colors.primary.light, dot: Colors.primary.DEFAULT, text: Colors.primary.dark };
+
   const headerDate = useMemo(() => {
     // Ex: "Terça, 14 Out"
     const d = format(new Date(), 'EEEE, d MMM', { locale: ptBR });
@@ -71,11 +95,11 @@ export default function Home() {
 
   const fetchPerfil = useCallback(async () => {
     try {
-      const res = await api.get('/perfil');
+      const res = await api.get('/perfil', { params: { hoje: format(new Date(), 'yyyy-MM-dd') } });
       setPerfil(res.data);
 
       if (!res.data?.ciclo) {
-        router.replace('/(onboarding)/dados-corpo');
+        router.replace('/(onboarding)/passos');
       }
     } catch (error: any) {
       console.error(error);
@@ -86,13 +110,27 @@ export default function Home() {
     }
   }, [router]);
 
+  // Carrega ao abrir e sempre que a home volta a aparecer (ex.: depois de editar objetivos ou
+  // salvar o registro). O loading de tela cheia so aparece na primeira carga.
+  useFocusEffect(
+    useCallback(() => {
+      (async () => {
+        await Promise.all([fetchPerfil(), quickLog.refresh()]);
+        setLoading(false);
+      })();
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [fetchPerfil])
+  );
+
+  // Algo foi registrado (pela home ou pelo "+"): fase, destaque e dicas podem ter mudado.
   useEffect(() => {
-    (async () => {
-      setLoading(true);
-      await fetchPerfil();
-      setLoading(false);
-    })();
-  }, [fetchPerfil]);
+    if (quickLog.savedAt) fetchPerfil();
+  }, [quickLog.savedAt, fetchPerfil]);
+
+  const initials = useMemo(() => {
+    const parts = (perfil?.user?.nomeCompleto || '').trim().split(/\s+/).filter(Boolean);
+    return parts.slice(0, 2).map((p) => p[0]?.toUpperCase()).join('') || '?';
+  }, [perfil]);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -110,7 +148,6 @@ export default function Home() {
   };
 
   const headlineTitle = insight.titulo;
-  const headlineEmoji = insight.emoji;
   const headlineDesc = insight.descricao;
 
   // Ícones mapeados para dicas (simples por enquanto)
@@ -123,15 +160,44 @@ export default function Home() {
     return 'check-circle'; // default
   };
 
-  const doList = (insight.facaHoje || []).map(item => ({
+  // O registro de hoje vem antes da fase: se ela relatou sintomas, a Home se adapta.
+  const sintomasHoje = quickLog.sintomasHoje;
+  const dia = ajustarDia(
+    {
+      faca: insight.facaHoje || [],
+      evite: insight.eviteHoje || [],
+      nota: insight?.notaEspecialista || 'Aproveite seu dia respeitando seu ritmo.',
+    },
+    podeAdaptar ? sintomasHoje : null
+  );
+  const relatoHoje = sintomasHoje && sintomasRelevantes(sintomasHoje).length ? textoRelato(sintomasRelevantes(sintomasHoje)) : null;
+  // A dica do registro de hoje e gratis; o Premium ajusta tambem o Faca/Evite e a nota.
+  const hojeParaVoce =
+    sintomasHoje && sintomasRelevantes(sintomasHoje).length
+      ? { ...gerarDica(sintomasHoje), relato: textoRelato(sintomasRelevantes(sintomasHoje)) }
+      : null;
+
+  const abrirDica = () => {
+    if (!sintomasHoje) return;
+    router.push({
+      pathname: '/(app)/dica-do-dia',
+      params: {
+        inchaco: String(sintomasHoje.inchaco),
+        fomeCompulsao: String(sintomasHoje.fomeCompulsao),
+        humorIrritacao: String(sintomasHoje.humorIrritacao),
+        qualidadeSono: String(sintomasHoje.qualidadeSono),
+      },
+    });
+  };
+
+  const doList = dia.faca.map((item) => ({
     icon: getIconForTip(item),
     title: item,
-    subtitle: 'Recomendado para hoje'
   }));
 
-  const avoidList = (insight.eviteHoje || []).map(item => ({
-    icon: 'block', 
-    text: item
+  const avoidList = dia.evite.map((item) => ({
+    icon: 'block',
+    text: item,
   }));
 
   const showCycleHelp = useCallback(() => {
@@ -157,9 +223,8 @@ export default function Home() {
       {/* Top App Bar (fixo) */}
       <View style={[styles.topBar, { paddingTop: insets.top + 12, height: headerHeight }]}>
         <View style={styles.topLeft}>
-          <View style={styles.avatarWrap}>
-            <View style={styles.avatar} />
-            <View style={styles.onlineDot} />
+          <View style={styles.avatar}>
+            <Text style={styles.avatarText}>{initials}</Text>
           </View>
           <View>
             <Text style={styles.dateText}>{headerDate}</Text>
@@ -176,12 +241,67 @@ export default function Home() {
         contentContainerStyle={[styles.scrollContent, { paddingTop: headerHeight + 20 }]}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
       >
+        {fertilityGoal && perfil?.ciclo && !podeFertilidade ? (
+          <View style={{ marginBottom: 16 }}>
+            <PremiumAviso
+              modulo="FERTILIDADE"
+              titulo={fertilityGoal === 'ENGRAVIDAR' ? 'Seus dias férteis' : 'Dias de maior risco de gravidez'}
+              texto={
+                fertilityGoal === 'ENGRAVIDAR'
+                  ? 'Veja quando sua chance de engravidar é maior e registre relações e testes.'
+                  : 'Veja em quais dias a chance de engravidar é maior e registre relações.'
+              }
+            />
+          </View>
+        ) : null}
+
+        {fertilityGoal && perfil?.ciclo && podeFertilidade ? (
+          <FertilityHero
+            goal={fertilityGoal}
+            ciclo={perfil.ciclo}
+            onPressCalendar={() => router.push('/(app)/calendario')}
+          />
+        ) : null}
+
+        {/* Atalhos fixos: menstruacao (corrige as previsoes) e sintomas (registro diario) */}
+        <QuickActions
+          goal={fertilityGoal}
+          menstruacaoEmAndamento={quickLog.menstruacaoEmAndamento}
+          ultimaMenstruacao={quickLog.ciclo?.dataUltimaMenstruacao}
+          sintomasFeitos={quickLog.sintomasFeitos}
+          relacaoFeita={quickLog.relacaoFeita}
+          testeFeito={quickLog.testeFeito}
+          onMenstruacao={() => quickLog.start('menstruacao')}
+          onSintomas={() => quickLog.start('sintomas')}
+          onRelacao={() => quickLog.start('relacao')}
+          onTeste={() => quickLog.start('teste')}
+        />
+
+        {/* Hoje para voce: resumo do feedback do registro de hoje */}
+        {hojeParaVoce ? (
+          <TouchableOpacity style={styles.todayCard} onPress={abrirDica} activeOpacity={0.85}>
+            <View style={styles.todayIcon}>
+              <MaterialIcons name={hojeParaVoce.icon} size={22} color={PRIMARY} />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.todayLabel}>HOJE PARA VOCÊ</Text>
+              <Text style={styles.todayTitle}>{hojeParaVoce.title}</Text>
+              <Text style={styles.todayText}>
+                {podeAdaptar
+                  ? `Você relatou ${hojeParaVoce.relato}. Ajustamos as dicas de hoje.`
+                  : `Você relatou ${hojeParaVoce.relato}. Toque para ver a dica de hoje.`}
+              </Text>
+            </View>
+            <MaterialIcons name="chevron-right" size={22} color="#9CA3AF" />
+          </TouchableOpacity>
+        ) : null}
+
         {/* Status Chip & Headline */}
         <View style={styles.section}>
           <View style={styles.statusRow}>
-            <View style={styles.phaseChip}>
-              <View style={styles.pulseDot} />
-              <Text style={styles.phaseChipText}>Fase {phaseName}</Text>
+            <View style={[styles.phaseChip, { backgroundColor: phaseColors.bg }]}>
+              <View style={[styles.pulseDot, { backgroundColor: phaseColors.dot }]} />
+              <Text style={[styles.phaseChipText, { color: phaseColors.text }]}>Fase {phaseName}</Text>
             </View>
           </View>
 
@@ -192,16 +312,26 @@ export default function Home() {
           </TouchableOpacity>
 
           <Text style={styles.h1}>
-            {headlineTitle} <Text style={styles.h1Emoji}>{headlineEmoji}</Text>
+            {headlineTitle}
           </Text>
           <Text style={styles.h1Desc}>{headlineDesc}</Text>
         </View>
+
+        {relatoHoje && !podeAdaptar ? (
+          <View style={{ marginBottom: 12 }}>
+            <PremiumAviso
+              modulo="DICAS_ADAPTADAS"
+              titulo="Faça e evite ajustados ao seu dia"
+              texto={`As listas abaixo seguem a fase do ciclo. No Premium elas mudam conforme o que você registrou (${relatoHoje}).`}
+            />
+          </View>
+        ) : null}
 
         {/* Faça hoje */}
         <View style={styles.card}>
           <View style={styles.cardHeader}>
             <View style={[styles.cardHeaderIcon, styles.cardHeaderIconOk]}>
-              <MaterialIcons name="check-circle" size={20} color="#16A34A" />
+              <MaterialIcons name="check-circle" size={20} color={Colors.accent.DEFAULT} />
             </View>
             <Text style={styles.cardTitle}>Faça hoje</Text>
           </View>
@@ -239,13 +369,12 @@ export default function Home() {
 
         {/* Nota da Especialista */}
         <View style={styles.noteCard}>
-          <MaterialIcons name="lightbulb" size={120} color="#000" style={styles.noteBgIcon} />
           <Text style={styles.noteLabel}>NOTA DA ESPECIALISTA</Text>
-          <Text style={styles.noteText}>{insight?.notaEspecialista || 'Aproveite seu dia respeitando seu ritmo.'}</Text>
+          <Text style={styles.noteText}>{dia.nota}</Text>
         </View>
 
         {/* Dica extra de hoje (gatilhos de sintomas) */}
-        {insight?.dicasExtras && insight.dicasExtras.length > 0 && (
+        {!dia.ajustado && insight?.dicasExtras && insight.dicasExtras.length > 0 && (
           <View style={styles.extraCard}>
             <Text style={styles.extraLabel}>DICA EXTRA DE HOJE</Text>
             {insight.dicasExtras.map((texto, index) => (
@@ -256,17 +385,13 @@ export default function Home() {
           </View>
         )}
 
-        {/* Spacer pro FAB */}
-        <View style={{ height: 120 }} />
+        <Respiro />
+
+        <ParaLer />
+
+        <View style={{ height: 32 }} />
       </ScrollView>
 
-      {/* FAB */}
-      <View style={styles.fabWrap} pointerEvents="box-none">
-        <TouchableOpacity style={styles.fab} onPress={() => router.push('/(app)/registro')}>
-          <MaterialIcons name="edit" size={22} color={PRIMARY} />
-          <Text style={styles.fabText}>Registrar meu dia</Text>
-        </TouchableOpacity>
-      </View>
     </View>
   );
 }
@@ -303,34 +428,6 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   // Header: Aumentar avatar e fontes
-  avatarWrap: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    borderWidth: 2,
-    borderColor: '#FFFFFF',
-    backgroundColor: '#FFFFFF',
-    shadowColor: '#000',
-    shadowOpacity: 0.06,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 2 },
-  },
-  avatar: {
-    flex: 1,
-    borderRadius: 24,
-    backgroundColor: '#D1FAE5',
-  },
-  onlineDot: {
-    position: 'absolute',
-    bottom: 0,
-    right: 0,
-    width: 14,
-    height: 14,
-    borderRadius: 7,
-    backgroundColor: PRIMARY,
-    borderWidth: 2,
-    borderColor: '#FFFFFF',
-  },
   dateText: {
     fontSize: 14,
     color: '#6B7280',
@@ -340,7 +437,7 @@ const styles = StyleSheet.create({
   helloText: {
     fontSize: 22,
     fontWeight: '900',
-    color: '#111813',
+    color: Colors.text,
   },
   notifBtn: {
     width: 40,
@@ -381,9 +478,6 @@ const styles = StyleSheet.create({
     paddingLeft: 12,
     paddingRight: 14,
     borderRadius: 999,
-    backgroundColor: 'rgba(19,236,91,0.18)',
-    borderWidth: 1,
-    borderColor: 'rgba(19,236,91,0.22)',
   },
   pulseDot: {
     width: 8,
@@ -394,7 +488,7 @@ const styles = StyleSheet.create({
   phaseChipText: {
     fontSize: 14,
     fontWeight: '900',
-    color: '#14532D',
+    color: Colors.accent.dark,
   },
   dayTag: {
     fontSize: 12,
@@ -438,7 +532,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   cardHeaderIconOk: {
-    backgroundColor: 'rgba(34,197,94,0.16)',
+    backgroundColor: 'rgba(20,184,166,0.16)',
   },
   cardHeaderIconNo: {
     backgroundColor: 'rgba(239,68,68,0.16)',
@@ -489,22 +583,16 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 20,
     borderWidth: 1,
-    borderColor: 'rgba(19,236,91,0.22)',
-    backgroundColor: 'rgba(19,236,91,0.14)',
+    borderColor: 'rgba(227,124,150,0.22)',
+    backgroundColor: 'rgba(227,124,150,0.14)',
     overflow: 'hidden',
     marginBottom: 12,
-  },
-  noteBgIcon: {
-    position: 'absolute',
-    right: -18,
-    top: -18,
-    opacity: 0.06,
   },
   noteLabel: {
     fontSize: 12,
     fontWeight: '900',
     letterSpacing: 1.1,
-    color: '#166534',
+    color: Colors.primary.dark,
   },
   noteText: {
     marginTop: 10,
@@ -516,16 +604,14 @@ const styles = StyleSheet.create({
   extraCard: {
     borderRadius: 16,
     padding: 16,
-    borderWidth: 1,
-    borderColor: 'rgba(59,130,246,0.25)',
-    backgroundColor: 'rgba(219,234,254,0.6)',
+    backgroundColor: Colors.surface,
     marginBottom: 12,
   },
   extraLabel: {
     fontSize: 12,
     fontWeight: '900',
     letterSpacing: 1.1,
-    color: '#1D4ED8',
+    color: Colors.primary.dark,
     marginBottom: 6,
   },
   extraText: {
@@ -534,34 +620,35 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     marginTop: 2,
   },
-  fabWrap: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    // acima do bottom tab bar
-    bottom: 84,
-    paddingHorizontal: 16,
-    alignItems: 'center',
-    zIndex: 40,
-  },
-  fab: {
-    width: '100%',
-    maxWidth: 420,
+  todayCard: {
     flexDirection: 'row',
     alignItems: 'center',
+    gap: 12,
+    backgroundColor: Colors.surface,
+    borderRadius: 16,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(227,124,150,0.35)',
+    marginBottom: 16,
+  },
+  todayIcon: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: Colors.primary.light,
+    alignItems: 'center',
     justifyContent: 'center',
-    gap: 10,
-    backgroundColor: '#111813',
-    borderRadius: 999,
-    paddingVertical: 16,
-    shadowColor: '#000',
-    shadowOpacity: 0.18,
-    shadowRadius: 16,
-    shadowOffset: { width: 0, height: 6 },
   },
-  fabText: {
-    color: '#FFFFFF',
-    fontSize: 18,
-    fontWeight: '900',
+  todayLabel: { fontSize: 11, fontWeight: '900', letterSpacing: 1.1, color: Colors.primary.dark },
+  todayTitle: { fontSize: 17, fontWeight: '900', color: Colors.text, marginTop: 2 },
+  todayText: { fontSize: 13, color: '#4B5563', marginTop: 2, lineHeight: 18 },
+  avatar: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: Colors.primary.light,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
+  avatarText: { fontSize: 17, fontWeight: '900', color: Colors.primary.dark },
 });

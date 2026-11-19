@@ -2,9 +2,12 @@ import { useMemo } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Colors } from '@/constants/Colors';
+import { gerarDica } from '@/services/dicaDoDia';
 
-const PRIMARY = '#13ec5b';
-const BG = '#F6F8F6';
+const PRIMARY = Colors.primary.DEFAULT;
+const BG = Colors.background;
 
 type Params = {
   inchaco?: string;
@@ -21,89 +24,25 @@ function n(v?: string) {
 export default function DicaDoDiaScreen() {
   const router = useRouter();
   const params = useLocalSearchParams<Params>();
+  const insets = useSafeAreaInsets();
 
   const inchaco = n(params.inchaco);
   const fome = n(params.fomeCompulsao);
   const humor = n(params.humorIrritacao);
   const sono = n(params.qualidadeSono);
 
-  const tip = useMemo(() => {
-    // MVP: regra simples baseada nos sintomas maiores.
-    const scores = [
-      { key: 'inchaco', label: 'inchaço', value: inchaco },
-      { key: 'fome', label: 'fome/compulsão', value: fome },
-      { key: 'humor', label: 'irritabilidade', value: humor },
-      { key: 'sono', label: 'sono', value: sono },
-    ].sort((a, b) => b.value - a.value);
-
-    const top = scores[0];
-    const second = scores[1];
-    const basedOn = [top, second].filter((s) => s.value > 0).map((s) => s.label);
-
-    const basedText = basedOn.length
-      ? `Baseado no ${basedOn.map((x) => `"${x}"`).join(' e ')} que você relatou hoje.`
-      : 'Baseado no seu registro de hoje.';
-
-    // Conteúdo placeholder alinhado ao design.
-    if (top.key === 'inchaco') {
-      return {
-        badge: 'Seu Feedback Diário',
-        title: 'Priorize o seu conforto',
-        basedText,
-        cardIcon: 'water-drop' as const,
-        cardTitle: 'Hidratação é a chave',
-        cardText:
-          'Para reduzir o inchaço, tente beber mais água ao longo do dia e evite alimentos ricos em sódio. Um chá de hibisco ou cavalinha também pode ajudar na retenção de líquidos.',
-        extra:
-          'Se sentir irritabilidade, reserve 10 minutos para respiração profunda antes de dormir.',
-      };
-    }
-
-    if (top.key === 'sono') {
-      return {
-        badge: 'Seu Feedback Diário',
-        title: 'Sono em primeiro lugar',
-        basedText,
-        cardIcon: 'bedtime' as const,
-        cardTitle: 'Rotina de desaceleração',
-        cardText:
-          'Hoje, priorize uma rotina leve à noite: luz baixa, menos telas e um ritual curto (banho morno, leitura, respiração). Isso ajuda a melhorar a qualidade do sono.',
-        extra:
-          'Tente deitar 30 minutos mais cedo e evite cafeína após as 14h.',
-      };
-    }
-
-    if (top.key === 'humor') {
-      return {
-        badge: 'Seu Feedback Diário',
-        title: 'Seja gentil com você',
-        basedText,
-        cardIcon: 'self-improvement' as const,
-        cardTitle: 'Pausas ajudam',
-        cardText:
-          'Quando perceber irritação, faça uma pausa curta: 3 minutos de respiração (4s inspira, 6s expira) e um copo de água. Pequenas pausas reduzem reatividade.',
-        extra:
-          'Se possível, planeje tarefas mais simples e deixe decisões complexas para amanhã.',
-      };
-    }
-
-    // fome
-    return {
+  const tip = useMemo(
+    () => ({
       badge: 'Seu Feedback Diário',
-      title: 'Foque em saciedade',
-      basedText,
-      cardIcon: 'restaurant' as const,
-      cardTitle: 'Proteína + fibras',
-      cardText:
-        'Para reduzir picos de fome, combine proteína e fibras nas refeições (ex: iogurte + frutas + aveia, ou almoço com feijão e salada). Isso melhora saciedade ao longo do dia.',
-      extra: 'Leve um lanche planejado para evitar beliscos por impulso.',
-    };
-  }, [fome, humor, inchaco, sono]);
+      ...gerarDica({ inchaco, fomeCompulsao: fome, humorIrritacao: humor, qualidadeSono: sono }),
+    }),
+    [fome, humor, inchaco, sono]
+  );
 
   return (
     <View style={styles.screen}>
       {/* Top bar */}
-      <View style={styles.topBar}>
+      <View style={[styles.topBar, { paddingTop: insets.top + 8 }]}>
         <View style={{ width: 40 }} />
         <Text style={styles.topTitle}>Dica do Dia</Text>
         <View style={{ width: 40 }} />
@@ -128,7 +67,7 @@ export default function DicaDoDiaScreen() {
         <View style={styles.card}>
           <View style={styles.cardHeader}>
             <View style={styles.cardIcon}>
-              <MaterialIcons name={tip.cardIcon} size={18} color={PRIMARY} />
+              <MaterialIcons name={tip.icon} size={18} color={PRIMARY} />
             </View>
             <Text style={styles.cardTitle}>{tip.cardTitle}</Text>
           </View>
@@ -147,7 +86,7 @@ export default function DicaDoDiaScreen() {
       {/* Footer */}
       <View style={styles.footer} pointerEvents="box-none">
         <TouchableOpacity style={styles.btn} onPress={() => router.replace('/(app)/home')}>
-          <MaterialIcons name="home" size={22} color="#102216" />
+          <MaterialIcons name="check" size={22} color={Colors.onPrimary} />
           <Text style={styles.btnText}>Entendi</Text>
         </TouchableOpacity>
       </View>
@@ -165,14 +104,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 24,
-    paddingTop: 44,
     paddingBottom: 14,
-    backgroundColor: 'rgba(246,248,246,0.92)',
+    backgroundColor: 'rgba(246,243,244,0.92)',
   },
   topTitle: {
     fontSize: 16,
     fontWeight: '900',
-    color: '#111813',
+    color: Colors.text,
   },
   content: {
     flex: 1,
@@ -226,7 +164,7 @@ const styles = StyleSheet.create({
   h1: {
     fontSize: 30,
     fontWeight: '900',
-    color: '#111813',
+    color: Colors.text,
     textAlign: 'center',
     marginBottom: 10,
   },
@@ -257,14 +195,14 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: 'rgba(19,236,91,0.18)',
+    backgroundColor: 'rgba(227,124,150,0.18)',
     alignItems: 'center',
     justifyContent: 'center',
   },
   cardTitle: {
     fontSize: 18,
     fontWeight: '900',
-    color: '#111813',
+    color: Colors.text,
   },
   cardText: {
     color: '#4B5563',
@@ -277,9 +215,9 @@ const styles = StyleSheet.create({
     gap: 10,
     padding: 14,
     borderRadius: 14,
-    backgroundColor: 'rgba(19,236,91,0.08)',
+    backgroundColor: 'rgba(227,124,150,0.08)',
     borderWidth: 1,
-    borderColor: 'rgba(19,236,91,0.14)',
+    borderColor: 'rgba(227,124,150,0.14)',
   },
   extraText: {
     flex: 1,
@@ -289,7 +227,7 @@ const styles = StyleSheet.create({
   },
   extraBold: {
     fontWeight: '900',
-    color: '#111813',
+    color: Colors.text,
   },
   footer: {
     position: 'absolute',
@@ -299,7 +237,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingTop: 16,
     paddingBottom: 24,
-    backgroundColor: 'rgba(246,248,246,0.98)',
+    backgroundColor: 'rgba(246,243,244,0.98)',
   },
   btn: {
     height: 56,
@@ -317,6 +255,6 @@ const styles = StyleSheet.create({
   btnText: {
     fontSize: 16,
     fontWeight: '900',
-    color: '#102216',
+    color: Colors.onPrimary,
   },
 });

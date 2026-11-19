@@ -3,9 +3,10 @@ import { Alert, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-n
 import { useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import * as SecureStore from 'expo-secure-store';
+import { Colors } from '@/constants/Colors';
 
-const PRIMARY = '#13ec5b';
-const BG = '#F6F8F6';
+const PRIMARY = Colors.primary.DEFAULT;
+const BG = Colors.background;
 const PREF_KEY = 'cicloleve_push_optin';
 
 export default function NotificacoesScreen() {
@@ -47,7 +48,7 @@ export default function NotificacoesScreen() {
     <View style={styles.screen}>
       <View style={styles.topBar}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-          <MaterialIcons name="arrow-back" size={22} color="#111813" />
+          <MaterialIcons name="arrow-back" size={22} color={Colors.text} />
         </TouchableOpacity>
         <Text style={styles.topTitle}>Notificações</Text>
         <View style={{ width: 40 }} />
@@ -68,7 +69,7 @@ export default function NotificacoesScreen() {
           <Switch
             value={enabled}
             onValueChange={toggle}
-            trackColor={{ false: '#D1D5DB', true: 'rgba(19,236,91,0.45)' }}
+            trackColor={{ false: '#D1D5DB', true: 'rgba(227,124,150,0.45)' }}
             thumbColor={enabled ? PRIMARY : '#9CA3AF'}
             disabled={loading}
           />
@@ -95,7 +96,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingTop: 44,
     paddingBottom: 14,
-    backgroundColor: 'rgba(246,248,246,0.98)',
+    backgroundColor: 'rgba(246,243,244,0.98)',
     borderBottomWidth: 1,
     borderBottomColor: '#E5E7EB',
   },
@@ -109,7 +110,7 @@ const styles = StyleSheet.create({
   topTitle: {
     fontSize: 16,
     fontWeight: '900',
-    color: '#111813',
+    color: Colors.text,
   },
   content: {
     flex: 1,
@@ -119,7 +120,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 22,
     fontWeight: '900',
-    color: '#111813',
+    color: Colors.text,
     marginBottom: 8,
   },
   subtitle: {
@@ -143,7 +144,7 @@ const styles = StyleSheet.create({
   rowTitle: {
     fontSize: 16,
     fontWeight: '800',
-    color: '#111813',
+    color: Colors.text,
   },
   rowDesc: {
     fontSize: 13,

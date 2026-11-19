@@ -22,7 +22,7 @@ export default function GlobalError({ error }: { error: unknown }) {
 
   return (
     <View className="flex-1 bg-[#0b0f0d] px-5 py-10">
-      <Text className="text-white text-xl font-bold">Ops — deu ruim ao abrir uma tela</Text>
+      <Text className="text-white text-xl font-bold">Não foi possível abrir esta tela</Text>
       <Text className="text-white/80 mt-2">{message}</Text>
 
       {stack ? (
@@ -33,7 +33,7 @@ export default function GlobalError({ error }: { error: unknown }) {
 
       <View className="mt-6 flex-row gap-3">
         <Pressable
-          className="rounded-xl bg-[#13ec5b] px-4 py-3"
+          className="rounded-xl bg-primary px-4 py-3"
           onPress={() => {
             // Try to restart navigation stack
             router.replace('/');

@@ -26,6 +26,10 @@ export class CicloService {
     if (dados.duracaoCiclo < 21 || dados.duracaoCiclo > 45) {
       throw new Error('Duração do ciclo deve estar entre 21 e 45 dias');
     }
+    // Objetivos contraditorios
+    if (dados.objetivos?.includes('ENGRAVIDAR') && dados.objetivos?.includes('EVITAR_GRAVIDEZ')) {
+      throw new Error('Escolha apenas um: "Engravidar" ou "Evitar engravidar"');
+    }
 
     // Upsert perfil
     const perfil = await prisma.perfilCiclo.upsert({
@@ -70,16 +74,22 @@ export class CicloService {
 
     let fase: string;
     let nomeFase: string; // Friendly name
-    
+
+    // Ovulacao ~14 dias antes da proxima menstruacao; fase ovulatoria = janela fertil
+    // (5 dias antes ate 1 dia depois). Manter alinhado com mobile/services/cycle.ts.
+    const diaOvulacao = perfil.duracaoCiclo - 14;
+    const inicioJanelaFertil = diaOvulacao - 5;
+    const fimJanelaFertil = diaOvulacao + 1;
+
     if (diaCiclo <= perfil.duracaoSangramento) {
       fase = 'MENSTRUAL';
       nomeFase = 'Menstruação';
     }
-    else if (diaCiclo <= 12) {
+    else if (diaCiclo < inicioJanelaFertil) {
       fase = 'FOLICULAR';
       nomeFase = 'Fase Folicular';
     }
-    else if (diaCiclo <= 16) {
+    else if (diaCiclo <= fimJanelaFertil) {
       fase = 'OVULATORIA';
       nomeFase = 'Fase Ovulatória';
     }

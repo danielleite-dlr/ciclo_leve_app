@@ -1,70 +1,133 @@
-import { View, Text, ScrollView, Image, TouchableOpacity } from 'react-native';
+import { useCallback, useMemo, useState } from 'react';
+import { ActivityIndicator, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useFocusEffect, useRouter } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { MaterialIcons } from '@expo/vector-icons';
+import api from '@/services/api';
 import { Colors } from '@/constants/Colors';
-import { Search } from 'lucide-react-native';
+import { Fase, ListaArtigos, NOME_FASE } from '@/services/conteudo';
+import { CartaoArtigo } from '@/components/conteudo/CartaoArtigo';
 
-export default function Conteudo() {
-  const articles = [
-    {
-      id: 1,
-      title: 'Alimentação na Fase Lútea',
-      category: 'Nutrição',
-      color: 'bg-orange-100 text-orange-700',
-      description: 'Descubra quais alimentos podem ajudar a reduzir os sintomas da TPM.'
-    },
-    {
-      id: 2,
-      title: 'Exercícios para Cada Fase',
-      category: 'Fitness',
-      color: 'bg-blue-100 text-blue-700',
-      description: 'Como adaptar seu treino de acordo com sua energia e ciclo hormonal.'
-    },
-    {
-      id: 3,
-      title: 'Entendendo a Ovulação',
-      category: 'Educação',
-      color: 'bg-pink-100 text-pink-700',
-      description: 'O que acontece no seu corpo durante o período mais fértil do mês.'
-    },
-    {
-      id: 4,
-      title: 'Sono e Hormônios',
-      category: 'Bem-estar',
-      color: 'bg-purple-100 text-purple-700',
-      description: 'Por que você sente mais sono antes da menstruação?'
+// Biblioteca de artigos. Os da fase atual vem primeiro; os chips filtram por fase.
+
+const FASES: Fase[] = ['MENSTRUAL', 'FOLICULAR', 'OVULATORIA', 'LUTEA'];
+
+export default function ConteudoScreen() {
+  const router = useRouter();
+  const insets = useSafeAreaInsets();
+  const [lista, setLista] = useState<ListaArtigos | null>(null);
+  const [erro, setErro] = useState(false);
+  const [filtro, setFiltro] = useState<Fase | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const carregar = useCallback(async () => {
+    try {
+      const res = await api.get<ListaArtigos>('/conteudo');
+      setLista(res.data);
+      setErro(false);
+    } catch {
+      setErro(true);
     }
-  ];
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      carregar();
+    }, [carregar])
+  );
+
+  const artigos = useMemo(
+    () => (lista?.data ?? []).filter((a) => !filtro || a.fasesAplicaveis.includes(filtro)),
+    [lista, filtro]
+  );
+  const daFase = filtro ? [] : artigos.filter((a) => a.daFaseAtual);
+  const outros = filtro ? artigos : artigos.filter((a) => !a.daFaseAtual);
 
   return (
-    <View className="flex-1 bg-white dark:bg-gray-900">
-      <View className="px-6 pt-12 pb-6 border-b border-gray-100 dark:border-gray-800">
-        <Text className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Conteúdo e Dicas</Text>
-        
-        <View className="flex-row items-center bg-gray-100 dark:bg-gray-800 p-3 rounded-xl">
-          <Search size={20} color={Colors.textLight} className="mr-2" />
-          <Text className="text-gray-400">Buscar artigos...</Text>
-        </View>
+    <View style={styles.tela}>
+      <View style={[styles.topo, { paddingTop: insets.top + 8 }]}>
+        <TouchableOpacity onPress={() => router.back()} style={styles.voltar} accessibilityLabel="Voltar">
+          <MaterialIcons name="arrow-back-ios-new" size={20} color={Colors.text} />
+        </TouchableOpacity>
+        <Text style={styles.titulo}>Para ler</Text>
+        <View style={styles.voltar} />
       </View>
 
-      <ScrollView className="flex-1 px-6 pt-6">
-        <Text className="text-lg font-bold text-gray-800 dark:text-white mb-4">Recomendado para você</Text>
-        
-        {articles.map((article) => (
-          <TouchableOpacity 
-            key={article.id} 
-            className="mb-4 bg-white dark:bg-gray-800 p-4 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm"
-          >
-            <View className="flex-row justify-between items-start mb-2">
-              <View className={`px-2 py-1 rounded-md ${article.color.split(' ')[0]}`}>
-                <Text className={`text-xs font-bold ${article.color.split(' ')[1]}`}>{article.category}</Text>
-              </View>
-            </View>
-            <Text className="text-lg font-bold text-gray-900 dark:text-white mb-2">{article.title}</Text>
-            <Text className="text-gray-500 dark:text-gray-400 leading-5">{article.description}</Text>
-          </TouchableOpacity>
-        ))}
-        
-        <View className="h-8" />
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chips} style={styles.chipsWrap}>
+        {[null, ...FASES].map((f) => {
+          const ativo = filtro === f;
+          return (
+            <TouchableOpacity
+              key={f ?? 'todas'}
+              onPress={() => setFiltro(f)}
+              style={[styles.chip, ativo && styles.chipAtivo]}
+              accessibilityState={{ selected: ativo }}
+            >
+              <Text style={[styles.chipTexto, ativo && styles.chipTextoAtivo]}>{f ? NOME_FASE[f] : 'Todos'}</Text>
+            </TouchableOpacity>
+          );
+        })}
       </ScrollView>
+
+      {!lista && !erro ? (
+        <View style={styles.centro}>
+          <ActivityIndicator color={Colors.primary.DEFAULT} />
+        </View>
+      ) : (
+        <ScrollView
+          contentContainerStyle={[styles.conteudo, { paddingBottom: insets.bottom + 100 }]}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={async () => {
+                setRefreshing(true);
+                await carregar();
+                setRefreshing(false);
+              }}
+            />
+          }
+        >
+          {erro ? <Text style={styles.vazio}>Não foi possível carregar os artigos. Puxe para tentar de novo.</Text> : null}
+
+          {daFase.length > 0 && lista?.faseAtual ? (
+            <>
+              <Text style={styles.secao}>Para a sua fase: {NOME_FASE[lista.faseAtual]}</Text>
+              {daFase.map((a) => (
+                <CartaoArtigo key={a.id} artigo={a} />
+              ))}
+              {outros.length > 0 ? <Text style={styles.secao}>Outros artigos</Text> : null}
+            </>
+          ) : null}
+
+          {outros.map((a) => (
+            <CartaoArtigo key={a.id} artigo={a} />
+          ))}
+
+          {lista && artigos.length === 0 ? <Text style={styles.vazio}>Nenhum artigo para esta fase ainda.</Text> : null}
+
+          <Text style={styles.aviso}>
+            Os artigos trazem informação geral e não substituem a consulta com um profissional de saúde.
+          </Text>
+        </ScrollView>
+      )}
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  tela: { flex: 1, backgroundColor: Colors.background },
+  topo: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, paddingBottom: 8 },
+  voltar: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center' },
+  titulo: { flex: 1, textAlign: 'center', fontSize: 20, fontWeight: '900', color: Colors.text },
+  chipsWrap: { flexGrow: 0 },
+  chips: { paddingHorizontal: 16, gap: 8, paddingVertical: 6 },
+  chip: { paddingHorizontal: 16, paddingVertical: 9, borderRadius: 999, backgroundColor: Colors.surface },
+  chipAtivo: { backgroundColor: Colors.primary.DEFAULT },
+  chipTexto: { fontSize: 14, fontWeight: '700', color: Colors.text },
+  chipTextoAtivo: { color: Colors.onPrimary },
+  centro: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  conteudo: { paddingHorizontal: 16, paddingTop: 8, gap: 10 },
+  secao: { fontSize: 13, fontWeight: '800', color: Colors.textLight, textTransform: 'uppercase', letterSpacing: 0.8, marginTop: 10 },
+  vazio: { fontSize: 15, color: Colors.textLight, textAlign: 'center', marginTop: 24 },
+  aviso: { fontSize: 12, color: Colors.textLight, textAlign: 'center', lineHeight: 17, marginTop: 16 },
+});

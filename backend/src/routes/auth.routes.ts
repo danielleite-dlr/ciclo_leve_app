@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { AuthController } from '../controllers/auth.controller';
+import { loginRateLimiter, registerRateLimiter } from '../middlewares/rateLimit.middleware';
 
 const authController = new AuthController();
 const router = Router();
@@ -40,7 +41,7 @@ const router = Router();
  *       400:
  *         description: Email já existe ou dados inválidos
  */
-router.post('/register', authController.register.bind(authController));
+router.post('/register', registerRateLimiter, authController.register.bind(authController));
 
 /**
  * @swagger
@@ -68,6 +69,6 @@ router.post('/register', authController.register.bind(authController));
  *       401:
  *         description: Credenciais inválidas
  */
-router.post('/login', authController.login.bind(authController));
+router.post('/login', loginRateLimiter, authController.login.bind(authController));
 
 export { router as authRoutes };

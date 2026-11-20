@@ -174,7 +174,8 @@ export class PerfilController {
       });
       res.json({ user });
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      console.error(error);
+      res.status(500).json({ error: 'Erro interno' });
     }
   }
 
@@ -195,7 +196,8 @@ export class PerfilController {
       await prisma.user.update({ where: { id: req.user.id }, data: { passwordHash: await hashPassword(novaSenha) } });
       res.json({ message: 'Senha alterada com sucesso' });
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      console.error(error);
+      res.status(500).json({ error: 'Erro interno' });
     }
   }
 
@@ -216,7 +218,8 @@ export class PerfilController {
       await prisma.user.delete({ where: { id: req.user.id } });
       res.json({ message: 'Conta excluída com sucesso' });
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      console.error(error);
+      res.status(500).json({ error: 'Erro interno' });
     }
   }
 

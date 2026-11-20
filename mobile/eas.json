@@ -26,7 +26,24 @@
         "buildType": "apk",
         "autoIncrement": true
       }
+    },
+    "production": {
+      "channel": "production",
+      "autoIncrement": true,
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://apicicloleve.atimoscrm.com.br/api/v1"
+      },
+      "android": {
+        "buildType": "app-bundle"
+      }
     }
   },
-  "submit": {}
+  "submit": {
+    "production": {
+      "android": {
+        "track": "internal",
+        "releaseStatus": "draft"
+      }
+    }
+  }
 }

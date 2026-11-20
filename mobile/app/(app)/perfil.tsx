@@ -2,10 +2,11 @@ import { useCallback, useState } from 'react';
 import { ActivityIndicator, Alert, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Bell, CalendarDays, ChevronRight, Clock, FileHeart, FileText, Fingerprint, HeartPulse, History, KeyRound, Lock, LogOut, ShieldCheck, Target } from 'lucide-react-native';
+import { Bell, CalendarDays, ChevronRight, Clock, FileHeart, FileText, Fingerprint, HeartPulse, History, KeyRound, Lock, LogOut, ScrollText, ShieldCheck, Target } from 'lucide-react-native';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Colors } from '@/constants/Colors';
+import { abrirLink, LINKS } from '@/constants/links';
 import { OBJETIVOS } from '@/constants/objetivos';
 import Constants from 'expo-constants';
 import { removeToken } from '@/services/storage';
@@ -26,7 +27,6 @@ type PerfilPayload = {
   ciclo: { duracaoCiclo?: number | null; duracaoSangramento?: number | null; objetivos?: string[] | null } | null;
 };
 
-const emBreve = (titulo: string) => Alert.alert(titulo, 'Disponível em uma próxima versão.');
 
 function SettingItem({
   icon: Icon,
@@ -312,11 +312,12 @@ export default function Perfil() {
             subtitle={perfil?.user?.consentimentoSaudeSexual ? 'Autorizado · toque para apagar' : 'Relações e testes'}
             onPress={gerenciarDadosIntimos}
           />
+          <SettingItem icon={ScrollText} label="Termos de Uso" subtitle="Regras de uso do app" onPress={() => abrirLink(LINKS.termos)} />
           <SettingItem
             icon={FileText}
-            label="Termos e privacidade"
-            subtitle="Uso do app e seus dados"
-            onPress={() => emBreve('Termos e privacidade')}
+            label="Política de Privacidade"
+            subtitle="Como cuidamos dos seus dados"
+            onPress={() => abrirLink(LINKS.privacidade)}
             last
           />
         </View>

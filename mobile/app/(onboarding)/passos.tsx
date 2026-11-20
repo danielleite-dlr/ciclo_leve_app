@@ -9,6 +9,7 @@ import { setToken } from '@/services/storage';
 import { getFertilityStatus, hasFertileWindow, parseDateOnly } from '@/services/cycle';
 import { salvarLembrete } from '@/services/lembrete';
 import { Colors } from '@/constants/Colors';
+import { abrirLink, LINKS } from '@/constants/links';
 import { alternarObjetivo, OBJETIVOS_ONBOARDING } from '@/constants/objetivos';
 import { modoCicloDe, respostasDe, useOnboardingStore } from '@/stores/onboardingStore';
 import { BotaoAvancar, Etapa, faixa, Opcao, Roda } from '@/components/onboarding/ui';
@@ -584,7 +585,17 @@ export default function Passos() {
 
             <TouchableOpacity style={styles.aceite} onPress={() => setAceite((v) => !v)} accessibilityRole="checkbox" accessibilityState={{ checked: aceite }}>
               <MaterialIcons name={aceite ? 'check-box' : 'check-box-outline-blank'} size={24} color={aceite ? Colors.primary.DEFAULT : '#B5AAAE'} />
-              <Text style={styles.aceiteTexto}>Li e aceito os Termos de Uso e a Política de Privacidade.</Text>
+              <Text style={styles.aceiteTexto}>
+                Li e aceito os{' '}
+                <Text style={styles.aceiteLink} onPress={() => abrirLink(LINKS.termos)} accessibilityRole="link">
+                  Termos de Uso
+                </Text>{' '}
+                e a{' '}
+                <Text style={styles.aceiteLink} onPress={() => abrirLink(LINKS.privacidade)} accessibilityRole="link">
+                  Política de Privacidade
+                </Text>
+                .
+              </Text>
             </TouchableOpacity>
 
             <TouchableOpacity onPress={() => router.replace('/(auth)/login')} style={{ alignSelf: 'center', marginTop: 8 }}>
@@ -623,6 +634,7 @@ const styles = StyleSheet.create({
   olho: { position: 'absolute', right: 14, top: 0, bottom: 0, justifyContent: 'center' },
   aceite: { flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 6 },
   aceiteTexto: { flex: 1, fontSize: 14, color: Colors.text, lineHeight: 20 },
+  aceiteLink: { color: Colors.primary.dark, fontWeight: '800', textDecorationLine: 'underline' },
   link: { color: Colors.primary.dark, fontWeight: '800', fontSize: 15 },
   stepper: {
     flexDirection: 'row',

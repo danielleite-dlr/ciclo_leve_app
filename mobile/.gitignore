@@ -6,3 +6,7 @@ expo-env.d.ts
 # @end expo-cli
 .expo/
 
+
+# Pastas nativas geradas pelo Expo (prebuild). O EAS gera a partir do app.json.
+/android
+/ios

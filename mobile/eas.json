@@ -8,7 +8,7 @@
       "distribution": "internal",
       "channel": "preview",
       "env": {
-        "EXPO_PUBLIC_API_URL": "https://innovations-til-connecticut-atlanta.trycloudflare.com/api/v1"
+        "EXPO_PUBLIC_API_URL": "https://apicicloleve.atimoscrm.com.br/api/v1"
       },
       "android": {
         "buildType": "apk",
@@ -20,7 +20,7 @@
       "distribution": "internal",
       "channel": "development",
       "env": {
-        "EXPO_PUBLIC_API_URL": "https://innovations-til-connecticut-atlanta.trycloudflare.com/api/v1"
+        "EXPO_PUBLIC_API_URL": "https://apicicloleve.atimoscrm.com.br/api/v1"
       },
       "android": {
         "buildType": "apk",

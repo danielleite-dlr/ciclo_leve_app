@@ -13,6 +13,7 @@ import { alternarObjetivo, OBJETIVOS_ONBOARDING } from '@/constants/objetivos';
 import { modoCicloDe, respostasDe, useOnboardingStore } from '@/stores/onboardingStore';
 import { BotaoAvancar, Etapa, faixa, Opcao, Roda } from '@/components/onboarding/ui';
 import { CalendarioMenstruacao } from '@/components/onboarding/CalendarioMenstruacao';
+import { Compromisso, fraseCompromisso } from '@/components/onboarding/Compromisso';
 
 // Onboarding: uma pergunta por tela. Na primeira vez termina criando a conta e mostrando os planos.
 // Com ?modo=editar (vindo do Perfil) pula nome/resultado/lembrete/conta e salva direto.
@@ -28,6 +29,7 @@ type Passo =
   | 'corpo'
   | 'resultado'
   | 'lembrete'
+  | 'compromisso'
   | 'conta';
 
 const ANO_ATUAL = new Date().getFullYear();
@@ -49,9 +51,9 @@ export default function Passos() {
   const [verSenha, setVerSenha] = useState(false);
 
   const passos = useMemo<Passo[]>(() => {
-    const lista: Passo[] = ['nome', 'objetivos', 'situacao', 'regularidade', 'calendario', 'duracao', 'nascimento', 'corpo', 'resultado', 'lembrete', 'conta'];
+    const lista: Passo[] = ['nome', 'objetivos', 'situacao', 'regularidade', 'calendario', 'duracao', 'nascimento', 'corpo', 'resultado', 'lembrete', 'compromisso', 'conta'];
     return lista.filter((p) => {
-      if (editar && ['nome', 'resultado', 'lembrete', 'conta'].includes(p)) return false;
+      if (editar && ['nome', 'resultado', 'lembrete', 'compromisso', 'conta'].includes(p)) return false;
       // Com anticoncepcional hormonal ou na menopausa a pergunta de regularidade nao se aplica.
       if (p === 'regularidade' && s.situacao && s.situacao !== 'NENHUMA') return false;
       return true;
@@ -508,6 +510,18 @@ export default function Passos() {
             </View>
           ) : null}
           <Opcao titulo="Agora não" selecionada={!s.lembreteAtivo} onPress={() => s.setDado('lembreteAtivo', false)} />
+        </Etapa>
+      );
+
+    case 'compromisso':
+      return (
+        <Etapa
+          {...base}
+          rolar={false}
+          titulo={nomeCurto ? `Eu, ${nomeCurto}, vou usar o CicloLeve para` : 'Eu vou usar o CicloLeve para'}
+          subtitulo={fraseCompromisso(s.objetivos)}
+        >
+          <Compromisso onConcluir={avancar} />
         </Etapa>
       );
 

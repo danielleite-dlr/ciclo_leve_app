@@ -81,7 +81,7 @@ export default function EditarDados() {
                 mode="date"
                 display={Platform.OS === 'ios' ? 'spinner' : 'default'}
                 locale="pt-BR"
-                maximumDate={subYears(new Date(), 10)}
+                maximumDate={subYears(new Date(), 18)}
                 minimumDate={subYears(new Date(), 80)}
                 onChange={(_e: DateTimePickerEvent, d?: Date) => {
                   if (Platform.OS !== 'ios') setMostrarData(false);

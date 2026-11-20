@@ -392,7 +392,7 @@ export default function Passos() {
           <View style={styles.cartaoRoda}>
             <Roda
               valor={s.anoNascimento ?? ANO_ATUAL - 28}
-              opcoes={faixa(ANO_ATUAL - 65, ANO_ATUAL - 10).reverse()}
+              opcoes={faixa(ANO_ATUAL - 65, ANO_ATUAL - 18).reverse()}
               onChange={(v) => s.setDado('anoNascimento', v)}
             />
           </View>

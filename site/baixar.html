@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Baixar o CicloLeve | Versão de testes</title>
+  <meta name="description" content="Baixe a versão de testes do CicloLeve.">
+  <link rel="icon" href="img/simbolo.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="estilo.css">
+  <style>
+    .baixar { max-width: 640px; margin: 48px auto; text-align: center; }
+    .baixar h1 { font-size: clamp(30px, 5vw, 42px); }
+    .baixar .chamada { margin: 0 auto 28px; }
+    .bloco { background: #fff; border: 1px solid var(--borda); border-radius: 24px; padding: 28px; margin-bottom: 18px; text-align: left; }
+    .bloco h2 { margin: 0 0 6px; font-size: 21px; font-weight: 900; }
+    .bloco p { color: var(--texto-suave); margin: 0 0 14px; }
+    .bloco ol { color: var(--texto-suave); padding-left: 20px; margin: 16px 0 0; }
+    .bloco li { margin-bottom: 6px; }
+    .versao { font-size: 13px; color: var(--texto-suave); margin-top: 10px; }
+    #qr { display: grid; place-items: center; margin: 8px 0 4px; }
+    #qr img, #qr canvas { border-radius: 12px; }
+    [hidden] { display: none !important; }
+  </style>
+</head>
+<body class="pagina-doc">
+  <header class="topo">
+    <div class="conteiner">
+      <a href="./"><img src="img/logo.svg" alt="CicloLeve" width="88" height="40"></a>
+    </div>
+  </header>
+
+  <main class="conteiner baixar">
+    <span class="selo"><span class="ponto"></span>Versão de testes</span>
+    <h1>Teste o CicloLeve</h1>
+    <p class="chamada">O app ainda não está nas lojas. Enquanto isso, você pode instalar a versão de testes e nos contar o que achou.</p>
+
+    <!-- Android -->
+    <div class="bloco" id="android">
+      <h2>Android</h2>
+      <p>Baixe o arquivo de instalação e abra no celular.</p>
+      <a class="botao" id="link-apk" href="#">Baixar para Android</a>
+      <div class="versao" id="versao"></div>
+      <ol>
+        <li>Toque em <strong>Baixar para Android</strong> e aguarde o download (cerca de 80 MB).</li>
+        <li>Abra o arquivo baixado. Se o Android pedir, permita instalar apps desta fonte (Chrome ou Arquivos).</li>
+        <li>Toque em <strong>Instalar</strong>. Se aparecer um aviso do Play Protect, toque em “Instalar mesmo assim”: ele aparece porque o app ainda não veio da Google Play.</li>
+      </ol>
+    </div>
+
+    <!-- iPhone -->
+    <div class="bloco" id="iphone">
+      <h2>iPhone</h2>
+      <p>A versão para iPhone ainda não está liberada para testes. Quer ser avisada quando estiver? Mande um <a href="mailto:drodrigues021@gmail.com?subject=Quero%20testar%20no%20iPhone">e-mail</a>.</p>
+    </div>
+
+    <!-- Computador: QR para abrir no celular -->
+    <div class="bloco" id="computador" hidden>
+      <h2>Está no computador?</h2>
+      <p>A versão de testes é para celulares <strong>Android</strong>. Aponte a câmera do seu Android para o código, abra esta página nele e toque em Baixar para Android.</p>
+      <div id="qr" aria-label="QR code com o endereço desta página"></div>
+    </div>
+
+    <p class="versao">Encontrou um problema? Mande um print por <a href="mailto:drodrigues021@gmail.com?subject=Problema%20no%20CicloLeve">e-mail</a>.</p>
+  </main>
+
+  <footer class="rodape">
+    <div class="conteiner">
+      <div class="colunas">
+        <div><a href="./">Início</a></div>
+        <div><a href="privacidade.html">Política de Privacidade</a></div>
+        <div><a href="termos.html">Termos de Uso</a></div>
+      </div>
+      <div class="legal">© 2026 CicloLeve · CNPJ 44.137.840/0001-76</div>
+    </div>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script>
+    // Versao atual do APK. A cada build novo, troque so estas tres linhas.
+    var APK = {
+      url: 'https://expo.dev/artifacts/eas/pncWMkUmzAx-UGsyTUrkTw5PRCiluDsy07FOwlZHTT4.apk',
+      versao: '1.0.0 (16)',
+      data: '20 de novembro de 2026'
+    };
+
+    document.getElementById('link-apk').href = APK.url;
+    document.getElementById('versao').textContent = 'Versão ' + APK.versao + ', publicada em ' + APK.data;
+
+    // Mostra primeiro o bloco do aparelho de quem abriu
+    var ua = navigator.userAgent;
+    var ehAndroid = /Android/i.test(ua);
+    var ehIphone = /iPhone|iPad|iPod/i.test(ua);
+    var android = document.getElementById('android');
+    var iphone = document.getElementById('iphone');
+    if (ehIphone) android.parentNode.insertBefore(iphone, android);
+    if (!ehAndroid && !ehIphone) {
+      document.getElementById('computador').hidden = false;
+      if (window.QRCode) new QRCode(document.getElementById('qr'), { text: location.href, width: 180, height: 180, colorDark: '#1b1d1c', colorLight: '#ffffff' });
+    }
+  </script>
+</body>
+</html>

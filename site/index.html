@@ -1,0 +1,338 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CicloLeve | Acompanhe seu ciclo com dicas para cada fase</title>
+  <meta name="description" content="App para acompanhar o ciclo menstrual, registrar como você se sente e receber dicas do dia de acordo com a fase e com os seus sintomas.">
+  <meta property="og:title" content="CicloLeve">
+  <meta property="og:description" content="Acompanhe seu ciclo e receba dicas do dia de acordo com a fase e com o que você sente.">
+  <meta property="og:image" content="img/tela-home.jpg">
+  <link rel="icon" href="img/simbolo.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+  <header class="topo">
+    <div class="conteiner">
+      <a href="./"><img src="img/logo.svg" alt="CicloLeve" width="88" height="40"></a>
+      <nav>
+        <a href="#recursos">O app</a>
+        <a href="#por-que">Por que o CicloLeve</a>
+        <a href="#planos">Planos</a>
+        <a href="#perguntas">Dúvidas</a>
+      </nav>
+      <a class="botao" href="baixar.html">Quero testar</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="abertura">
+      <div class="conteiner">
+        <div>
+          <span class="selo"><span class="ponto"></span>Em fase de testes</span>
+          <h1>Seu ciclo, seu ritmo e <em>dicas para cada dia</em></h1>
+          <p class="chamada">O CicloLeve prevê a menstruação e o período fértil, e ajusta as dicas do dia à fase do ciclo e ao que você sente: inchaço, fome, humor e sono.</p>
+          <div class="lojas" aria-label="Disponível em breve nas lojas">
+            <span class="loja"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16.4 12.6c0-2.4 2-3.6 2.1-3.7-1.1-1.7-2.9-1.9-3.5-1.9-1.5-.2-2.9.9-3.7.9-.8 0-1.9-.9-3.2-.8-1.6 0-3.1 1-4 2.4-1.7 3-.4 7.4 1.2 9.8.8 1.2 1.8 2.5 3 2.4 1.2 0 1.7-.8 3.1-.8s1.9.8 3.2.8 2.1-1.2 2.9-2.4c.9-1.4 1.3-2.7 1.3-2.8 0 0-2.4-.9-2.4-3.9zM14 5.3c.7-.8 1.1-1.9 1-3-1 0-2.1.7-2.8 1.5-.6.7-1.2 1.8-1 2.9 1.1.1 2.1-.6 2.8-1.4z"/></svg><span><small>Em breve na</small>App Store</span></span>
+            <span class="loja"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.6 1.8 13.4 12l-9.8 10.2c-.4-.2-.6-.7-.6-1.2V3c0-.5.2-1 .6-1.2zm11 8.9 2.6-2.7 3.3 1.9c.9.5.9 1.7 0 2.2l-3.3 1.9-2.6-2.7-.6-.5.6-.1zM4.7 1.2l11.2 6.4-2.5 2.6L4.7 1.2zm8.7 12.6 2.5 2.6L4.7 22.8l8.7-9z"/></svg><span><small>Em breve no</small>Google Play</span></span>
+          </div>
+          <span class="nota-mao">Cadastro grátis. Leva 2 minutos.</span>
+        </div>
+
+        <div class="palco" aria-hidden="true">
+          <div class="anel"></div>
+          <div class="celular"><div class="tela">
+            <img src="img/tela-home-engravidar.jpg" alt="" width="700" height="1517">
+            <!-- Datas escritas pelo site: acompanham o dia de hoje -->
+            <span class="na-tela data-cabecalho" data-data="cabecalho">Sexta-feira, 20 nov</span>
+            <span class="na-tela data-ultima" data-data="ultima">última 8 nov</span>
+          </div></div>
+          <div class="flutuante f-menstruacao">
+            <small>Ovulação em</small>
+            <div class="grande">1 dia</div>
+            <small>dia mais fértil: <span data-data="ovulacao">21 nov</span></small>
+          </div>
+          <div class="flutuante f-sintomas">
+            <strong>Como você está hoje?</strong>
+            <div class="chips"><span class="chip">Inchada</span><span class="chip">Mais fome</span><span class="chip verde">Dormi bem</span></div>
+          </div>
+          <div class="flutuante f-fertil">
+            <span class="bolinha">🌱</span>
+            <div><strong>Período fértil</strong><small data-data="fertil">de 16 a 22 de novembro</small></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="recursos">
+      <div class="conteiner">
+        <h2 class="titulo-secao">O que dá para fazer com o CicloLeve</h2>
+        <p class="sub-secao">Tudo começa com uma pergunta simples: como você está hoje? As previsões e as dicas partem daí.</p>
+        <div class="recursos">
+          <div class="vitrine">
+            <div class="celular"><img id="tela-recurso" src="img/tela-calendario.jpg" alt="Calendário do CicloLeve com menstruação e período fértil" width="430" height="932" loading="lazy"></div>
+            <div class="pontos" aria-hidden="true"><span class="ativo"></span><span></span><span></span><span></span></div>
+          </div>
+          <div class="lista-recursos" role="tablist">
+            <div class="recurso ativo" role="tab" tabindex="0" aria-selected="true" data-tela="img/tela-calendario.jpg" data-alt="Calendário do CicloLeve com menstruação e período fértil">
+              <h3>Acompanhe o ciclo e o período fértil</h3>
+              <p>Calendário com a menstruação registrada, a próxima prevista e os dias férteis. A previsão melhora a cada ciclo que você registra.</p>
+            </div>
+            <div class="recurso" role="tab" tabindex="0" aria-selected="false" data-tela="img/tela-registro.jpg" data-alt="Registro diário com inchaço, fome, humor e sono">
+              <h3>Registre como você está em 1 minuto</h3>
+              <p>Inchaço, fome, humor e sono, cada um numa barra de deslizar. Sem formulário longo.</p>
+            </div>
+            <div class="recurso" role="tab" tabindex="0" aria-selected="false" data-tela="img/tela-home.jpg" data-alt="Tela inicial com a fase do ciclo e as dicas de Faça hoje">
+              <h3>Receba o que fazer e o que evitar hoje</h3>
+              <p>A tela inicial mostra a fase do ciclo e ajusta as sugestões de alimentação, movimento e descanso ao que você registrou.</p>
+            </div>
+            <div class="recurso" role="tab" tabindex="0" aria-selected="false" data-tela="img/tela-insights.jpg" data-alt="Insights com a dica do dia e o resumo do último registro">
+              <h3>Entenda os seus padrões</h3>
+              <p>Insights com a dica do dia, o resumo dos registros e um relatório em PDF para levar à consulta.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="por-que" style="padding-top: 24px;">
+      <div class="conteiner">
+        <h2 class="titulo-secao">Por que o CicloLeve?</h2>
+        <p class="sub-secao">Feito para o dia a dia de quem quer entender o próprio corpo sem complicação.</p>
+        <div class="motivos">
+          <div class="motivo">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+            <h3>Previsões que se ajustam a você</h3>
+            <p>Cada menstruação registrada deixa a próxima previsão mais certeira, inclusive em ciclos irregulares.</p>
+          </div>
+          <div class="motivo">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10" width="14" height="10" rx="2.5"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/><circle cx="12" cy="15" r="1.3"/></svg>
+            <h3>Seus dados são seus</h3>
+            <p>Nada é vendido nem usado para publicidade. Dá para bloquear o app com Face ID e excluir tudo quando quiser.</p>
+            <a class="link-seta" href="privacidade.html">Como cuidamos dos seus dados</a>
+          </div>
+          <div class="motivo">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.6-7 10-7 10z"/></svg>
+            <h3>Dicas para o que você sente hoje</h3>
+            <p>A fase do ciclo é só uma tendência. Se hoje você está inchada ou dormiu mal, as dicas mudam.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="faixa">
+      <div class="conteiner">
+        <div>
+          <h2>Um compromisso <em>com você mesma</em></h2>
+          <p>No fim do cadastro, você escolhe o que quer cuidar (inchaço, TPM, sono, fertilidade) e firma esse compromisso segurando o símbolo do CicloLeve. A partir daí, o app lembra você de registrar e acompanha a sua evolução.</p>
+          <a class="botao" href="baixar.html">Quero participar dos testes</a>
+        </div>
+        <div class="celular"><img src="img/tela-insights.jpg" alt="Insights do CicloLeve com a dica do dia e o resumo do último registro" width="430" height="932" loading="lazy"></div>
+      </div>
+    </section>
+
+    <section id="planos">
+      <div class="conteiner">
+        <h2 class="titulo-secao">Planos</h2>
+        <p class="sub-secao">O acompanhamento do ciclo e a dica do dia são gratuitos. O Premium libera o restante.</p>
+        <div class="planos">
+          <div class="plano">
+            <h3>Gratuito</h3>
+            <div class="preco">R$ 0</div>
+            <ul>
+              <li>Previsão da menstruação e fase atual</li>
+              <li>Registro diário de sintomas</li>
+              <li>Dica do dia</li>
+              <li>Artigos selecionados</li>
+            </ul>
+          </div>
+          <div class="plano destaque">
+            <h3>Premium anual</h3>
+            <div class="preco">R$ 89,90 <small>por ano</small></div>
+            <div class="equivale">Equivale a R$ 7,49 por mês</div>
+            <ul>
+              <li>Faça e evite ajustados ao seu registro</li>
+              <li>Período fértil, relações e testes</li>
+              <li>Histórico completo e estatísticas</li>
+              <li>Relatório em PDF para a consulta</li>
+              <li>Todos os artigos</li>
+            </ul>
+          </div>
+          <div class="plano">
+            <h3>Premium mensal</h3>
+            <div class="preco">R$ 14,90 <small>por mês</small></div>
+            <ul>
+              <li>Tudo do Premium anual</li>
+              <li>Sem fidelidade: cancele quando quiser</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section style="padding-top: 24px;">
+      <div class="conteiner">
+        <h2 class="titulo-secao">Para ler no app</h2>
+        <p class="sub-secao">Artigos curtos sobre cada fase do ciclo, em linguagem do dia a dia.</p>
+        <div class="artigos">
+          <div class="artigo">
+            <div class="capa c1"><svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="42" fill="none" stroke="#e37c96" stroke-width="10" stroke-dasharray="66 198" transform="rotate(-90 60 60)"/><circle cx="60" cy="60" r="42" fill="none" stroke="#14b8a6" stroke-width="10" stroke-dasharray="40 224" stroke-dashoffset="-110" transform="rotate(-90 60 60)"/><circle cx="60" cy="60" r="42" fill="none" stroke="#f3b6c6" stroke-width="10" stroke-dasharray="70 194" stroke-dashoffset="-160" transform="rotate(-90 60 60)"/></svg></div>
+            <h3>As fases do ciclo menstrual</h3>
+            <span>Leitura de 4 min</span>
+          </div>
+          <div class="artigo">
+            <div class="capa c2"><svg viewBox="0 0 120 120" aria-hidden="true"><path d="M60 22c14 20 26 34 26 50a26 26 0 0 1-52 0c0-16 12-30 26-50z" fill="#14b8a6" opacity=".85"/><path d="M48 74a12 12 0 0 0 12 12" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round"/></svg></div>
+            <h3>Inchaço antes da menstruação</h3>
+            <span>Leitura de 3 min</span>
+          </div>
+          <div class="artigo">
+            <div class="capa c3"><svg viewBox="0 0 120 120" aria-hidden="true"><path d="M78 30a32 32 0 1 0 12 50A26 26 0 0 1 78 30z" fill="#9b7be0" opacity=".85"/><circle cx="36" cy="34" r="3" fill="#9b7be0"/><circle cx="92" cy="44" r="2.5" fill="#9b7be0"/><circle cx="30" cy="84" r="2" fill="#9b7be0"/></svg></div>
+            <h3>Sono e ciclo menstrual</h3>
+            <span>Leitura de 3 min</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="perguntas" style="padding-top: 24px;">
+      <div class="conteiner">
+        <h2 class="titulo-secao">Dúvidas frequentes</h2>
+        <div class="perguntas">
+          <details>
+            <summary>O CicloLeve serve como método para evitar gravidez?</summary>
+            <p>Não. As previsões são estimativas baseadas nos seus registros e não substituem métodos contraceptivos nem a orientação de um profissional de saúde.</p>
+          </details>
+          <details>
+            <summary>Meus dados ficam protegidos?</summary>
+            <p>Seus registros ficam na sua conta, protegidos por senha, e não são vendidos nem usados para publicidade. Você pode excluir a conta e todos os dados pelo próprio app. Os detalhes estão na <a href="privacidade.html">Política de Privacidade</a>.</p>
+          </details>
+          <details>
+            <summary>Funciona com o Apple Watch?</summary>
+            <p>No iPhone, você pode conectar o CicloLeve ao app Saúde. As menstruações registradas no Apple Watch entram no CicloLeve, e os seus registros vão para o app Saúde.</p>
+          </details>
+          <details>
+            <summary>Meu ciclo é irregular. O app funciona?</summary>
+            <p>Funciona. Você informa isso no começo, e as previsões se ajustam conforme você registra as menstruações.</p>
+          </details>
+          <details>
+            <summary>Como cancelo o Premium?</summary>
+            <p>Pela loja onde você assinou (App Store ou Google Play), a qualquer momento. No plano anual, quem cancela durante os 7 dias grátis não é cobrada.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="rodape">
+    <div class="conteiner">
+      <div class="colunas">
+        <div>
+          <img src="img/logo.svg" alt="CicloLeve" width="88" height="40">
+          <p>Acompanhe seu ciclo e receba dicas do dia de acordo com a fase e com o que você sente.</p>
+        </div>
+        <div>
+          <h4>O app</h4>
+          <ul>
+            <li><a href="#recursos">Recursos</a></li>
+            <li><a href="#planos">Planos</a></li>
+            <li><a href="#perguntas">Dúvidas frequentes</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Ajuda e legal</h4>
+          <ul>
+            <li><a href="suporte.html">Suporte</a></li>
+            <li><a href="privacidade.html">Política de Privacidade</a></li>
+            <li><a href="termos.html">Termos de Uso</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="legal">
+        © 2026 CicloLeve · CNPJ 44.137.840/0001-76<br>
+        O CicloLeve oferece informações gerais e estimativas. Não substitui consulta, diagnóstico ou tratamento por profissional de saúde.
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Datas da abertura: tudo relativo a hoje, como no app (dia 13 do ciclo, ovulacao amanha).
+    (function () {
+      var hoje = new Date(); hoje.setHours(12, 0, 0, 0);
+      function dia(n) { var d = new Date(hoje); d.setDate(d.getDate() + n); return d; }
+      function mesCurto(d) { return d.toLocaleDateString('pt-BR', { month: 'short' }).replace('.', ''); }
+      function mesLongo(d) { return d.toLocaleDateString('pt-BR', { month: 'long' }); }
+      var semana = hoje.toLocaleDateString('pt-BR', { weekday: 'long' });
+      var ini = dia(-4), fim = dia(2);
+      var textos = {
+        cabecalho: semana.charAt(0).toUpperCase() + semana.slice(1) + ', ' + hoje.getDate() + ' ' + mesCurto(hoje),
+        ultima: 'última ' + dia(-12).getDate() + ' ' + mesCurto(dia(-12)),
+        ovulacao: dia(1).getDate() + ' ' + mesCurto(dia(1)),
+        fertil: ini.getMonth() === fim.getMonth()
+          ? 'de ' + ini.getDate() + ' a ' + fim.getDate() + ' de ' + mesLongo(fim)
+          : 'de ' + ini.getDate() + ' de ' + mesLongo(ini) + ' a ' + fim.getDate() + ' de ' + mesLongo(fim)
+      };
+      document.querySelectorAll('[data-data]').forEach(function (el) { el.textContent = textos[el.dataset.data]; });
+    })();
+  </script>
+
+  <script>
+    // Carrossel de recursos: passa sozinho a cada 5 s; clique escolhe e reinicia a contagem.
+    // Pausa com o mouse em cima ou com o foco do teclado na lista.
+    (function () {
+      var INTERVALO = 5000;
+      var img = document.getElementById('tela-recurso');
+      var itens = Array.prototype.slice.call(document.querySelectorAll('.recurso'));
+      var pontos = Array.prototype.slice.call(document.querySelectorAll('.pontos span'));
+      var area = document.querySelector('.recursos');
+      var atual = 0, timer = null, pausado = false;
+
+      // Carrega as telas antes, para a troca nao piscar
+      itens.forEach(function (el) { new Image().src = el.dataset.tela; });
+
+      function mostrar(n) {
+        atual = (n + itens.length) % itens.length;
+        var el = itens[atual];
+        itens.forEach(function (i, k) {
+          i.classList.toggle('ativo', k === atual);
+          i.setAttribute('aria-selected', k === atual ? 'true' : 'false');
+        });
+        pontos.forEach(function (p, k) { p.classList.toggle('ativo', k === atual); });
+        img.classList.add('saindo');
+        setTimeout(function () {
+          img.src = el.dataset.tela; img.alt = el.dataset.alt;
+          img.classList.remove('saindo');
+        }, 250);
+        reiniciar();
+      }
+      function reiniciar() {
+        clearTimeout(timer);
+        // Recomeca a barra de progresso do item ativo
+        itens.forEach(function (i) { i.classList.remove('contando'); });
+        if (pausado) return;
+        void itens[atual].offsetWidth;
+        itens[atual].classList.add('contando');
+        timer = setTimeout(function () { mostrar(atual + 1); }, INTERVALO);
+      }
+      function pausar(v) { pausado = v; if (v) { clearTimeout(timer); itens.forEach(function (i) { i.classList.remove('contando'); }); } else reiniciar(); }
+
+      itens.forEach(function (el, k) {
+        el.addEventListener('click', function () { mostrar(k); });
+        el.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); mostrar(k); } });
+      });
+      pontos.forEach(function (p, k) { p.addEventListener('click', function () { mostrar(k); }); });
+      area.addEventListener('mouseenter', function () { pausar(true); });
+      area.addEventListener('mouseleave', function () { pausar(false); });
+      area.addEventListener('focusin', function () { pausar(true); });
+      area.addEventListener('focusout', function () { pausar(false); });
+
+      // So comeca a passar quando a secao aparece na tela
+      if ('IntersectionObserver' in window) {
+        new IntersectionObserver(function (e) { e[0].isIntersecting ? reiniciar() : clearTimeout(timer); }, { threshold: 0.4 }).observe(area);
+      } else reiniciar();
+    })();
+  </script>
+</body>
+</html>

@@ -65,6 +65,28 @@ server {
 
 Teste com `sudo nginx -t`, recarregue e gere o certificado com `sudo certbot --nginx -d api.dominio.com.br`.
 
+## Site (landing, privacidade, termos, suporte)
+
+Páginas estáticas na pasta `site/` do repositório (HTML, CSS e imagens; sem build e sem Node).
+Ficam em outro subdomínio, separado da API (ex.: `appcicloleve.atimoscrm.com.br`).
+
+1. Confirme que o DNS do subdomínio aponta para esta VPS (`dig +short`).
+2. Crie um site novo no Nginx, sem mexer nos existentes:
+   ```nginx
+   server {
+       server_name appcicloleve.atimoscrm.com.br;
+       root /CAMINHO/DO/REPOSITORIO/site;
+       index index.html;
+       location / { try_files $uri $uri.html $uri/ =404; }
+       location ~* \.(css|svg|jpg|png)$ { expires 7d; }
+   }
+   ```
+   O `try_files` com `$uri.html` faz `/privacidade` abrir `privacidade.html`.
+3. `sudo nginx -t`, recarregue e gere o certificado: `sudo certbot --nginx -d appcicloleve.atimoscrm.com.br`.
+4. Confira `https://appcicloleve.atimoscrm.com.br/`, `/privacidade`, `/termos` e `/suporte`.
+
+Para atualizar o site depois, basta `git pull`: o Nginx serve os arquivos direto da pasta.
+
 ## Atualizar depois
 
 ```sh

@@ -3,6 +3,7 @@ import { Alert, Modal, Pressable, StyleSheet, Text, TouchableOpacity, View } fro
 import { useRouter } from 'expo-router';
 import { format, isToday } from 'date-fns';
 import api from '@/services/api';
+import { useDiaAtual } from '@/hooks/useDiaAtual';
 import { Colors } from '@/constants/Colors';
 import { Ciclo, parseDateOnly } from '@/services/cycle';
 import type { Sintomas } from '@/services/dicaDoDia';
@@ -102,9 +103,11 @@ export function QuickLogProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  // Recarrega ao abrir o app e quando o dia muda (o "registrado hoje" de ontem nao vale mais)
+  const hoje = useDiaAtual();
   useEffect(() => {
     refresh();
-  }, [refresh]);
+  }, [refresh, hoje]);
 
   const salvo = useCallback(async () => {
     await refresh();

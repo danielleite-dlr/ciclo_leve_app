@@ -1,4 +1,6 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useAoVoltarAoApp, useDiaAtual } from '@/hooks/useDiaAtual';
+import { parseDateOnly } from '@/services/cycle';
 import {
   ActivityIndicator,
   Alert,
@@ -23,7 +25,8 @@ import { useAssinatura } from '@/contexts/AssinaturaContext';
 import { PremiumAviso } from '@/components/PremiumAviso';
 import { ParaLer } from '@/components/conteudo/ParaLer';
 import { Respiro } from '@/components/Respiro';
-import { ajustarDia, gerarDica, sintomasRelevantes, textoRelato } from '@/services/dicaDoDia';
+import { sincronizarSaude } from '@/services/saude';
+import { ajustarDia, gerarDica, sintomasRelevantes, soLeves, textoRegistro, textoRelato } from '@/services/dicaDoDia';
 
 type PerfilResponse = {
   user: { nomeCompleto?: string };
@@ -87,11 +90,14 @@ export default function Home() {
       ? { bg: Colors.accent.light, dot: Colors.accent.DEFAULT, text: Colors.accent.dark }
       : { bg: Colors.primary.light, dot: Colors.primary.DEFAULT, text: Colors.primary.dark };
 
+  // Muda sozinho na virada do dia e quando o app volta do segundo plano
+  const hoje = useDiaAtual();
+
   const headerDate = useMemo(() => {
     // Ex: "Terça, 14 Out"
-    const d = format(new Date(), 'EEEE, d MMM', { locale: ptBR });
+    const d = format(parseDateOnly(hoje), 'EEEE, d MMM', { locale: ptBR });
     return capFirst(d);
-  }, []);
+  }, [hoje]);
 
   const fetchPerfil = useCallback(async () => {
     try {
@@ -112,15 +118,31 @@ export default function Home() {
 
   // Carrega ao abrir e sempre que a home volta a aparecer (ex.: depois de editar objetivos ou
   // salvar o registro). O loading de tela cheia so aparece na primeira carga.
+  const carregar = useCallback(async () => {
+    await Promise.all([fetchPerfil(), quickLog.refresh()]);
+    setLoading(false);
+    // App Saude: traz menstruacoes registradas fora do CicloLeve (ex.: Apple Watch)
+    const { importadas } = await sincronizarSaude().catch(() => ({ importadas: 0 }));
+    if (importadas > 0) await Promise.all([fetchPerfil(), quickLog.refresh()]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fetchPerfil]);
+
   useFocusEffect(
     useCallback(() => {
-      (async () => {
-        await Promise.all([fetchPerfil(), quickLog.refresh()]);
-        setLoading(false);
-      })();
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [fetchPerfil])
+      carregar();
+    }, [carregar])
   );
+
+  // Reabriu o app (ex.: deixou aberto de ontem para hoje): fase, dicas e registro do dia mudam.
+  useAoVoltarAoApp(carregar);
+
+  // Virou o dia com o app aberto na tela
+  const diaCarregado = useRef(hoje);
+  useEffect(() => {
+    if (diaCarregado.current === hoje) return;
+    diaCarregado.current = hoje;
+    carregar();
+  }, [hoje, carregar]);
 
   // Algo foi registrado (pela home ou pelo "+"): fase, destaque e dicas podem ter mudado.
   useEffect(() => {
@@ -172,10 +194,19 @@ export default function Home() {
   );
   const relatoHoje = sintomasHoje && sintomasRelevantes(sintomasHoje).length ? textoRelato(sintomasRelevantes(sintomasHoje)) : null;
   // A dica do registro de hoje e gratis; o Premium ajusta tambem o Faca/Evite e a nota.
-  const hojeParaVoce =
-    sintomasHoje && sintomasRelevantes(sintomasHoje).length
-      ? { ...gerarDica(sintomasHoje), relato: textoRelato(sintomasRelevantes(sintomasHoje)) }
-      : null;
+  // Todo registro tem retorno: forte ajusta o dia (Premium), leve e "tudo bem" so comentam.
+  const hojeParaVoce = sintomasHoje
+    ? {
+        ...gerarDica(sintomasHoje),
+        texto: relatoHoje
+          ? podeAdaptar
+            ? `Você relatou ${relatoHoje}. Ajustamos as dicas de hoje.`
+            : `Você relatou ${relatoHoje}. Toque para ver a dica de hoje.`
+          : soLeves(sintomasHoje)
+            ? `Você relatou ${textoRegistro(sintomasHoje)}. Como é leve, as dicas da fase seguem valendo.`
+            : 'Você registrou que está bem hoje. As dicas da fase seguem valendo.',
+      }
+    : null;
 
   const abrirDica = () => {
     if (!sintomasHoje) return;
@@ -286,11 +317,7 @@ export default function Home() {
             <View style={{ flex: 1 }}>
               <Text style={styles.todayLabel}>HOJE PARA VOCÊ</Text>
               <Text style={styles.todayTitle}>{hojeParaVoce.title}</Text>
-              <Text style={styles.todayText}>
-                {podeAdaptar
-                  ? `Você relatou ${hojeParaVoce.relato}. Ajustamos as dicas de hoje.`
-                  : `Você relatou ${hojeParaVoce.relato}. Toque para ver a dica de hoje.`}
-              </Text>
+              <Text style={styles.todayText}>{hojeParaVoce.texto}</Text>
             </View>
             <MaterialIcons name="chevron-right" size={22} color="#9CA3AF" />
           </TouchableOpacity>

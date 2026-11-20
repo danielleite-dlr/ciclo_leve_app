@@ -1,8 +1,8 @@
 import { useCallback, useState } from 'react';
-import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Alert, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Bell, CalendarDays, ChevronRight, Clock, FileHeart, FileText, Fingerprint, History, KeyRound, Lock, LogOut, ShieldCheck, Target } from 'lucide-react-native';
+import { Bell, CalendarDays, ChevronRight, Clock, FileHeart, FileText, Fingerprint, HeartPulse, History, KeyRound, Lock, LogOut, ShieldCheck, Target } from 'lucide-react-native';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Colors } from '@/constants/Colors';
@@ -11,6 +11,7 @@ import Constants from 'expo-constants';
 import { removeToken } from '@/services/storage';
 import { formatarHora, LembretePref, lerLembrete, limparLembrete } from '@/services/lembrete';
 import { bloqueioAtivo, definirBloqueio, limparBloqueio, nomeDoMetodo } from '@/services/bloqueio';
+import { ativarSaude, desativarSaude, saudeAtiva } from '@/services/saude';
 import api from '@/services/api';
 import { useAssinatura } from '@/contexts/AssinaturaContext';
 
@@ -69,12 +70,14 @@ export default function Perfil() {
   const [loading, setLoading] = useState(true);
   const [lembrete, setLembrete] = useState<LembretePref | null>(null);
   const [bloqueio, setBloqueio] = useState<{ ativo: boolean; metodo: string }>({ ativo: false, metodo: 'Face ID' });
+  const [saude, setSaude] = useState(false);
 
   // Recarrega ao voltar para a aba (ex.: depois de editar objetivos ou dados do ciclo)
   useFocusEffect(
     useCallback(() => {
       let active = true;
       lerLembrete().then((l) => active && setLembrete(l));
+      saudeAtiva().then((a) => active && setSaude(a));
       Promise.all([bloqueioAtivo(), nomeDoMetodo()]).then(([ativo, metodo]) => active && setBloqueio({ ativo, metodo }));
       (async () => {
         try {
@@ -118,6 +121,35 @@ export default function Perfil() {
     const { ok, motivo } = await definirBloqueio(!bloqueio.ativo);
     if (ok) setBloqueio((b) => ({ ...b, ativo: !b.ativo }));
     else if (motivo) Alert.alert('Não foi possível ativar', motivo);
+  };
+
+  const alternarSaude = async () => {
+    if (saude) {
+      Alert.alert(
+        'Desligar o app Saúde',
+        'O CicloLeve para de enviar e receber dados. O que já foi gravado continua no app Saúde e pode ser apagado por lá.',
+        [
+          { text: 'Cancelar', style: 'cancel' },
+          {
+            text: 'Desligar',
+            style: 'destructive',
+            onPress: async () => {
+              await desativarSaude();
+              setSaude(false);
+            },
+          },
+        ]
+      );
+      return;
+    }
+    const { ok, motivo } = await ativarSaude();
+    if (ok) {
+      setSaude(true);
+      Alert.alert(
+        'App Saúde conectado',
+        'Suas menstruações e sintomas vão para o app Saúde, e as menstruações anotadas no Apple Watch entram no CicloLeve. Para mudar as permissões, use Ajustes > Saúde > Acesso a Dados.'
+      );
+    } else if (motivo) Alert.alert('Não foi possível conectar', motivo);
   };
 
   // LGPD: revogar o consentimento apaga todos os registros de relacao e testes.
@@ -241,6 +273,14 @@ export default function Perfil() {
 
         <Text style={styles.sectionTitle}>Preferências</Text>
         <View style={styles.section}>
+          {Platform.OS === 'ios' ? (
+            <SettingItem
+              icon={HeartPulse}
+              label="App Saúde e Apple Watch"
+              subtitle={saude ? 'Conectado · menstruação e sintomas' : 'Desconectado'}
+              onPress={alternarSaude}
+            />
+          ) : null}
           <SettingItem
             icon={Clock}
             label="Lembrete diário"

@@ -16,6 +16,7 @@ import {
   subMonths,
 } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { useDiaAtual } from '@/hooks/useDiaAtual';
 import api from '@/services/api';
 import { Colors } from '@/constants/Colors';
 import {
@@ -49,6 +50,8 @@ function capFirst(s: string) {
 export default function Calendario() {
   const insets = useSafeAreaInsets();
   const [currentDate, setCurrentDate] = useState(new Date());
+  // Redesenha na virada do dia para o destaque de "hoje" andar junto
+  useDiaAtual();
   const [ciclo, setCiclo] = useState<Ciclo | null>(null);
   const [historico, setHistorico] = useState<HistoricoMenstrual[]>([]);
   const [loading, setLoading] = useState(true);

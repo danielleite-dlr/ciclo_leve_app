@@ -1,7 +1,15 @@
 import jwt from 'jsonwebtoken';
 
-const SECRET = process.env.JWT_SECRET || 'default_secret';
-const REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || 'default_refresh_secret';
+// Em producao, sem segredo definido a API nao sobe (um segredo padrao deixaria qualquer um gerar login).
+function segredo(nome: string, padraoDev: string) {
+  const valor = process.env[nome];
+  if (valor) return valor;
+  if (process.env.NODE_ENV === 'production') throw new Error(`${nome} nao definido`);
+  return padraoDev;
+}
+
+const SECRET = segredo('JWT_SECRET', 'default_secret');
+const REFRESH_SECRET = segredo('JWT_REFRESH_SECRET', 'default_refresh_secret');
 
 export const generateToken = (userId: string) => {
   return jwt.sign({ userId }, SECRET, { expiresIn: '7d' });

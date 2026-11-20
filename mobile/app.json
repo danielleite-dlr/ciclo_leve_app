@@ -39,6 +39,14 @@
         {
           "faceIDPermission": "Permita que o CicloLeve use o Face ID para proteger seus dados."
         }
+      ],
+      [
+        "@kingstinct/react-native-healthkit",
+        {
+          "NSHealthShareUsageDescription": "O CicloLeve lê as menstruações registradas no app Saúde, como as anotadas no Apple Watch, para manter seu ciclo atualizado.",
+          "NSHealthUpdateUsageDescription": "O CicloLeve grava no app Saúde os dias de menstruação e os sintomas que você registra.",
+          "background": false
+        }
       ]
     ],
     "experiments": {

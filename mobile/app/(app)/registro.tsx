@@ -14,8 +14,10 @@ import { format, isToday } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import Slider from '@react-native-community/slider';
 import api from '@/services/api';
+import { enviarSintomasSaude } from '@/services/saude';
 import { Colors } from '@/constants/Colors';
 import { parseDateOnly } from '@/services/cycle';
+import { useDiaAtual } from '@/hooks/useDiaAtual';
 import { SINTOMAS, SintomaKey } from '@/constants/sintomas';
 
 type SymptomKey = SintomaKey;
@@ -95,11 +97,12 @@ export default function Registro() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
+  const hoje = useDiaAtual();
   const todayLabel = useMemo(() => {
     // Ex: "Hoje, 24 Out"
-    const d = format(new Date(), "d MMM", { locale: ptBR });
+    const d = format(parseDateOnly(hoje), 'd MMM', { locale: ptBR });
     return `Hoje, ${d}`;
-  }, []);
+  }, [hoje]);
 
   const [values, setValues] = useState<Record<SymptomKey, number>>({
     inchaco: 0,
@@ -157,6 +160,8 @@ export default function Registro() {
         // data do aparelho (evita cair no dia seguinte pelo fuso do servidor)
         dataRegistro: format(new Date(), 'yyyy-MM-dd'),
       });
+      // App Saude (se ativado). Falha aqui nao atrapalha o registro.
+      enviarSintomasSaude(new Date(), values).catch(() => null);
 
       // Após salvar, mostra feedback (Dica do Dia) no padrão do design.
       router.replace({

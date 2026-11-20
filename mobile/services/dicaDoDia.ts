@@ -10,7 +10,7 @@ export type Sintomas = {
 
 type Chave = 'inchaco' | 'fome' | 'humor' | 'sono';
 
-const NIVEL_RELEVANTE = 2; // moderado ou pior
+const NIVEL_RELEVANTE = 2; // moderado ou pior: a partir daqui o Faca/Evite da Home muda
 
 const RELATO: Record<Chave, string> = {
   sono: 'sono ruim',
@@ -51,23 +51,53 @@ export function sintomasRelevantes(s: Sintomas): Chave[] {
     .map((x) => x.key);
 }
 
-/** "sono ruim e irritação" */
-export function textoRelato(chaves: Chave[]) {
-  const partes = chaves.map((k) => RELATO[k]);
+// Nivel 1 ("um pouco"): aparece no texto, mas nao muda o plano do dia
+const RELATO_LEVE: Record<Chave, string> = {
+  sono: 'sono razoável',
+  humor: 'um pouco de irritação',
+  inchaco: 'pouco inchaço',
+  fome: 'um pouco mais de fome',
+};
+
+function juntar(partes: string[]) {
   if (partes.length <= 1) return partes.join('');
   return `${partes.slice(0, -1).join(', ')} e ${partes[partes.length - 1]}`;
 }
 
+/** "sono ruim e irritação" */
+export function textoRelato(chaves: Chave[]) {
+  return juntar(chaves.map((k) => RELATO[k]));
+}
+
+/** Tudo o que ela marcou acima de zero, com o peso certo: "irritação e pouco inchaço". */
+export function textoRegistro(s: Sintomas) {
+  return juntar(
+    ordenar(s)
+      .filter((x) => x.value > 0)
+      .map((x) => (x.value >= NIVEL_RELEVANTE ? RELATO[x.key] : RELATO_LEVE[x.key]))
+  );
+}
+
+/** Registrou algo, mas tudo em nivel leve. */
+export const soLeves = (s: Sintomas) => sintomasRelevantes(s).length === 0 && ordenar(s)[0].value > 0;
+
 export function gerarDica(s: Sintomas) {
-  const scores = ordenar(s);
-  const top = scores[0];
-  const basedOn = scores
-    .slice(0, 2)
-    .filter((x) => x.value > 0)
-    .map((x) => x.label);
-  const basedText = basedOn.length
-    ? `Baseado no ${basedOn.map((x) => `"${x}"`).join(' e ')} que você relatou hoje.`
-    : 'Baseado no seu registro de hoje.';
+  const top = ordenar(s)[0];
+
+  // Nada a relatar: sem dica de sintoma, so reforco da fase
+  if (top.value === 0) {
+    return {
+      title: 'Dia tranquilo',
+      basedText: 'Você registrou que está bem hoje.',
+      icon: 'check-circle' as const,
+      cardTitle: 'Siga o ritmo da fase',
+      cardText:
+        'Sem inchaço, fome fora do normal, irritação ou noite ruim. As dicas da sua fase na tela inicial continuam valendo para hoje.',
+      extra: 'Registrar também os dias bons ajuda a mostrar o seu padrão ao longo do ciclo.',
+    };
+  }
+
+  const basedText = `Baseado no que você registrou hoje: ${textoRegistro(s)}.`;
 
   if (top.key === 'inchaco') {
     return {

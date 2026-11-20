@@ -1,0 +1,101 @@
+# Ciclo Leve - producao (VPS)
+# Rodar dentro desta pasta:  docker compose up -d --build
+# Com o Caddy cuidando do HTTPS:  docker compose --profile caddy up -d --build
+# As senhas ficam em deploy/.env (fora do Git). Modelo: deploy/env.example
+
+name: cicloleve
+
+x-db-url: &db-url "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?schema=public"
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:?defina no .env}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?defina no .env}
+      POSTGRES_DB: ${POSTGRES_DB:?defina no .env}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    # Sem "ports": o banco so e acessivel pelos outros containers
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # Aplica as migracoes do Prisma e termina. A API so sobe depois que ele der certo.
+  migrate:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile.prod
+      target: build
+    command: ["npx", "prisma", "migrate", "deploy"]
+    environment:
+      DATABASE_URL: *db-url
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+
+  api:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile.prod
+      target: runtime
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: "3000"
+      DATABASE_URL: *db-url
+      JWT_SECRET: ${JWT_SECRET:?defina no .env}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:?defina no .env}
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    # So escuta no proprio servidor. O HTTPS fica com o Caddy (abaixo) ou com o Nginx da VPS.
+    ports:
+      - "127.0.0.1:${API_PORTA:-3000}:3000"
+
+  # Copia do banco uma vez por dia, guardada em deploy/backups (mantem 14 dias)
+  backup:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    environment:
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - ./backups:/backups
+    depends_on:
+      postgres:
+        condition: service_healthy
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        while true; do
+          arquivo=/backups/cicloleve-$$(date +%F).sql.gz
+          pg_dump --clean --if-exists -h postgres -U ${POSTGRES_USER} ${POSTGRES_DB} | gzip > $$arquivo.tmp && mv $$arquivo.tmp $$arquivo && echo "backup ok: $$arquivo"
+          find /backups -name 'cicloleve-*.sql.gz' -mtime +14 -delete
+          sleep 86400
+        done
+
+  # HTTPS automatico (Let's Encrypt). Use so se as portas 80 e 443 estiverem livres na VPS.
+  caddy:
+    image: caddy:2-alpine
+    profiles: ["caddy"]
+    restart: unless-stopped
+    environment:
+      API_DOMINIO: ${API_DOMINIO:?defina no .env}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - api
+
+volumes:
+  postgres_data:
+  caddy_data:
+  caddy_config:

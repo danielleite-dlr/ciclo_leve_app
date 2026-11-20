@@ -4,6 +4,7 @@ import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/dat
 import { addDays, format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import api from '@/services/api';
+import { sincronizarSaude } from '@/services/saude';
 import { Colors } from '@/constants/Colors';
 
 export type MenstruacaoAcao = 'inicio' | 'fim';
@@ -39,6 +40,7 @@ export function MenstruacaoSheet({
       // Data local (yyyy-MM-dd): evita trocar o dia por causa do fuso
       const res = await api.post(`/menstruacao/${acao}`, { data: format(dataEscolhida, 'yyyy-MM-dd') });
       onSaved({ registroId: res.data?.registro?.id, acao });
+      sincronizarSaude({ forcar: true }).catch(() => null);
     } catch (error: any) {
       Alert.alert('Não foi possível registrar', error?.response?.data?.error || 'Tente novamente.');
     } finally {

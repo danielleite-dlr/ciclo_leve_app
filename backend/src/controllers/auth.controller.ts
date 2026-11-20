@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { AuthService } from '../services/auth.service';
-import { registerSchema } from '../schemas/user.schema';
+import { registerSchema, loginSchema } from '../schemas/user.schema';
 import { z } from 'zod';
 
 const authService = new AuthService();
@@ -27,11 +27,19 @@ export class AuthController {
 
   async login(req: Request, res: Response) {
     try {
-      const { email, senha } = req.body;
+      const { email, senha } = loginSchema.parse(req.body);
       const result = await authService.login(email, senha);
       res.json(result);
     } catch (error: any) {
-      res.status(401).json({ error: error.message });
+      if (error instanceof z.ZodError) {
+        res.status(400).json({
+          error: 'Dados inválidos',
+          details: error.errors.map(e => ({ field: e.path.join('.'), message: e.message })),
+        });
+        return;
+      }
+      // Resposta uniforme: nunca revela se o e-mail existe ou se a senha e que estava errada.
+      res.status(401).json({ error: 'Credenciais inválidas' });
     }
   }
 }

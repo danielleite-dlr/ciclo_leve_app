@@ -70,22 +70,47 @@ Teste com `sudo nginx -t`, recarregue e gere o certificado com `sudo certbot --n
 Páginas estáticas na pasta `site/` do repositório (HTML, CSS e imagens; sem build e sem Node).
 Ficam em outro subdomínio, separado da API (ex.: `appcicloleve.atimoscrm.com.br`).
 
+> **Importante:** o Nginx (usuário `www-data`) **não** consegue servir direto da pasta do
+> repositório quando ele fica em `/root` (permissão `700` — daria **403**). Por isso a LP é
+> publicada em `/var/www/appcicloleve`, e o `root` do Nginx aponta para lá.
+
 1. Confirme que o DNS do subdomínio aponta para esta VPS (`dig +short`).
-2. Crie um site novo no Nginx, sem mexer nos existentes:
+2. Publique os arquivos num diretório que o Nginx leia:
+   ```sh
+   mkdir -p /var/www/appcicloleve
+   cp -r /root/ciclo_leve_app/site/. /var/www/appcicloleve/
+   chmod -R a+rX /var/www/appcicloleve
+   ```
+3. Crie um site novo no Nginx, sem mexer nos existentes:
    ```nginx
    server {
+       listen 80;
+       listen [::]:80;
        server_name appcicloleve.atimoscrm.com.br;
-       root /CAMINHO/DO/REPOSITORIO/site;
+       root /var/www/appcicloleve;
        index index.html;
        location / { try_files $uri $uri.html $uri/ =404; }
-       location ~* \.(css|svg|jpg|png)$ { expires 7d; }
+       location ~* \.(css|svg|jpg|jpeg|png|webp|ico)$ { expires 7d; access_log off; }
    }
    ```
    O `try_files` com `$uri.html` faz `/privacidade` abrir `privacidade.html`.
-3. `sudo nginx -t`, recarregue e gere o certificado: `sudo certbot --nginx -d appcicloleve.atimoscrm.com.br`.
-4. Confira `https://appcicloleve.atimoscrm.com.br/`, `/privacidade`, `/termos` e `/suporte`.
+4. Habilite, teste e gere o certificado (com redirect HTTP→HTTPS):
+   ```sh
+   ln -sfn /etc/nginx/sites-available/appcicloleve /etc/nginx/sites-enabled/appcicloleve
+   sudo nginx -t && sudo systemctl reload nginx
+   sudo certbot --nginx -d appcicloleve.atimoscrm.com.br --redirect
+   ```
+5. Confira `https://appcicloleve.atimoscrm.com.br/`, `/privacidade`, `/termos` e `/suporte`.
 
-Para atualizar o site depois, basta `git pull`: o Nginx serve os arquivos direto da pasta.
+### Atualizar o site depois
+
+Como o Nginx serve de `/var/www/appcicloleve` (não do repo), depois de alterar a LP rode:
+
+```sh
+bash /root/ciclo_leve_app/deploy/atualizar-site.sh
+```
+
+O script faz `git pull`, copia `site/` para `/var/www/appcicloleve`, valida e recarrega o Nginx.
 
 ## Atualizar depois
 

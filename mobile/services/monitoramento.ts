@@ -1,8 +1,9 @@
 import Constants, { ExecutionEnvironment } from 'expo-constants';
 
-// Relatorio de falhas (Firebase Crashlytics). So existe nos builds nativos (APK/AAB):
-// no Expo Go o modulo nativo nao esta presente, entao tudo aqui vira no-op.
+// Relatorio de falhas (Firebase Crashlytics) e estatisticas de uso (Google Analytics do Firebase).
+// So existem nos builds nativos (APK/AAB): no Expo Go o modulo nativo nao esta presente, entao tudo aqui vira no-op.
 // Nunca mandar dados de saude, nome ou e-mail para ca: so o erro e o nome da tela.
+// O Analytics nao recebe o id da usuaria nem o ID de publicidade (ver firebase.json e app.json).
 
 type Crashlytics = {
   log: (c: unknown, msg: string) => void;
@@ -10,8 +11,15 @@ type Crashlytics = {
   getCrashlytics: () => unknown;
 };
 
+type Analytics = {
+  getAnalytics: () => unknown;
+  logScreenView: (a: unknown, p: { screen_name: string; screen_class: string }) => Promise<void>;
+};
+
 let mod: Crashlytics | null = null;
 let instancia: unknown = null;
+let analyticsMod: Analytics | null = null;
+let analytics: unknown = null;
 
 export function iniciarMonitoramento() {
   if (instancia || Constants.executionEnvironment === ExecutionEnvironment.StoreClient) return;
@@ -24,6 +32,19 @@ export function iniciarMonitoramento() {
     mod = null;
     instancia = null;
   }
+  try {
+    analyticsMod = require('@react-native-firebase/analytics') as Analytics;
+    analytics = analyticsMod.getAnalytics();
+  } catch {
+    analyticsMod = null;
+    analytics = null;
+  }
+}
+
+/** Registra a tela aberta (ex.: "(app)/conteudo/[id]"), para o painel de uso do Firebase. */
+export function registrarTela(nome: string) {
+  if (!analyticsMod || !analytics) return;
+  analyticsMod.logScreenView(analytics, { screen_name: nome, screen_class: nome }).catch(() => {});
 }
 
 /** Registra um erro tratado (ex.: tela de erro). */

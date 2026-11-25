@@ -58,6 +58,9 @@ services:
       REVENUECAT_WEBHOOK_AUTH: ${REVENUECAT_WEBHOOK_AUTH:-}
       # true = libera a compra simulada (sem loja). So para testes.
       COMPRA_SIMULADA: ${COMPRA_SIMULADA:-false}
+      # Painel de uso em /api/v1/admin. Vazias = painel desligado.
+      ADMIN_USUARIO: ${ADMIN_USUARIO:-}
+      ADMIN_SENHA: ${ADMIN_SENHA:-}
     depends_on:
       migrate:
         condition: service_completed_successfully

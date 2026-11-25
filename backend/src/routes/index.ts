@@ -7,6 +7,7 @@ import { menstruacaoRoutes } from './menstruacao.routes';
 import { fertilidadeRoutes } from './fertilidade.routes';
 import { assinaturaRoutes } from './assinatura.routes';
 import { webhookRoutes } from './webhook.routes';
+import { adminRoutes } from './admin.routes';
 
 const router = Router();
 
@@ -19,6 +20,7 @@ router.use('/menstruacao', menstruacaoRoutes);
 router.use('/fertilidade', fertilidadeRoutes);
 router.use('/assinatura', assinaturaRoutes);
 router.use('/webhooks', webhookRoutes);
+router.use('/admin', adminRoutes);
 
 
 export { router as routes };

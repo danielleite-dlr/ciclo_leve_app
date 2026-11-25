@@ -96,7 +96,7 @@ Ordem sugerida das capturas: 01 dias férteis, 02 calendário, 03 registro, 04 d
 ## Segurança dos dados (Política > Conteúdo do app > Segurança dos dados)
 
 - **O app coleta dados?** Sim.
-- **Compartilha dados com terceiros?** Não. O Firebase Crashlytics atua como prestador de serviço (processa em nosso nome), o que o Google não conta como compartilhamento.
+- **Compartilha dados com terceiros?** Não. O Firebase (Crashlytics e Analytics) atua como prestador de serviço (processa em nosso nome), o que o Google não conta como compartilhamento.
 - **Os dados são criptografados em trânsito?** Sim (HTTPS).
 - **Os usuários podem pedir a exclusão dos dados?** Sim, no app e pela URL de exclusão.
 
@@ -106,11 +106,11 @@ Ordem sugerida das capturas: 01 dias férteis, 02 calendário, 03 registro, 04 d
 | Informações pessoais > Endereço de e-mail | E-mail | Sim | Gerenciamento da conta |
 | Informações pessoais > Outras informações | Idade, altura e peso | Não | Funcionalidade do app, personalização |
 | Saúde e fitness > Informações de saúde | Datas de menstruação, sintomas, relações e testes de ovulação e gravidez | Sim (ciclo) / Não (relações e testes) | Funcionalidade do app, personalização |
-| Atividade no app > Interações com o app | Artigos lidos | Não | Funcionalidade do app |
+| Atividade no app > Interações com o app | Artigos lidos; telas abertas (Google Analytics para Firebase) | Sim (automático) | Funcionalidade do app, Análise |
 | Atividade no app > Outras ações | Lembrete diário (horário) | Não | Funcionalidade do app |
 | Informações e desempenho do app > Registros de falhas | Relatórios de travamento (Firebase Crashlytics) | Sim (automático) | Análise |
-| Informações e desempenho do app > Diagnóstico | Modelo e versão do aparelho e do sistema no momento da falha | Sim (automático) | Análise |
-| Identificadores do dispositivo ou outros IDs | ID aleatório da instalação usado pelo Crashlytics | Sim (automático) | Análise |
+| Informações e desempenho do app > Diagnóstico | Modelo e versão do aparelho e do sistema (falhas e estatísticas de uso) | Sim (automático) | Análise |
+| Identificadores do dispositivo ou outros IDs | ID aleatório da instalação usado pelo Crashlytics e pelo Analytics (o ID de publicidade fica bloqueado) | Sim (automático) | Análise |
 
 Não coletados: localização, contatos, fotos, arquivos, mensagens, identificadores de publicidade, dados financeiros (o pagamento é feito pelo Google Play).
 

@@ -23,6 +23,8 @@ model User {
   resetPasswordToken   String?   @map("reset_password_token") @db.VarChar(100)
   resetPasswordExpires DateTime? @map("reset_password_expires") @db.Timestamp
   ultimoLogin          DateTime? @map("ultimo_login") @db.Timestamp
+  // Ultima chamada autenticada (atualizada no maximo a cada 2 min), para o painel de uso
+  ultimoAcesso         DateTime? @map("ultimo_acesso") @db.Timestamp
   
   // Subscription
   plano         String    @default("FREE") @db.VarChar(20)
@@ -57,6 +59,7 @@ model User {
   @@map("users")
   @@index([email])
   @@index([plano, planoExpiraEm])
+  @@index([ultimoAcesso])
 }
 
 // 2. PERFIL_CICLO

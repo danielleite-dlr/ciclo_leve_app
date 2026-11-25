@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { verifyToken } from '../utils/jwt';
+import { marcarAcesso } from '../services/painel.service';
 
 export interface AuthRequest extends Request {
   user?: {
@@ -19,6 +20,7 @@ export const authMiddleware = (req: AuthRequest, res: Response, next: NextFuncti
   try {
     const decoded = verifyToken(token);
     req.user = { id: decoded.userId };
+    marcarAcesso(decoded.userId);
     next();
   } catch (error) {
     return res.status(401).json({ error: 'Token inválido' });

@@ -10,6 +10,7 @@ import { abrirLink, LINKS } from '@/constants/links';
 import { OBJETIVOS } from '@/constants/objetivos';
 import Constants from 'expo-constants';
 import { removeToken } from '@/services/storage';
+import { sairCompras } from '@/services/compras';
 import { formatarHora, LembretePref, lerLembrete, limparLembrete } from '@/services/lembrete';
 import { bloqueioAtivo, definirBloqueio, limparBloqueio, nomeDoMetodo } from '@/services/bloqueio';
 import { ativarSaude, desativarSaude, saudeAtiva } from '@/services/saude';
@@ -109,6 +110,7 @@ export default function Perfil() {
         style: 'destructive',
         onPress: async () => {
           await removeToken();
+          await sairCompras();
           await limparLembrete();
           await limparBloqueio();
           router.replace('/(auth)/login');

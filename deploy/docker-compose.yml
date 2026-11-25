@@ -52,6 +52,12 @@ services:
       JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:?defina no .env}
       # Origem(ns) permitida(s) no CORS. Vazio = libera geral (app mobile nao usa CORS).
       CORS_ORIGIN: ${CORS_ORIGIN:-*}
+      # Cobranca pela loja (RevenueCat). Vazias = o app mostra que a assinatura ainda nao esta disponivel.
+      REVENUECAT_ANDROID_KEY: ${REVENUECAT_ANDROID_KEY:-}
+      REVENUECAT_SECRET_KEY: ${REVENUECAT_SECRET_KEY:-}
+      REVENUECAT_WEBHOOK_AUTH: ${REVENUECAT_WEBHOOK_AUTH:-}
+      # true = libera a compra simulada (sem loja). So para testes.
+      COMPRA_SIMULADA: ${COMPRA_SIMULADA:-false}
     depends_on:
       migrate:
         condition: service_completed_successfully

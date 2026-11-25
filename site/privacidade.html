@@ -38,7 +38,7 @@
           <tr><td>Ciclo menstrual</td><td>Datas de início e fim das menstruações, duração do ciclo e do sangramento, regularidade, uso de anticoncepcional hormonal ou menopausa</td><td>Você, no app; ou o app Saúde, se você conectar</td></tr>
           <tr><td>Registro diário</td><td>Inchaço, fome, humor, qualidade do sono e, se você informar, peso do dia</td><td>Você, no registro diário</td></tr>
           <tr><td>Saúde sexual e reprodutiva</td><td>Relações (com ou sem proteção) e resultados de testes de ovulação e de gravidez</td><td>Você, apenas depois de dar um consentimento específico no app</td></tr>
-          <tr><td>Assinatura</td><td>Plano contratado, período de teste e datas de validade. Não recebemos os dados do seu cartão: o pagamento é feito pela App Store ou pelo Google Play</td><td>Loja de aplicativos</td></tr>
+          <tr><td>Assinatura</td><td>Plano contratado, período de teste e datas de validade. Não recebemos os dados do seu cartão: o pagamento é feito pela App Store ou pelo Google Play</td><td>Loja de aplicativos, por meio do RevenueCat</td></tr>
           <tr><td>Uso e segurança</td><td>Data do último acesso, artigos lidos e registros técnicos do servidor (endereço IP, data e hora das requisições)</td><td>Gerados automaticamente</td></tr>
           <tr><td>Falhas do app</td><td>Quando o app trava ou dá erro: o erro técnico, a tela em que aconteceu, o modelo e a versão do aparelho e do sistema e um identificador aleatório da instalação. Não inclui nome, e-mail nem dados do ciclo ou de saúde</td><td>Gerados automaticamente pelo app (Firebase Crashlytics)</td></tr>
         </tbody>
@@ -70,6 +70,7 @@
       <ul>
         <li><strong>Provedor de hospedagem:</strong> empresa que fornece o servidor onde ficam a API e o banco de dados do CicloLeve. Ela armazena os dados em nosso nome e não pode usá-los para outros fins.</li>
         <li><strong>Google (Firebase Crashlytics):</strong> recebe os relatórios de falhas do app descritos acima, para nos ajudar a corrigir erros. Esses relatórios não contêm dados de saúde nem dados de identificação da conta.</li>
+        <li><strong>RevenueCat:</strong> confirma junto à loja de aplicativos as compras e renovações da assinatura. Recebe apenas um identificador da sua conta no CicloLeve e os dados da compra, sem dados de saúde.</li>
         <li><strong>Apple e Google:</strong> processam o pagamento da assinatura nas lojas de aplicativos, conforme as políticas próprias de cada uma.</li>
         <li><strong>Autoridades:</strong> quando houver obrigação legal ou ordem judicial.</li>
       </ul>

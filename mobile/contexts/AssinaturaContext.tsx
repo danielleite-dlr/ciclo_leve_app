@@ -1,6 +1,7 @@
-import { createContext, ReactNode, useCallback, useContext, useMemo, useState } from 'react';
+import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'expo-router';
 import api from '@/services/api';
+import { aoMudarAssinatura, prepararCompras } from '@/services/compras';
 
 // Plano da usuaria e modulos liberados. A regra fica no backend (GET /assinatura);
 // aqui so guardamos o resultado para as telas decidirem o que mostrar.
@@ -16,6 +17,7 @@ export type PlanoInfo = {
 };
 
 export type StatusAssinatura = {
+  userId: string;
   plano: 'FREE' | 'MENSAL' | 'ANUAL';
   premium: boolean;
   emTeste: boolean;
@@ -24,6 +26,8 @@ export type StatusAssinatura = {
   modulos: Record<ModuloId, boolean>;
   planos: PlanoInfo[];
   catalogoModulos: { id: ModuloId; nome: string; descricao: string }[];
+  /** como vender: pela loja (chave publica do RevenueCat) ou simulado */
+  compras?: { revenuecatAndroid: string | null; simulada: boolean };
 };
 
 type Ctx = {
@@ -33,6 +37,10 @@ type Ctx = {
   temModulo: (m: ModuloId) => boolean;
   abrirPlanos: (modulo?: ModuloId) => void;
   definir: (s: StatusAssinatura) => void;
+  /** true quando da para assinar pelo Google Play neste aparelho */
+  lojaDisponivel: boolean;
+  /** pede ao backend o plano atualizado na loja (depois de comprar ou restaurar) */
+  sincronizar: () => Promise<StatusAssinatura | null>;
 };
 
 const AssinaturaContext = createContext<Ctx | null>(null);
@@ -40,6 +48,39 @@ const AssinaturaContext = createContext<Ctx | null>(null);
 export function AssinaturaProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
   const [status, setStatus] = useState<StatusAssinatura | null>(null);
+  const [lojaDisponivel, setLojaDisponivel] = useState(false);
+  const premiumRef = useRef(false);
+  premiumRef.current = !!status?.premium;
+
+  const sincronizar = useCallback(async () => {
+    try {
+      const { data } = await api.post<StatusAssinatura>('/assinatura/sincronizar');
+      setStatus(data);
+      return data;
+    } catch {
+      return null;
+    }
+  }, []);
+
+  // Liga a loja para a usuaria assim que o status chega (a chave publica vem do backend)
+  const chave = status?.compras?.revenuecatAndroid;
+  const userId = status?.userId;
+  useEffect(() => {
+    if (!userId) return;
+    let ativo = true;
+    prepararCompras(chave, userId).then((ok) => ativo && setLojaDisponivel(ok));
+    return () => {
+      ativo = false;
+    };
+  }, [chave, userId]);
+
+  // A loja confirmou uma assinatura que o backend ainda nao conhece (compra, renovacao, restauracao)
+  useEffect(() => {
+    aoMudarAssinatura((ativa) => {
+      if (ativa && !premiumRef.current) sincronizar();
+    });
+    return () => aoMudarAssinatura(null);
+  }, [sincronizar]);
 
   const refresh = useCallback(async () => {
     try {
@@ -58,7 +99,10 @@ export function AssinaturaProvider({ children }: { children: ReactNode }) {
     [router]
   );
 
-  const value = useMemo(() => ({ status, refresh, temModulo, abrirPlanos, definir: setStatus }), [status, refresh, temModulo, abrirPlanos]);
+  const value = useMemo(
+    () => ({ status, refresh, temModulo, abrirPlanos, definir: setStatus, lojaDisponivel, sincronizar }),
+    [status, refresh, temModulo, abrirPlanos, lojaDisponivel, sincronizar]
+  );
   return <AssinaturaContext.Provider value={value}>{children}</AssinaturaContext.Provider>;
 }
 

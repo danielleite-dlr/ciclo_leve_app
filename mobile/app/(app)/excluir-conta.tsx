@@ -4,6 +4,8 @@ import { useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import api from '@/services/api';
 import { removeToken } from '@/services/storage';
+import { sairCompras } from '@/services/compras';
+import { useAssinatura } from '@/contexts/AssinaturaContext';
 import { limparLembrete } from '@/services/lembrete';
 import { limparBloqueio } from '@/services/bloqueio';
 import { Colors } from '@/constants/Colors';
@@ -12,6 +14,7 @@ import { ScreenHeader } from '@/components/ScreenHeader';
 // Exclusao definitiva da conta (LGPD e exigencia da App Store para apps com cadastro).
 export default function ExcluirConta() {
   const router = useRouter();
+  const { status } = useAssinatura();
   const [senha, setSenha] = useState('');
   const [excluindo, setExcluindo] = useState(false);
 
@@ -26,6 +29,7 @@ export default function ExcluirConta() {
           try {
             await api.delete('/perfil', { data: { senha } });
             await removeToken();
+            await sairCompras();
             await limparLembrete();
             await limparBloqueio();
             setSenha('');
@@ -62,6 +66,11 @@ export default function ExcluirConta() {
             </Text>
           ))}
           <Text style={[styles.text, { marginTop: 12 }]}>Essa ação não pode ser desfeita.</Text>
+          {status?.premium ? (
+            <Text style={[styles.text, styles.avisoAssinatura]}>
+              Excluir a conta não cancela a assinatura Premium. Cancele antes no Google Play para não ser cobrada de novo.
+            </Text>
+          ) : null}
 
           <Text style={styles.label}>Digite sua senha para confirmar</Text>
           <TextInput
@@ -92,6 +101,7 @@ export default function ExcluirConta() {
 }
 
 const styles = StyleSheet.create({
+  avisoAssinatura: { marginTop: 12, color: Colors.error, fontWeight: '700' },
   screen: { flex: 1, backgroundColor: Colors.background },
   flex1: { flex: 1 },
   content: { padding: 24, paddingBottom: 120 },

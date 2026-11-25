@@ -114,4 +114,4 @@ Ordem sugerida das capturas: 01 dias férteis, 02 calendário, 03 registro, 04 d
 
 Não coletados: localização, contatos, fotos, arquivos, mensagens, identificadores de publicidade, dados financeiros (o pagamento é feito pelo Google Play).
 
-Quando a cobrança pelo Google Play estiver ativa, acrescentar: Informações financeiras > Histórico de compras (finalidade: funcionalidade do app).
+Cobrança pelo Google Play (RevenueCat): marcar também **Informações financeiras > Histórico de compras**: coletado, não compartilhado (o RevenueCat processa em nosso nome), não temporário, obrigatório para quem assina, finalidade Funcionalidade do app e Gerenciamento da conta.

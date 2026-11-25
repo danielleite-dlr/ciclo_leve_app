@@ -23,6 +23,16 @@ export class AssinaturaController {
     }
   }
 
+  // POST /assinatura/sincronizar  (depois de comprar ou restaurar pela loja)
+  async sincronizar(req: AuthRequest, res: Response) {
+    try {
+      if (!req.user) return res.status(401).json({ error: 'User not authenticated' });
+      res.json(await assinaturaService.sincronizar(req.user.id));
+    } catch (error: any) {
+      res.status(400).json({ error: error.message });
+    }
+  }
+
   // POST /assinatura/cancelar
   async cancelar(req: AuthRequest, res: Response) {
     try {

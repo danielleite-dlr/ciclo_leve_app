@@ -4,6 +4,7 @@ import { CicloService } from '../services/ciclo.service';
 import { AuthRequest } from '../middlewares/auth.middleware';
 import { recommendationService, Sintomas } from '../services/recommendation.service';
 import { comparePassword, hashPassword } from '../utils/bcrypt';
+import { apagarCliente } from '../services/revenuecat.service';
 
 const cicloService = new CicloService();
 
@@ -216,6 +217,8 @@ export class PerfilController {
       }
 
       await prisma.user.delete({ where: { id: req.user.id } });
+      // Dados de compra guardados no RevenueCat tambem saem (a conta ja foi apagada; falha aqui so vai para o log)
+      await apagarCliente(req.user.id).catch((e) => console.error('[revenuecat] apagar cliente:', e?.message));
       res.json({ message: 'Conta excluída com sucesso' });
     } catch (error: any) {
       console.error(error);

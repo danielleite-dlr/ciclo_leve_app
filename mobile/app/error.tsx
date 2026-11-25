@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { View, Text, Pressable, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
+import { registrarErro } from '@/services/monitoramento';
 
 export default function GlobalError({ error }: { error: unknown }) {
   const router = useRouter();
@@ -9,6 +10,7 @@ export default function GlobalError({ error }: { error: unknown }) {
     // Best-effort: surface the error in native logs
     // eslint-disable-next-line no-console
     console.error('[GLOBAL_ERROR_BOUNDARY]', error);
+    registrarErro(error, 'tela de erro');
   }, [error]);
 
   const message =

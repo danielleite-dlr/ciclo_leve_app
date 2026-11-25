@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1055012718725",
+    "project_id": "cicloleve-d5851",
+    "storage_bucket": "cicloleve-d5851.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1055012718725:android:c15db93e9e8d460fc481ec",
+        "android_client_info": {
+          "package_name": "com.cicloleve.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCbXFe9b__1ftvLJmQiyxOOD8bkiEvA3_g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -9,7 +9,7 @@ import api from '@/services/api';
 import { parseDateOnly } from '@/services/cycle';
 import { Colors } from '@/constants/Colors';
 import { nivelTexto } from '@/constants/sintomas';
-import { gerarDica } from '@/services/dicaDoDia';
+import { gerarDica, textoRegistro } from '@/services/dicaDoDia';
 
 type Registro = {
   id: string;
@@ -23,11 +23,11 @@ type Registro = {
 type SymptomKey = 'inchaco' | 'fomeCompulsao' | 'humorIrritacao' | 'qualidadeSono';
 
 // Escala do registro diario: 0 = sem queixa ... 3 = intenso (para todos, inclusive sono).
-const SYMPTOMS: { key: SymptomKey; label: string; tipLabel: string; icon: keyof typeof MaterialIcons.glyphMap }[] = [
-  { key: 'inchaco', label: 'Inchaço', tipLabel: 'inchaço', icon: 'water-drop' },
-  { key: 'fomeCompulsao', label: 'Fome', tipLabel: 'fome/compulsão', icon: 'restaurant' },
-  { key: 'humorIrritacao', label: 'Humor', tipLabel: 'irritabilidade', icon: 'sentiment-dissatisfied' },
-  { key: 'qualidadeSono', label: 'Sono', tipLabel: 'sono', icon: 'bedtime' },
+const SYMPTOMS: { key: SymptomKey; label: string; icon: keyof typeof MaterialIcons.glyphMap }[] = [
+  { key: 'inchaco', label: 'Inchaço', icon: 'water-drop' },
+  { key: 'fomeCompulsao', label: 'Fome', icon: 'restaurant' },
+  { key: 'humorIrritacao', label: 'Humor', icon: 'sentiment-dissatisfied' },
+  { key: 'qualidadeSono', label: 'Sono', icon: 'bedtime' },
 ];
 // Texto do nivel por sintoma (mesmo do Registro).
 
@@ -93,16 +93,16 @@ export default function InsightsScreen() {
     if (!last) return { tip: null, basedText: '' };
     const ranked = SYMPTOMS.map((s) => ({ ...s, v: val(last, s.key) })).sort((a, b) => b.v - a.v);
     if (ranked[0].v === 0) return { tip: DIA_LEVE, basedText: 'Você não relatou sintomas no último registro.' };
-    const top = ranked.slice(0, 2).filter((s) => s.v > 0);
-    const d = gerarDica({
+    const sintomas = {
       inchaco: val(last, 'inchaco'),
       fomeCompulsao: val(last, 'fomeCompulsao'),
       humorIrritacao: val(last, 'humorIrritacao'),
       qualidadeSono: val(last, 'qualidadeSono'),
-    });
+    };
+    const d = gerarDica(sintomas);
     return {
       tip: { title: d.title, icon: d.icon, cardTitle: d.cardTitle, text: d.cardText, extra: d.extra } as Tip,
-      basedText: `Baseado em ${top.map((s) => `"${s.tipLabel}"`).join(' e ')} do seu último registro.`,
+      basedText: `Baseado no seu último registro: ${textoRegistro(sintomas)}.`,
     };
   }, [last]);
 

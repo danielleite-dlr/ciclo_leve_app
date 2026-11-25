@@ -119,8 +119,9 @@ const styles = StyleSheet.create({
   topo: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, paddingBottom: 8 },
   voltar: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center' },
   titulo: { flex: 1, textAlign: 'center', fontSize: 20, fontWeight: '900', color: Colors.text },
-  chipsWrap: { flexGrow: 0 },
-  chips: { paddingHorizontal: 16, gap: 8, paddingVertical: 6 },
+  // flexShrink 0: no Android a lista abaixo (flex 1) espremia a faixa e cortava os chips
+  chipsWrap: { flexGrow: 0, flexShrink: 0 },
+  chips: { paddingHorizontal: 16, gap: 8, paddingVertical: 6, alignItems: 'center' },
   chip: { paddingHorizontal: 16, paddingVertical: 9, borderRadius: 999, backgroundColor: Colors.surface },
   chipAtivo: { backgroundColor: Colors.primary.DEFAULT },
   chipTexto: { fontSize: 14, fontWeight: '700', color: Colors.text },

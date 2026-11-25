@@ -13,6 +13,8 @@
     "@kingstinct/react-native-healthkit": "^16.2.0",
     "@react-native-community/datetimepicker": "8.4.4",
     "@react-native-community/slider": "5.0.1",
+    "@react-native-firebase/app": "~23.8.8",
+    "@react-native-firebase/crashlytics": "~23.8.8",
     "@react-native-picker/picker": "2.11.1",
     "axios": "^1.6.7",
     "clsx": "^2.1.0",

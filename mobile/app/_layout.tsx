@@ -4,7 +4,11 @@ import { StyleSheet, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AppLock } from '@/components/AppLock';
 import { AssinaturaProvider } from '@/contexts/AssinaturaContext';
+import { iniciarMonitoramento } from '@/services/monitoramento';
 import '../global.css';
+
+// Relatorio de falhas: liga antes de qualquer tela renderizar
+iniciarMonitoramento();
 
 export default function RootLayout() {
   return (

@@ -175,10 +175,11 @@ export default function Home() {
   // Ícones mapeados para dicas (simples por enquanto)
   const getIconForTip = (text: string) => {
     const t = text.toLowerCase();
-    if (t.includes('treino') || t.includes('caminhada') || t.includes('exercício')) return 'directions-run';
-    if (t.includes('água') || t.includes('hidrata')) return 'water-drop';
-    if (t.includes('proteína') || t.includes('vegetais') || t.includes('fibra')) return 'restaurant';
-    if (t.includes('sono') || t.includes('dormir')) return 'bedtime';
+    const tem = (...p: string[]) => p.some((x) => t.includes(x));
+    if (tem('sono', 'dormir', 'cochilo', 'banho', 'chá', 'telas', 'celular')) return 'bedtime';
+    if (tem('treino', 'caminhada', 'exercício', 'yoga', 'alongamento', 'bicicleta', 'natação', 'hidroginástica', 'pilates', 'dança', 'corrida', 'escadas', 'mobilidade')) return 'directions-run';
+    if (tem('água', 'hidrata')) return 'water-drop';
+    if (tem('proteína', 'vegetais', 'fibra', 'ovos', 'peixe', 'frango', 'feijão', 'lentilha', 'iogurte', 'banana', 'aveia', 'castanhas', 'chocolate', 'refeições', 'sardinha', 'carne', 'sopa', 'tofu', 'arroz')) return 'restaurant';
     return 'check-circle'; // default
   };
 

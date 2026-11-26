@@ -5,6 +5,7 @@ import { AuthRequest } from '../middlewares/auth.middleware';
 import { recommendationService, Sintomas } from '../services/recommendation.service';
 import { comparePassword, hashPassword } from '../utils/bcrypt';
 import { apagarCliente } from '../services/revenuecat.service';
+import { conteudoDoDia } from '../services/conteudo-diario.service';
 
 const cicloService = new CicloService();
 
@@ -67,8 +68,31 @@ export class PerfilController {
       const { passwordHash, ...userClean } = user;
 
       // Monta insight consolidado a partir das recomendações
+      // Conteudo que muda a cada dia (titulo, frase, faca/evite e nota pela posicao na fase)
+      const doDia =
+        faseAtual && perfilCiclo
+          ? conteudoDoDia({
+              fase: faseAtual.fase,
+              diaCiclo: faseAtual.diaCiclo,
+              duracaoCiclo: perfilCiclo.duracaoCiclo,
+              duracaoSangramento: perfilCiclo.duracaoSangramento,
+              data: hojeStr,
+              userId,
+            })
+          : null;
+
       const mensagemFase = recomendacoes.mensagemFase;
-      const insight = mensagemFase
+      const insight = doDia
+        ? {
+            titulo: doDia.titulo,
+            emoji: doDia.emoji,
+            descricao: doDia.descricao,
+            facaHoje: doDia.faca,
+            eviteHoje: doDia.evite,
+            notaEspecialista: doDia.nota,
+            dicasExtras: recomendacoes.dicasExtras,
+          }
+        : mensagemFase
         ? {
             titulo: mensagemFase.titulo,
             emoji: mensagemFase.emoji,

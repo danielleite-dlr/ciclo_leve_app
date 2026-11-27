@@ -6,6 +6,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AppLock } from '@/components/AppLock';
 import { AssinaturaProvider } from '@/contexts/AssinaturaContext';
 import { iniciarMonitoramento, registrarTela } from '@/services/monitoramento';
+import { avisarAbertura } from '@/services/instalacao';
 import '../global.css';
 
 // Relatorio de falhas: liga antes de qualquer tela renderizar
@@ -16,6 +17,10 @@ export default function RootLayout() {
   const segmentos = useSegments();
   const tela = segmentos.join('/') || 'inicio';
   useEffect(() => registrarTela(tela), [tela]);
+  // Primeira abertura depois de instalar ou atualizar
+  useEffect(() => {
+    avisarAbertura();
+  }, []);
 
   return (
     <SafeAreaProvider>

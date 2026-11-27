@@ -61,6 +61,9 @@ services:
       # Painel de uso em /api/v1/admin. Vazias = painel desligado.
       ADMIN_USUARIO: ${ADMIN_USUARIO:-}
       ADMIN_SENHA: ${ADMIN_SENHA:-}
+      # Alertas no Telegram (cadastro, login, download, atualizacao). Vazias = sem alertas.
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
+      TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID:-}
     depends_on:
       migrate:
         condition: service_completed_successfully

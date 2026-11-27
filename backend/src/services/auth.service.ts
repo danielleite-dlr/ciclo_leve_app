@@ -2,6 +2,7 @@ import { prisma } from '../config/database';
 import { hashPassword, comparePassword } from '../utils/bcrypt';
 import { generateToken, generateRefreshToken } from '../utils/jwt';
 import { User } from '@prisma/client';
+import { avisarAtividade, avisarCadastro } from './alerta.service';
 
 export class AuthService {
   async register(data: any) {
@@ -29,6 +30,8 @@ export class AuthService {
       },
     });
 
+    avisarCadastro(user).catch(() => {});
+
     const token = generateToken(user.id);
     const refreshToken = generateRefreshToken(user.id);
 
@@ -55,6 +58,7 @@ export class AuthService {
         where: { id: user.id },
         data: { ultimoLogin: new Date() }
     });
+    avisarAtividade('login', user.id, user).catch(() => {});
 
     const token = generateToken(user.id);
     const refreshToken = generateRefreshToken(user.id);

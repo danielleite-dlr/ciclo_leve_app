@@ -8,6 +8,7 @@ import { fertilidadeRoutes } from './fertilidade.routes';
 import { assinaturaRoutes } from './assinatura.routes';
 import { webhookRoutes } from './webhook.routes';
 import { adminRoutes } from './admin.routes';
+import { appRoutes } from './app.routes';
 
 const router = Router();
 
@@ -21,6 +22,7 @@ router.use('/fertilidade', fertilidadeRoutes);
 router.use('/assinatura', assinaturaRoutes);
 router.use('/webhooks', webhookRoutes);
 router.use('/admin', adminRoutes);
+router.use('/app', appRoutes);
 
 
 export { router as routes };

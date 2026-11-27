@@ -2,6 +2,7 @@ import { Response } from 'express';
 import { AuthRequest } from '../middlewares/auth.middleware';
 import { RegistroService } from '../services/registro.service';
 import { recommendationService, Sintomas } from '../services/recommendation.service';
+import { avisarAtividade } from '../services/alerta.service';
 
 const registroService = new RegistroService();
 
@@ -11,6 +12,7 @@ export class RegistroController {
       if (!req.user) return res.status(401).json({ error: 'Auth required' });
       
       const registro = await registroService.criarOuAtualizar(req.user.id, req.body);
+      avisarAtividade('registro', req.user.id).catch(() => {});
 
       const sintomasHoje: Sintomas = {
         inchaco: registro.inchaco ?? 0,

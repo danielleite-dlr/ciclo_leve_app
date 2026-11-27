@@ -1,5 +1,6 @@
 import { timingSafeEqual } from 'crypto';
 import { prisma } from '../config/database';
+import { avisarAtividade } from './alerta.service';
 
 // Painel de uso para a dona do app: quantas usuarias, quantas usaram agora e nas ultimas horas.
 // "Acesso" = qualquer chamada autenticada do app. Gravamos no maximo a cada 2 min por usuaria
@@ -13,6 +14,7 @@ export function marcarAcesso(userId: string) {
   const agora = Date.now();
   if (agora - (ultimaGravacao.get(userId) ?? 0) < INTERVALO_MS) return;
   ultimaGravacao.set(userId, agora);
+  avisarAtividade('uso', userId).catch(() => {});
   prisma.user
     .updateMany({ where: { id: userId }, data: { ultimoAcesso: new Date(agora) } })
     .catch(() => ultimaGravacao.delete(userId));
